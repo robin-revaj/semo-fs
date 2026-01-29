@@ -21,13 +21,13 @@ class Database:
                               )")
         self.__cursor.execute("CREATE TABLE IF NOT EXISTS rel_file_tag(\
                               id INTEGER PRIMARY KEY, \
-                              file_id REFERENCES file ON DELETE CASCADE, \
-                              tag_id REFERENCES tag ON DELETE CASCADE\
+                              file_id REFERENCES file ON DELETE CASCADE NOT NULL, \
+                              tag_id REFERENCES tag ON DELETE CASCADE NOT NULL\
                               )")
         self.__cursor.execute("CREATE TABLE IF NOT EXISTS rel_tag_tag(\
                               id INTEGER PRIMARY KEY, \
-                              superior_id REFERENCES tag ON DELETE CASCADE, \
-                              inferior_id REFERENCES tag ON DELETE CASCADE\
+                              superior_id REFERENCES tag ON DELETE CASCADE NOT NULL, \
+                              inferior_id REFERENCES tag ON DELETE CASCADE NOT NULL\
                               )")
         
         self.__connection.commit()
@@ -68,14 +68,14 @@ class Database:
                                         WHERE file.id == ?) AS r\
                                     LEFT JOIN tag ON r.tag_id == tag.id", (self.__get_file_id(file_system, inode),))
         return [x[0] for x in res.fetchall()]
-    def list_files_for_tag(self, tag_name : str) -> list[int]:
+    def list_files_for_tag(self, tag_name : str) -> list[tuple[int, int]]:
         # TODO do i have to query tags by id when their name is already unique & not null
-        res = self.__cursor.execute("SELECT file.inode FROM (\
+        res = self.__cursor.execute("SELECT file.file_system, file.inode FROM (\
                                         SELECT rel_file_tag.tag_id, rel_file_tag.file_id \
                                         FROM rel_file_tag LEFT JOIN tag ON rel_file_tag.tag_id == tag.id\
                                         WHERE tag.id == ?) AS r\
                                     LEFT JOIN file ON r.file_id == file.id", (self.__get_tag_id(tag_name),))
-        return [x[0] for x in res.fetchall()]
+        return [(x[0], x[1]) for x in res.fetchall()]
     def list_subtags_for_tag(self, tag_name : str) -> list[str]:
         res = self.__cursor.execute("SELECT tag.name FROM (\
                                         SELECT rel_tag_tag.superior_id, rel_tag_tag.inferior_id \
@@ -100,14 +100,19 @@ class Database:
         self.__cursor.execute("INSERT INTO tag VALUES (NULL, ?)", (tag_name,))
         self.__connection.commit()
     def delete_tag(self, tag_name : str):
+        id_to_delete = self.__get_tag_id(tag_name)
         self.__cursor.execute("DELETE FROM tag WHERE name == ?", (tag_name,))
+        self.__cursor.execute("DELETE FROM rel_file_tag WHERE tag_id == ?", (id_to_delete,))
+        self.__cursor.execute("DELETE FROM rel_tag_tag WHERE superior_id == ? OR inferior_id == ?", (id_to_delete, id_to_delete))
         self.__connection.commit()
 
     def new_file(self, file_system, inode : int):
         self.__cursor.execute("INSERT INTO file VALUES (NULL, ?, ?)", (file_system, inode))
         self.__connection.commit()
     def delete_file(self, file_system, inode : int):
+        id_to_delete = self.__get_file_id(file_system, inode)
         self.__cursor.execute("DELETE FROM file WHERE file_system == ? AND inode == ?", (file_system, inode))
+        self.__cursor.execute("DELETE FROM rel_file_tag WHERE file_id == ?", (id_to_delete,))
         self.__connection.commit()
     
     def new_rel_file_tag(self, file_system, inode : int, tag_name : str):
