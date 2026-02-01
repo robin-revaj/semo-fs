@@ -53,6 +53,57 @@ class TestCommandBackend(unittest.TestCase):
 
         self.assertListEqual([], backend.command_LIST_TAGS_FOR_FILE(filepath))
         self.assertListEqual([], backend.command_LIST_EXISTING_TAGS())
+    
+    def test_tag_hierarchy(self):
+        tag1 = "t1"
+        tag2 = "t2"
+        tag3 = "t3"
+
+        backend.command_ASSIGN_SUBTAG(tag1, [tag2, tag3])
+        table = testDB2.dump_tables()
+        self.assertListEqual([], table['tag'])
+        self.assertListEqual([], table['rel_tag_tag'])
+
+        backend.command_TAG(filepath, tag1)
+
+        backend.command_ASSIGN_SUBTAG(tag1, [tag2, tag3])
+        table1 = testDB2.dump_tables()
+        self.assertListEqual([(1,  "t1"), (2, "t2"), (3, "t3")], table1['tag'])
+        self.assertListEqual([(1, 1, 2), (2, 1, 3)], table1['rel_tag_tag'])
+        
+        backend.command_ASSIGN_SUBTAG(tag2, [tag1])
+        table2 = testDB2.dump_tables()
+        self.assertListEqual(table1["tag"], table2["tag"])
+        self.assertListEqual(table1["rel_tag_tag"], table2["rel_tag_tag"])
+        
+        backend.command_ASSIGN_SUBTAG(tag2, [tag3])
+        table = testDB2.dump_tables()
+        self.assertListEqual([(1, 1, 2), (2, 1, 3), (3, 2, 3)], table['rel_tag_tag'])
+
+        backend.command_UNASSIGN_SUBTAG(tag1, [tag2])
+        backend.command_UNASSIGN_SUBTAG(tag2, [tag3])
+        table = testDB2.dump_tables()
+        self.assertListEqual([(2, 1, 3)], table['rel_tag_tag'])
+        self.assertListEqual([(1,  "t1"), (3, "t3")], table['tag'])
+        
+        backend.command_ASSIGN_SUBTAG(tag1, [tag2])
+        backend.command_ASSIGN_SUBTAG(tag2, [tag3])
+        backend.command_UNASSIGN_SUBTAG(tag1, [tag3])
+        table1 = testDB2.dump_tables()
+        backend.command_UNASSIGN_SUBTAG(tag1, [tag3])
+        table2 = testDB2.dump_tables()
+        self.assertListEqual(table1["tag"], table2["tag"])
+        self.assertListEqual(table1["rel_tag_tag"], table2["rel_tag_tag"])
+
+        backend.command_UNASSIGN_SUBTAG(tag2, [tag3])
+        backend.command_UNASSIGN_SUBTAG(tag1, [tag2])
+        backend.command_UNTAG(filepath, tag1)
+        table = testDB2.dump_tables()
+        self.assertListEqual([], table['tag'])
+        self.assertListEqual([], table['rel_tag_tag'])
+
+    def test_hierarchy_listing(self):
+        pass
 
 
 if __name__ == '__main__':

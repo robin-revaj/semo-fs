@@ -15,9 +15,27 @@ class Validator:
     def file_has_tag(self, file_system, inode : int, tag_name : str):
         return tag_name in self.database.list_tags_for_file(file_system, inode)
 
-    def tags_have_hierarchy(self, super_tag_name : str, inf_tag_name : str):
+    def tag_has_direct_superiority(self, super_tag_name : str, inf_tag_name : str):
         return inf_tag_name in self.database.list_subtags_for_tag(super_tag_name)
 
+    def tag_has_superiority(self, super_tag_name : str, inf_tag_name : str):
+        queue = self.database.list_subtags_for_tag(super_tag_name)
+        if inf_tag_name in queue:
+            return True
+        
+        for tag in queue:
+            if self.tag_has_superiority(tag, inf_tag_name):
+                return True
+        return False
+    
+    def file_is_isolated(self, file_system, inode : int):
+        return len(self.database.list_tags_for_file(file_system, inode)) == 0
+    
+    def tag_is_isolated(self, tag_name : str):
+        no_attached_files = len(self.database.list_files_for_tag(tag_name)) == 0
+        no_superiors = len(self.database.list_superior_tags_for_tag(tag_name)) == 0
+        no_inferiors = len(self.database.list_subtags_for_tag(tag_name)) == 0
+        return no_attached_files and no_superiors and no_inferiors
 
     def approved_tag_operation(self, file_system, inode, tag):
         if not self.tag_exists(tag):
@@ -46,12 +64,12 @@ class Validator:
             return False
         if not self.tag_exists(inf_tag_name):
             self.database.new_tag(inf_tag_name)
-        conflicting_hierarchy = (self.tags_have_hierarchy(super_tag_name, inf_tag_name) or self.tags_have_hierarchy(inf_tag_name, super_tag_name))
+        conflicting_hierarchy = (self.tag_has_direct_superiority(super_tag_name, inf_tag_name) or self.tag_has_superiority(inf_tag_name, super_tag_name))
         return not conflicting_hierarchy
 
     def approved_unsubtag_operation(self, super_tag_name, inf_tag_name):
         if not self.tag_exists(super_tag_name) or not self.tag_exists(inf_tag_name):
             return False
-        return self.tags_have_hierarchy(super_tag_name, inf_tag_name)
+        return self.tag_has_direct_superiority(super_tag_name, inf_tag_name)
 
    

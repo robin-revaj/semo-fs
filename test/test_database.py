@@ -127,15 +127,16 @@ class TestDatabaseCommands(unittest.TestCase):
         testDB.new_tag(subtag1)
         testDB.new_tag(subtag2)
 
-        testDB.list_subtags_for_tag(root1)
         self.assertListEqual([], testDB.list_subtags_for_tag(root1))
         self.assertListEqual([root1, root2, subtag1, subtag2], testDB.list_root_tags())
         testDB.new_rel_tag_tag(root1, subtag1)
         self.assertListEqual([subtag1], testDB.list_subtags_for_tag(root1))
+        self.assertListEqual([root1], testDB.list_superior_tags_for_tag(subtag1))
         testDB.new_rel_tag_tag(root1, subtag2)
         testDB.new_rel_tag_tag(root2, subtag2)
         self.assertListEqual([subtag1, subtag2], testDB.list_subtags_for_tag(root1))
         self.assertListEqual([subtag2], testDB.list_subtags_for_tag(root2))
+        self.assertListEqual([root1, root2], testDB.list_superior_tags_for_tag(subtag2))
         self.assertListEqual([root1, root2], testDB.list_root_tags())
 
         testDB.delete_tag(root1)

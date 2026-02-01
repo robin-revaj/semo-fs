@@ -83,6 +83,13 @@ class Database:
                                         WHERE tag.id == ?) AS r\
                                     LEFT JOIN tag ON r.inferior_id == tag.id", (self.__get_tag_id(tag_name),))
         return [x[0] for x in res.fetchall()]
+    def list_superior_tags_for_tag(self, tag_name : str) -> list[str]:
+        res = self.__cursor.execute("SELECT tag.name FROM (\
+                                        SELECT rel_tag_tag.superior_id, rel_tag_tag.inferior_id \
+                                        FROM rel_tag_tag LEFT JOIN tag ON rel_tag_tag.inferior_id == tag.id\
+                                        WHERE tag.id == ?) AS r\
+                                    LEFT JOIN tag ON r.superior_id == tag.id", (self.__get_tag_id(tag_name),))
+        return [x[0] for x in res.fetchall()]
     
     # TODO
     def list_root_tags(self) -> list[str]:

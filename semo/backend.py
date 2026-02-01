@@ -65,8 +65,7 @@ def command_DEL_TAG(tag_name : str):
     affected_files = database.list_files_for_tag(tag_name)
     database.delete_tag(tag_name)
     for (file_system, inode) in affected_files:
-        remaining_tags = len(database.list_tags_for_file(file_system, inode))
-        if remaining_tags == 0:
+        if validator.file_is_isolated(file_system, inode):
             database.delete_file(file_system, inode)
 
 def command_ASSIGN_SUBTAG(superior_tag_name : str, inferior_tags : list[str]):
@@ -86,6 +85,10 @@ def command_UNASSIGN_SUBTAG(superior_tag_name : str, inferior_tags : list[str]):
         if not validator.approved_unsubtag_operation(superior_tag_name, inferior_tag_name):
             continue
         database.delete_rel_tag_tag(superior_tag_name, inferior_tag_name)
+        if validator.tag_is_isolated(inferior_tag_name):
+            database.delete_tag(inferior_tag_name)
+    if validator.tag_is_isolated(superior_tag_name):
+        database.delete_tag(superior_tag_name)
 
 def command_LIST_DIRECT_SUBTAGS(superior_tag_name : str):
     database = db.Database(settings.database_path)
