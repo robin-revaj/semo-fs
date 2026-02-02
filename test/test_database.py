@@ -146,6 +146,3 @@ class TestDatabaseCommands(unittest.TestCase):
 
         self.assertListEqual([], testDB.list_tags())
         self.assertListEqual([], testDB.dump_tables()['rel_tag_tag'])
-
-if __name__ == '__main__':
-    unittest.main()

@@ -37,8 +37,8 @@ class TestCommandBackend(unittest.TestCase):
         backend.command_TAG(filepath, "tag2")
 
         self.assertListEqual([(1, "tag1"), (2, "tag2")], testDB2.dump_tables()['tag'])
-        self.assertListEqual(["tag1", "tag2"], backend.command_LIST_TAGS_FOR_FILE(filepath))
-        self.assertListEqual(["tag1", "tag2"], backend.command_LIST_EXISTING_TAGS())
+        self.assertListEqual(["tag1", "tag2"], backend.query_LIST_TAGS_FOR_FILE(filepath))
+        self.assertListEqual(["tag1", "tag2"], backend.query_LIST_EXISTING_TAGS())
 
         backend.command_DEL_TAG("tag1")
 
@@ -46,13 +46,13 @@ class TestCommandBackend(unittest.TestCase):
         self.assertEqual(len(testDB2.dump_tables()['file']), 1)
         self.assertListEqual([(2, 1, 2)], testDB2.dump_tables()['rel_file_tag'])    
 
-        self.assertListEqual(["tag2"], backend.command_LIST_TAGS_FOR_FILE(filepath))
-        self.assertListEqual(["tag2"], backend.command_LIST_EXISTING_TAGS())
+        self.assertListEqual(["tag2"], backend.query_LIST_TAGS_FOR_FILE(filepath))
+        self.assertListEqual(["tag2"], backend.query_LIST_EXISTING_TAGS())
 
         backend.command_DEL_TAG("tag2")
 
-        self.assertListEqual([], backend.command_LIST_TAGS_FOR_FILE(filepath))
-        self.assertListEqual([], backend.command_LIST_EXISTING_TAGS())
+        self.assertListEqual([], backend.query_LIST_TAGS_FOR_FILE(filepath))
+        self.assertListEqual([], backend.query_LIST_EXISTING_TAGS())
     
     def test_tag_hierarchy(self):
         tag1 = "t1"
@@ -105,6 +105,3 @@ class TestCommandBackend(unittest.TestCase):
     def test_hierarchy_listing(self):
         pass
 
-
-if __name__ == '__main__':
-    unittest.main()
