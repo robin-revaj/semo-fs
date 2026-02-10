@@ -20,30 +20,32 @@ def command_TAG(file_name : str, tag_name : str):
         file_system, inode = os_calls.retrieve_inode_from_path(file_name)
     except Exception:
         logger.exception(f"Failed to retrieve inode for file '{file_name}'")
-        return
+        return False
 
     database = db.Database(settings.database_path)
     validator = v.Validator(database)
     
     if not validator.approved_tag_operation(file_system, inode, tag_name):
         logger.info(f"Tag operation not approved for file ({file_name}) and tag '{tag_name}'")
-        return
+        return False
     
     database.new_rel_file_tag(file_system, inode, tag_name)
     logger.info(f"Tagged file ({file_name}) with tag '{tag_name}'")
+    return True
+
 def command_UNTAG(file_name : str, tag_name : str):
     try:
         file_system, inode = os_calls.retrieve_inode_from_path(file_name)
     except Exception:
         logger.exception(f"Failed to retrieve inode for file '{file_name}'")
-        return
+        return False
 
     database = db.Database(settings.database_path)
     validator = v.Validator(database)
 
     if not validator.approved_untag_operation(file_system, inode, tag_name):
         logger.info(f"Untag operation not approved for file ({file_name}) and tag '{tag_name}'")
-        return
+        return False
     
     database.delete_rel_file_tag(file_system, inode, tag_name)
     logger.info(f"Untagged file ({file_name}) from tag '{tag_name}'")
@@ -54,6 +56,7 @@ def command_UNTAG(file_name : str, tag_name : str):
     if validator.tag_is_isolated(tag_name):
         logger.info(f"Tag '{tag_name}' is now isolated. Deleting tag record.")
         database.delete_tag(tag_name)
+    return True
 
 def command_DEL_TAG(tag_name : str):
     database = db.Database(settings.database_path)
@@ -61,7 +64,7 @@ def command_DEL_TAG(tag_name : str):
 
     if not validator.approved_del_tag_operation(tag_name):
         logger.info(f"Delete tag operation not approved for tag '{tag_name}'")
-        return
+        return False
     
     affected_files = database.list_files_for_tag(tag_name)
     database.delete_tag(tag_name)
@@ -71,6 +74,7 @@ def command_DEL_TAG(tag_name : str):
         if validator.file_is_isolated(file_system, inode):
             logger.info(f"File is now isolated. Deleting file record.")
             database.delete_file(file_system, inode)
+    return True
 
 def command_ASSIGN_SUBTAG(superior_tag_name : str, inferior_tags : list[str]):
     database = db.Database(settings.database_path)
@@ -82,6 +86,7 @@ def command_ASSIGN_SUBTAG(superior_tag_name : str, inferior_tags : list[str]):
             continue
         database.new_rel_tag_tag(superior_tag_name, inferior_tag_name)
         logger.info(f"Assigned inferior tag '{inferior_tag_name}' to superior tag '{superior_tag_name}'") 
+    return True
 
 
 def command_UNASSIGN_SUBTAG(superior_tag_name : str, inferior_tags : list[str]):
@@ -100,6 +105,7 @@ def command_UNASSIGN_SUBTAG(superior_tag_name : str, inferior_tags : list[str]):
     if validator.tag_is_isolated(superior_tag_name):
         logger.info(f"Superior tag '{superior_tag_name}' is now isolated. Deleting tag record.")
         database.delete_tag(superior_tag_name)
+    return True
 
 
 def query_LIST_EXISTING_TAGS() -> list[str]:

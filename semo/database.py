@@ -6,6 +6,7 @@ class Database:
     def __init__(self, path : str):
         self.__connection : sql.Connection = sql.connect(path)
         self.__cursor : sql.Cursor = self.__connection.cursor()
+        self.init_create_script()
 
     def init_create_script(self):
         self.__cursor.execute("PRAGMA foreign_keys = ON")

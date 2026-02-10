@@ -32,3 +32,61 @@
 2026-02-02 14:02:34,090 - semo.backend - INFO - Untagged file (test/data/fake_file_system/empty.txt) from tag 'tag2'
 2026-02-02 14:02:34,090 - semo.backend - INFO - File (test/data/fake_file_system/empty.txt) is now isolated. Deleting file record.
 2026-02-02 14:02:34,099 - semo.backend - INFO - Tag 'tag2' is now isolated. Deleting tag record.
+2026-02-03 09:01:06,172 - semo.backend - INFO - Tagged file (test/data/fake_file_system/empty.txt) with tag 'abcd'
+2026-02-03 09:01:38,664 - semo.backend - ERROR - Failed to retrieve inode for file 'abcd'
+Traceback (most recent call last):
+  File "/home/mercury/Documents/Motherboard/University/Year 3/BC_THESIS/semo_root/semo/backend.py", line 118, in query_LIST_TAGS_FOR_FILE
+    file_system, inode = os_calls.retrieve_inode_from_path(file_name)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mercury/Documents/Motherboard/University/Year 3/BC_THESIS/semo_root/semo/os_calls.py", line 7, in retrieve_inode_from_path
+    raise e
+  File "/home/mercury/Documents/Motherboard/University/Year 3/BC_THESIS/semo_root/semo/os_calls.py", line 5, in retrieve_inode_from_path
+    return (0, os.stat(filename).st_ino)
+               ^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'abcd'
+2026-02-03 09:02:12,041 - semo.backend - INFO - Assigned inferior tag 'a2' to superior tag 'abcd'
+2026-02-03 09:10:52,125 - semo.backend - INFO - Assigned inferior tag 'b2' to superior tag 'abcd'
+2026-02-03 09:11:33,047 - semo.backend - INFO - Assigned inferior tag 'a3' to superior tag 'a2'
+2026-02-06 16:56:18,380 - semo.backend - INFO - Tagged file (test/data/fake_file_system/empty.txt) with tag 'tag1'
+2026-02-06 16:56:18,399 - semo.backend - INFO - Tagged file (test/data/fake_file_system/empty.txt) with tag 'tag2'
+2026-02-06 16:56:18,400 - semo.backend - INFO - Assign subtag operation not approved for superior tag 't1' and inferior tag 't2'
+2026-02-06 16:56:18,401 - semo.backend - INFO - Assign subtag operation not approved for superior tag 't1' and inferior tag 't3'
+2026-02-06 16:56:18,422 - semo.backend - INFO - Tagged file (test/data/fake_file_system/empty.txt) with tag 't1'
+2026-02-06 16:56:18,436 - semo.backend - INFO - Assigned inferior tag 't2' to superior tag 't1'
+2026-02-06 16:56:18,454 - semo.backend - INFO - Assigned inferior tag 't3' to superior tag 't1'
+2026-02-06 16:56:18,456 - semo.backend - INFO - Tag operation not approved for file (test/data/fake_file_system/empty.txt) and tag 'tag1'
+2026-02-06 16:56:18,457 - semo.backend - INFO - Tag operation not approved for file (test/data/fake_file_system/empty.txt) and tag 'tag2'
+2026-02-06 16:56:59,244 - semo.backend - INFO - Tagged file (test/data/fake_file_system/empty.txt) with tag 'tag1'
+2026-02-06 16:56:59,263 - semo.backend - INFO - Tagged file (test/data/fake_file_system/empty.txt) with tag 'tag2'
+2026-02-06 16:56:59,274 - semo.backend - INFO - Deleted tag 'tag1' from database.
+2026-02-06 16:56:59,284 - semo.backend - INFO - Deleted tag 'tag2' from database.
+2026-02-06 16:56:59,284 - semo.backend - INFO - File is now isolated. Deleting file record.
+2026-02-06 16:56:59,294 - semo.backend - INFO - List tags for file operation not approved for file 'test/data/fake_file_system/empty.txt'
+2026-02-06 16:56:59,296 - semo.backend - INFO - Assign subtag operation not approved for superior tag 't1' and inferior tag 't2'
+2026-02-06 16:56:59,296 - semo.backend - INFO - Assign subtag operation not approved for superior tag 't1' and inferior tag 't3'
+2026-02-06 16:56:59,324 - semo.backend - INFO - Tagged file (test/data/fake_file_system/empty.txt) with tag 't1'
+2026-02-06 16:56:59,343 - semo.backend - INFO - Assigned inferior tag 't2' to superior tag 't1'
+2026-02-06 16:56:59,363 - semo.backend - INFO - Assigned inferior tag 't3' to superior tag 't1'
+2026-02-06 16:56:59,364 - semo.backend - INFO - Assign subtag operation not approved for superior tag 't2' and inferior tag 't1'
+2026-02-06 16:56:59,374 - semo.backend - INFO - Assigned inferior tag 't3' to superior tag 't2'
+2026-02-06 16:56:59,385 - semo.backend - INFO - Unassigned inferior tag 't2' from superior tag 't1'
+2026-02-06 16:56:59,396 - semo.backend - INFO - Unassigned inferior tag 't3' from superior tag 't2'
+2026-02-06 16:56:59,397 - semo.backend - INFO - Superior tag 't2' is now isolated. Deleting tag record.
+2026-02-06 16:56:59,426 - semo.backend - INFO - Assigned inferior tag 't2' to superior tag 't1'
+2026-02-06 16:56:59,437 - semo.backend - INFO - Assigned inferior tag 't3' to superior tag 't2'
+2026-02-06 16:56:59,447 - semo.backend - INFO - Unassigned inferior tag 't3' from superior tag 't1'
+2026-02-06 16:56:59,449 - semo.backend - INFO - Unassign subtag operation not approved for superior tag 't1' and inferior tag 't3'
+2026-02-06 16:56:59,459 - semo.backend - INFO - Unassigned inferior tag 't3' from superior tag 't2'
+2026-02-06 16:56:59,460 - semo.backend - INFO - Inferior tag 't3' is now isolated. Deleting tag record.
+2026-02-06 16:56:59,479 - semo.backend - INFO - Unassigned inferior tag 't2' from superior tag 't1'
+2026-02-06 16:56:59,479 - semo.backend - INFO - Inferior tag 't2' is now isolated. Deleting tag record.
+2026-02-06 16:56:59,500 - semo.backend - INFO - Untagged file (test/data/fake_file_system/empty.txt) from tag 't1'
+2026-02-06 16:56:59,501 - semo.backend - INFO - File (test/data/fake_file_system/empty.txt) is now isolated. Deleting file record.
+2026-02-06 16:56:59,511 - semo.backend - INFO - Tag 't1' is now isolated. Deleting tag record.
+2026-02-06 16:56:59,551 - semo.backend - INFO - Tagged file (test/data/fake_file_system/empty.txt) with tag 'tag1'
+2026-02-06 16:56:59,571 - semo.backend - INFO - Tagged file (test/data/fake_file_system/empty.txt) with tag 'tag2'
+2026-02-06 16:56:59,582 - semo.backend - INFO - Untagged file (test/data/fake_file_system/empty.txt) from tag 'tag1'
+2026-02-06 16:56:59,582 - semo.backend - INFO - Tag 'tag1' is now isolated. Deleting tag record.
+2026-02-06 16:56:59,603 - semo.backend - INFO - Untagged file (test/data/fake_file_system/empty.txt) from tag 'tag2'
+2026-02-06 16:56:59,603 - semo.backend - INFO - File (test/data/fake_file_system/empty.txt) is now isolated. Deleting file record.
+2026-02-06 16:56:59,614 - semo.backend - INFO - Tag 'tag2' is now isolated. Deleting tag record.
