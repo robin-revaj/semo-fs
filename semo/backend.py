@@ -20,17 +20,18 @@ def command_TAG(file_name : str, tag_name : str):
         file_system, inode = os_calls.retrieve_inode_from_path(file_name)
     except Exception:
         logger.exception(f"Failed to retrieve inode for file '{file_name}'")
-        return False
+        return f"Failed to retrieve inode for file '{file_name}'"
 
     database = db.Database(settings.database_path)
     validator = v.Validator(database)
     
-    if not validator.approved_tag_operation(file_system, inode, tag_name):
+    if not validator.approved_tag_operation(file_system, inode, file_name, tag_name):
         logger.info(f"Tag operation not approved for file ({file_name}) and tag '{tag_name}'")
-        return False
+        return f"Tag operation not approved for file ({file_name}) and tag '{tag_name}'"
     
     database.new_rel_file_tag(file_system, inode, tag_name)
     logger.info(f"Tagged file ({file_name}) with tag '{tag_name}'")
+
     return True
 
 def command_UNTAG(file_name : str, tag_name : str):
@@ -38,14 +39,14 @@ def command_UNTAG(file_name : str, tag_name : str):
         file_system, inode = os_calls.retrieve_inode_from_path(file_name)
     except Exception:
         logger.exception(f"Failed to retrieve inode for file '{file_name}'")
-        return False
+        return f"Failed to retrieve inode for file '{file_name}'"
 
     database = db.Database(settings.database_path)
     validator = v.Validator(database)
 
     if not validator.approved_untag_operation(file_system, inode, tag_name):
         logger.info(f"Untag operation not approved for file ({file_name}) and tag '{tag_name}'")
-        return False
+        return f"Untag operation not approved for file ({file_name}) and tag '{tag_name}'"
     
     database.delete_rel_file_tag(file_system, inode, tag_name)
     logger.info(f"Untagged file ({file_name}) from tag '{tag_name}'")
@@ -70,7 +71,7 @@ def command_DEL_TAG(tag_name : str):
     database.delete_tag(tag_name)
     logger.info(f"Deleted tag '{tag_name}' from database.")
 
-    for (file_system, inode) in affected_files:
+    for (file_system, inode, filename) in affected_files:
         if validator.file_is_isolated(file_system, inode):
             logger.info(f"File is now isolated. Deleting file record.")
             database.delete_file(file_system, inode)
@@ -128,6 +129,18 @@ def query_LIST_TAGS_FOR_FILE(file_name : str) -> list[str]:
         return []
     
     return database.list_tags_for_file(file_system, inode)
+
+def query_LIST_FILES(query) -> list[tuple[int, int]]:
+    database = db.Database(settings.database_path)
+    validator = v.Validator(database)
+
+    output = []
+    for tag in query:
+        if not validator.approved_list_for_tag_operation(tag):
+            logger.info(f"List files for tag operation not approved for tag '{tag}'")
+            continue
+        output.extend(database.list_files_for_tag(tag))
+    return output
 
 def query_LIST_DIRECT_SUBTAGS(superior_tag_name : str) -> list[str]:
     database = db.Database(settings.database_path)

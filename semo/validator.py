@@ -1,79 +1,124 @@
 #!/usr/bin/env python3
 
-from . import database
+from . import database, settings
+import logging 
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+file_handler = logging.FileHandler(settings.log_file)
+file_handler.setLevel(logging.DEBUG)
+file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+
+logger.addHandler(file_handler)
 class Validator:
     def __init__(self, database : database.Database):
         self.database = database
 
-    def tag_exists(self, tag_name : str) -> bool:
-        return tag_name in self.database.list_tags()
+    def __tag_exists(self, tag_name : str) -> bool:
+        output = tag_name in self.database.list_tags()
+        logger.info(f"Tag Exists '{tag_name}': {output}")
+        return output
 
-    def file_exists(self, file_system, inode : int) -> bool:
-        return inode in self.database.list_files()
+    def __file_exists(self, file_system, inode : int) -> bool:
+        output = inode in self.database.list_files()
+        logger.info(f"File Exists ({file_system}, {inode}): {output}")
+        return output
 
-    def file_has_tag(self, file_system, inode : int, tag_name : str) -> bool:
-        return tag_name in self.database.list_tags_for_file(file_system, inode)
+    def __file_has_tag(self, file_system, inode : int, tag_name : str) -> bool:
+        output = tag_name in self.database.list_tags_for_file(file_system, inode)
+        logger.info(f"File ({file_system}, {inode}) has tag '{tag_name}': {output}")
+        return output
 
-    def tag_has_direct_superiority(self, super_tag_name : str, inf_tag_name : str) -> bool:
-        return inf_tag_name in self.database.list_subtags_for_tag(super_tag_name)
+    def __tag_has_direct_superiority(self, super_tag_name : str, inf_tag_name : str) -> bool:
+        output = inf_tag_name in self.database.list_subtags_for_tag(super_tag_name)
+        logger.info(f"Tag '{super_tag_name}' has direct superiority over '{inf_tag_name}': {output}")
+        return output
 
-    def tag_has_superiority(self, super_tag_name : str, inf_tag_name : str) -> bool:
+    def __tag_has_superiority(self, super_tag_name : str, inf_tag_name : str) -> bool:
         queue = self.database.list_subtags_for_tag(super_tag_name)
+        
         if inf_tag_name in queue:
+            logger.info(f"Tag '{super_tag_name}' has superiority over '{inf_tag_name}': True")
             return True
         
         for tag in queue:
-            if self.tag_has_superiority(tag, inf_tag_name):
+            if self.__tag_has_superiority(tag, inf_tag_name):
+                logger.info(f"Tag '{super_tag_name}' has superiority over '{inf_tag_name}': True")
                 return True
+        logger.info(f"Tag '{super_tag_name}' has superiority over '{inf_tag_name}': False")
         return False
     
     def file_is_isolated(self, file_system, inode : int) -> bool:
-        return len(self.database.list_tags_for_file(file_system, inode)) == 0
+        output = len(self.database.list_tags_for_file(file_system, inode)) == 0
+        logger.info(f"File ({file_system}, {inode}) is isolated: {output}")
+        return output
     
     def tag_is_isolated(self, tag_name : str) -> bool:
         no_attached_files = len(self.database.list_files_for_tag(tag_name)) == 0
         no_superiors = len(self.database.list_superior_tags_for_tag(tag_name)) == 0
         no_inferiors = len(self.database.list_subtags_for_tag(tag_name)) == 0
+        logger.info(f"Tag '{tag_name}' has no attached files: {no_attached_files} and no_superiors: {no_superiors} and no_inferiors: {no_inferiors}")
         return no_attached_files and no_superiors and no_inferiors
 
-    def approved_tag_operation(self, file_system, inode, tag) -> bool:
-        if not self.tag_exists(tag):
-            # log
+    def __confirm_path_accuracy(self, file_system, inode, filename):
+        existing_filename = self.database.get_file_name(file_system, inode)
+        if existing_filename != filename:
+            self.database.set_file_name(file_system, inode, filename)
+
+    def approved_tag_operation(self, file_system, inode, filename, tag) -> bool:
+        if not self.__tag_exists(tag):
+            logger.info(f"Tag '{tag}' does not exist. Creating tag record.")
             self.database.new_tag(tag)
 
-        if not self.file_exists(file_system, inode):
-            self.database.new_file(file_system, inode)
+        if not self.__file_exists(file_system, inode):
+            logger.info(f"File ({file_system}, {inode}) not in database. Creating file record.")
+            self.database.new_file(file_system, inode, filename)
+        else:
+            self.__confirm_path_accuracy(file_system, inode, filename)
 
-        permit = not self.file_has_tag(file_system, inode, tag)
-        # logging.debug(f"Approved tag operation for file ({file_system}, {inode}) and tag '{tag}': {permit}")
+        permit = not self.__file_has_tag(file_system, inode, tag)
+        logger.info(f"Approval for tag operation for file ({file_system}, {inode}) and tag '{tag}': {permit}")
         return permit
         
 
     def approved_untag_operation(self, file_system, inode, tag) -> bool:
-        permit = ( self.file_exists(file_system, inode) and self.file_has_tag(file_system, inode, tag) )
-        # logging.debug(f"Approved untag operation for file ({file_system}, {inode}) and tag '{tag}': {permit}")
+        permit = ( self.__file_exists(file_system, inode) and self.__file_has_tag(file_system, inode, tag) )
+        logger.info(f"Approval for untag operation for file ({file_system}, {inode}) and tag '{tag}': {permit}")
         return permit
 
     def approved_list_for_tag_operation(self, tag_name) -> bool:
-        return self.tag_exists(tag_name)
+        permit = self.__tag_exists(tag_name)
+        logger.info(f"Approval for list for tag operation for tag '{tag_name}': {permit}")
+        return permit
 
     def approved_list_for_file_operation(self, file_system, inode) -> bool:
-        return self.file_exists(file_system, inode)
+        permit = self.__file_exists(file_system, inode)
+        logger.info(f"Approval for list for file operation for file ({file_system}, {inode}): {permit}")
+        return permit
 
     def approved_del_tag_operation(self, tag_name) -> bool:
-        return self.tag_exists(tag_name)
+        permit = self.__tag_exists(tag_name)
+        logger.info(f"Approval for delete tag operation for tag '{tag_name}': {permit}")
+        return permit
 
     def approved_subtag_operation(self, super_tag_name, inf_tag_name) -> bool:
-        if not self.tag_exists(super_tag_name):
+        if not self.__tag_exists(super_tag_name):
+            logger.info(f"Superior tag '{super_tag_name}' does not exist. Aborting.")
             return False
-        if not self.tag_exists(inf_tag_name):
+        if not self.__tag_exists(inf_tag_name):
+            logger.info(f"Inferior tag '{inf_tag_name}' does not exist. Creating tag record.")
             self.database.new_tag(inf_tag_name)
-        conflicting_hierarchy = (self.tag_has_direct_superiority(super_tag_name, inf_tag_name) or self.tag_has_superiority(inf_tag_name, super_tag_name))
+        conflicting_hierarchy = (self.__tag_has_direct_superiority(super_tag_name, inf_tag_name) or self.__tag_has_superiority(inf_tag_name, super_tag_name))
+        logger.info(f"Approval for subtag operation for superior tag '{super_tag_name}' and inferior tag '{inf_tag_name}': Not exists conflicting hierarchy: {not conflicting_hierarchy}")
         return not conflicting_hierarchy
 
     def approved_unsubtag_operation(self, super_tag_name, inf_tag_name) -> bool:
-        if not self.tag_exists(super_tag_name) or not self.tag_exists(inf_tag_name):
+        if not self.__tag_exists(super_tag_name) or not self.__tag_exists(inf_tag_name):
+            logger.info(f"One of the tags '{super_tag_name}' or '{inf_tag_name}' does not exist. Aborting.")
             return False
-        return self.tag_has_direct_superiority(super_tag_name, inf_tag_name)
+        permit = self.__tag_has_direct_superiority(super_tag_name, inf_tag_name)
+        logger.info(f"Approval for unsubtag operation for superior tag '{super_tag_name}' and inferior tag '{inf_tag_name}': {permit}")
+        return permit
 
    

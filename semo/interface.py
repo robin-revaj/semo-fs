@@ -7,6 +7,7 @@ def interface_translate_TAG(args):
     file_name : str = args.filename
     tag_name : str = args.tagname
 
+    print(backend.command_TAG(file_name, tag_name))
     if not backend.command_TAG(file_name, tag_name):
         print("Failed due to reasons")
         raise SystemExit(1)
@@ -31,15 +32,15 @@ def interface_translate_LISTTAGS(args):
         output = backend.query_LIST_TAGS_FOR_FILE(file_name) 
         print("File {0} tagged with: {1}".format(file_name, output))
         raise SystemExit(0)
-    
     output1 = backend.query_LIST_EXISTING_TAGS()
     print("All existing tags: {0}".format(output1))
-    output2 = backend.query_LIST_HIERARCHY()
-    for line in construct_hierarchy_tree(output2):
-        print(line)
-
 
     raise SystemExit(0)
+
+def interface_translate_LISTFILES(args):
+    query : list[str] = args.query
+
+    
 
 def construct_hierarchy_tree(hierarchy):
     lines = []
