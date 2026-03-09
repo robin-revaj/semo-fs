@@ -10,6 +10,8 @@ class TestCommandBackend(unittest.TestCase):
         self.testDB2 = db.Database("test/data/testDB.db")
         self.testDB2.init_create_script()
         self.location = "test/data/"
+    def tearDown(self):
+        self.testDB2.clear_contents()
 
     def test_tag_ok(self):
         filepath = self.location + "file1.txt"

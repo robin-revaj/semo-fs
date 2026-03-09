@@ -6,6 +6,8 @@ class TestDatabaseCommands(unittest.TestCase):
         self.testDB = db.Database("test/data/testDB.db")
         self.testDB.init_create_script()
         self.file_system = 0
+    def tearDown(self):
+        self.testDB.clear_contents()
         
     def test_verify_empty_db(self):
         con = db.sql.connect("test/data/emptyDB.db")
@@ -298,8 +300,6 @@ class TestDatabaseCommands(unittest.TestCase):
         self.testDB.delete_tag(root2_name)
         self.testDB.delete_tag(subtag_name)
 
-    def tearDown(self) -> None:
-        return super().tearDown() 
 
     # def test_00_database_initalization(self):
     #     pattern = {'tag' : [], 'file' : [], 'rel_file_tag' : [], 'rel_tag_tag' : []}
