@@ -219,3 +219,14 @@ FileNotFoundError: [Errno 2] No such file or directory: 'semo/test/data/fake_fil
 2026-03-02 13:53:26,039 - semo.validator - INFO - Val: File Exists (0, 36211281): True
 2026-03-02 13:54:05,852 - semo.validator - INFO - Val: File Exists (0, 36211281): True
 2026-03-02 13:54:30,221 - semo.validator - INFO - Val: File Exists (0, 36211281): True
+2026-03-09 12:47:18,778 - semo.backend - ERROR - Failed to retrieve inode for file 'test/data/file1.txt'
+Traceback (most recent call last):
+  File "/home/mercury/Documents/Motherboard/University/Year 3/BC_THESIS/semo_root/semo/backend.py", line 20, in command_TAG
+    file_system, inode = os_calls.retrieve_inode_from_path(file_name)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mercury/Documents/Motherboard/University/Year 3/BC_THESIS/semo_root/semo/os_calls.py", line 7, in retrieve_inode_from_path
+    raise e
+  File "/home/mercury/Documents/Motherboard/University/Year 3/BC_THESIS/semo_root/semo/os_calls.py", line 5, in retrieve_inode_from_path
+    return (0, os.stat(filename).st_ino)
+               ^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'test/data/file1.txt'

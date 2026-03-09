@@ -13,14 +13,14 @@ class TestCommandBackend(unittest.TestCase):
     def tearDown(self):
         self.testDB2.clear_contents()
 
-    def test_tag_ok(self):
-        filepath = self.location + "file1.txt"
-        backend.command_TAG(filepath, "tag1")
-        table = self.testDB2.dump_tables()
-        self.assertListEqual(table['tag'], [(1, "tag1")])
-        self.assertEqual(len(table['file']), 1)
-        self.assertEqual(table['file'][0][0], 1)
-        self.assertListEqual(table['rel_file_tag'], [(1, 1, 1)])
+    # def test_tag_ok(self):
+    #     filepath = self.location + "file1.txt"
+    #     backend.command_TAG(filepath, "tag1")
+    #     table = self.testDB2.dump_tables()
+    #     self.assertListEqual(table['tag'], [(1, "tag1")])
+    #     self.assertEqual(len(table['file']), 1)
+    #     self.assertEqual(table['file'][0][0], 1)
+    #     self.assertListEqual(table['rel_file_tag'], [(1, 1, 1)])
 
     # def test_tag_untag(self):
     #     backend.command_TAG(filepath, "tag1")

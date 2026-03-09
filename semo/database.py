@@ -8,7 +8,7 @@ class Database:
         self.__cursor : sql.Cursor = self.__connection.cursor()
 
     def verify_db(self) -> bool:
-        res = self.__cursor.execute("SELECT TABLE_NAME FROM sqlite_master WHERE type='table'")
+        res = self.__cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
         tables = set(x[0] for x in res.fetchall())
         if len(tables) == 0:
             self.init_create_script()
@@ -35,14 +35,23 @@ class Database:
         self.__cursor.execute("CREATE TABLE IF NOT EXISTS rel_file_tag(\
                               id INTEGER PRIMARY KEY, \
                               file_id REFERENCES file ON DELETE CASCADE NOT NULL, \
-                              tag_id REFERENCES tag ON DELETE CASCADE NOT NULL\
+                              tag_id REFERENCES tag ON DELETE CASCADE NOT NULL,\
+                              UNIQUE (file_id, tag_id) \
                               )")
         self.__cursor.execute("CREATE TABLE IF NOT EXISTS rel_tag_tag(\
                               id INTEGER PRIMARY KEY, \
                               superior_id REFERENCES tag ON DELETE CASCADE NOT NULL, \
-                              inferior_id REFERENCES tag ON DELETE CASCADE NOT NULL\
+                              inferior_id REFERENCES tag ON DELETE CASCADE NOT NULL, \
+                              UNIQUE (superior_id, inferior_id) \
                               )")
         
+        self.__connection.commit()
+
+    def clear_contents(self):
+        self.__cursor.execute("DELETE FROM file")
+        self.__cursor.execute("DELETE FROM tag")
+        self.__cursor.execute("DELETE FROM rel_file_tag")
+        self.__cursor.execute("DELETE FROM rel_tag_tag")
         self.__connection.commit()
 
     def __get_tag_id(self, tag_name : str) -> int:
