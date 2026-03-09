@@ -90,3 +90,132 @@ FileNotFoundError: [Errno 2] No such file or directory: 'abcd'
 2026-02-06 16:56:59,603 - semo.backend - INFO - Untagged file (test/data/fake_file_system/empty.txt) from tag 'tag2'
 2026-02-06 16:56:59,603 - semo.backend - INFO - File (test/data/fake_file_system/empty.txt) is now isolated. Deleting file record.
 2026-02-06 16:56:59,614 - semo.backend - INFO - Tag 'tag2' is now isolated. Deleting tag record.
+2026-02-23 15:19:28,455 - semo.backend - ERROR - Failed to retrieve inode for file 'semo/test/data/fake_file_system/empty.txt'
+Traceback (most recent call last):
+  File "/home/mercury/Documents/Motherboard/University/Year 3/BC_THESIS/semo_root/semo/backend.py", line 20, in command_TAG
+    file_system, inode = os_calls.retrieve_inode_from_path(file_name)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mercury/Documents/Motherboard/University/Year 3/BC_THESIS/semo_root/semo/os_calls.py", line 7, in retrieve_inode_from_path
+    raise e
+  File "/home/mercury/Documents/Motherboard/University/Year 3/BC_THESIS/semo_root/semo/os_calls.py", line 5, in retrieve_inode_from_path
+    return (0, os.stat(filename).st_ino)
+               ^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'semo/test/data/fake_file_system/empty.txt'
+2026-02-23 15:21:03,307 - semo.backend - INFO - Tagged file (abc.txt) with tag 'tag1'
+2026-03-02 13:18:59,161 - semo.backend - INFO - Tagged file (test/data/empty.txt) with tag 'tag1'
+2026-03-02 13:19:29,572 - semo.backend - INFO - Tagged file (test/data/vacant.txt) with tag 'tag2'
+2026-03-02 13:21:24,244 - semo.backend - INFO - Assigned inferior tag 'tag2' to superior tag 'tag1'
+2026-03-02 13:24:44,085 - semo.backend - INFO - Deleted tag 'tag1' from database.
+2026-03-02 13:24:44,086 - semo.backend - INFO - File is now isolated. Deleting file record.
+2026-03-02 13:24:44,108 - semo.backend - INFO - File is now isolated. Deleting file record.
+2026-03-02 13:24:47,429 - semo.backend - INFO - Deleted tag 'tag2' from database.
+2026-03-02 13:24:47,430 - semo.backend - INFO - File is now isolated. Deleting file record.
+2026-03-02 13:25:17,498 - semo.backend - INFO - Tagged file (test/data/empty.txt) with tag 'tag1'
+2026-03-02 13:25:33,606 - semo.backend - INFO - Tagged file (test/data/vacant.txt) with tag 'tag2'
+2026-03-02 13:26:30,081 - semo.backend - INFO - Untagged file (test/data/vacant.txt) from tag 'tag2'
+2026-03-02 13:26:30,081 - semo.backend - INFO - File (test/data/vacant.txt) is now isolated. Deleting file record.
+2026-03-02 13:26:30,097 - semo.backend - INFO - Tag 'tag2' is now isolated. Deleting tag record.
+2026-03-02 13:26:33,297 - semo.backend - INFO - List tags for file operation not approved for file 'test/data/vacant.txt'
+2026-03-02 13:26:36,223 - semo.backend - INFO - Untag operation not approved for file (test/data/vacant.txt) and tag 'tag2'
+2026-03-02 13:39:08,298 - semo.backend - INFO - List files for tag operation not approved for tag 't'
+2026-03-02 13:39:08,298 - semo.backend - INFO - List files for tag operation not approved for tag 'e'
+2026-03-02 13:39:08,298 - semo.backend - INFO - List files for tag operation not approved for tag 's'
+2026-03-02 13:39:08,298 - semo.backend - INFO - List files for tag operation not approved for tag 't'
+2026-03-02 13:39:08,298 - semo.backend - INFO - List files for tag operation not approved for tag '/'
+2026-03-02 13:39:08,299 - semo.backend - INFO - List files for tag operation not approved for tag 'd'
+2026-03-02 13:39:08,299 - semo.backend - INFO - List files for tag operation not approved for tag 'a'
+2026-03-02 13:39:08,299 - semo.backend - INFO - List files for tag operation not approved for tag 't'
+2026-03-02 13:39:08,299 - semo.backend - INFO - List files for tag operation not approved for tag 'a'
+2026-03-02 13:39:08,299 - semo.backend - INFO - List files for tag operation not approved for tag '/'
+2026-03-02 13:39:08,299 - semo.backend - INFO - List files for tag operation not approved for tag 'e'
+2026-03-02 13:39:08,299 - semo.backend - INFO - List files for tag operation not approved for tag 'm'
+2026-03-02 13:39:08,299 - semo.backend - INFO - List files for tag operation not approved for tag 'p'
+2026-03-02 13:39:08,299 - semo.backend - INFO - List files for tag operation not approved for tag 't'
+2026-03-02 13:39:08,299 - semo.backend - INFO - List files for tag operation not approved for tag 'y'
+2026-03-02 13:39:08,299 - semo.backend - INFO - List files for tag operation not approved for tag '1'
+2026-03-02 13:39:08,299 - semo.backend - INFO - List files for tag operation not approved for tag '.'
+2026-03-02 13:39:08,299 - semo.backend - INFO - List files for tag operation not approved for tag 't'
+2026-03-02 13:39:08,299 - semo.backend - INFO - List files for tag operation not approved for tag 'x'
+2026-03-02 13:39:08,299 - semo.backend - INFO - List files for tag operation not approved for tag 't'
+2026-03-02 13:39:17,827 - semo.backend - INFO - List files for tag operation not approved for tag 't'
+2026-03-02 13:39:17,827 - semo.backend - INFO - List files for tag operation not approved for tag 'e'
+2026-03-02 13:39:17,827 - semo.backend - INFO - List files for tag operation not approved for tag 's'
+2026-03-02 13:39:17,827 - semo.backend - INFO - List files for tag operation not approved for tag 't'
+2026-03-02 13:39:17,828 - semo.backend - INFO - List files for tag operation not approved for tag '/'
+2026-03-02 13:39:17,828 - semo.backend - INFO - List files for tag operation not approved for tag 'd'
+2026-03-02 13:39:17,828 - semo.backend - INFO - List files for tag operation not approved for tag 'a'
+2026-03-02 13:39:17,828 - semo.backend - INFO - List files for tag operation not approved for tag 't'
+2026-03-02 13:39:17,828 - semo.backend - INFO - List files for tag operation not approved for tag 'a'
+2026-03-02 13:39:17,828 - semo.backend - INFO - List files for tag operation not approved for tag '/'
+2026-03-02 13:39:17,828 - semo.backend - INFO - List files for tag operation not approved for tag 'e'
+2026-03-02 13:39:17,828 - semo.backend - INFO - List files for tag operation not approved for tag 'm'
+2026-03-02 13:39:17,828 - semo.backend - INFO - List files for tag operation not approved for tag 'p'
+2026-03-02 13:39:17,828 - semo.backend - INFO - List files for tag operation not approved for tag 't'
+2026-03-02 13:39:17,828 - semo.backend - INFO - List files for tag operation not approved for tag 'y'
+2026-03-02 13:39:17,828 - semo.backend - INFO - List files for tag operation not approved for tag '.'
+2026-03-02 13:39:17,828 - semo.backend - INFO - List files for tag operation not approved for tag 't'
+2026-03-02 13:39:17,829 - semo.backend - INFO - List files for tag operation not approved for tag 'x'
+2026-03-02 13:39:17,829 - semo.backend - INFO - List files for tag operation not approved for tag 't'
+2026-03-02 13:40:41,957 - semo.backend - INFO - Tag operation not approved for file (test/data/empty1.txt) and tag 'tag1'
+2026-03-02 13:44:29,522 - semo.backend - INFO - Tag operation not approved for file (test/data/empty1.txt) and tag 'tag1'
+2026-03-02 13:44:48,042 - semo.backend - INFO - Tag operation not approved for file (test/data/empty1.txt) and tag 'tag1'
+2026-03-02 13:44:48,043 - semo.backend - INFO - Tag operation not approved for file (test/data/empty1.txt) and tag 'tag1'
+2026-03-02 13:45:17,654 - semo.backend - INFO - Tag operation not approved for file (test/data/empty1.txt) and tag 'tag1'
+2026-03-02 13:45:17,655 - semo.backend - INFO - Tag operation not approved for file (test/data/empty1.txt) and tag 'tag1'
+2026-03-02 13:48:08,168 - semo.validator - INFO - Approval for tag operation for file (0, 36211281) and tag 'tag1': False
+2026-03-02 13:48:08,169 - semo.backend - INFO - Tag operation not approved for file (test/data/empty1.txt) and tag 'tag1'
+2026-03-02 13:48:08,169 - semo.validator - INFO - Approval for tag operation for file (0, 36211281) and tag 'tag1': False
+2026-03-02 13:48:08,169 - semo.backend - INFO - Tag operation not approved for file (test/data/empty1.txt) and tag 'tag1'
+2026-03-02 13:52:35,439 - semo.validator - INFO - Val: Tag Exists 'tag1': True
+2026-03-02 13:52:35,439 - semo.validator - INFO - Val: File Exists (0, 36211281): True
+2026-03-02 13:52:35,439 - semo.validator - INFO - Val: File (0, 36211281) has tag 'tag1': True
+2026-03-02 13:52:35,439 - semo.validator - INFO - Approval for tag operation for file (0, 36211281) and tag 'tag1': False
+2026-03-02 13:52:35,439 - semo.backend - INFO - Tag operation not approved for file (test/data/empty1.txt) and tag 'tag1'
+2026-03-02 13:52:35,440 - semo.validator - INFO - Val: Tag Exists 'tag1': True
+2026-03-02 13:52:35,440 - semo.validator - INFO - Val: File Exists (0, 36211281): True
+2026-03-02 13:52:35,440 - semo.validator - INFO - Val: File (0, 36211281) has tag 'tag1': True
+2026-03-02 13:52:35,440 - semo.validator - INFO - Approval for tag operation for file (0, 36211281) and tag 'tag1': False
+2026-03-02 13:52:35,440 - semo.backend - INFO - Tag operation not approved for file (test/data/empty1.txt) and tag 'tag1'
+2026-03-02 13:53:13,767 - semo.validator - INFO - Val: Tag Exists 't': False
+2026-03-02 13:53:13,767 - semo.backend - INFO - List files for tag operation not approved for tag 't'
+2026-03-02 13:53:13,767 - semo.validator - INFO - Val: Tag Exists 'e': False
+2026-03-02 13:53:13,767 - semo.backend - INFO - List files for tag operation not approved for tag 'e'
+2026-03-02 13:53:13,768 - semo.validator - INFO - Val: Tag Exists 's': False
+2026-03-02 13:53:13,768 - semo.backend - INFO - List files for tag operation not approved for tag 's'
+2026-03-02 13:53:13,768 - semo.validator - INFO - Val: Tag Exists 't': False
+2026-03-02 13:53:13,768 - semo.backend - INFO - List files for tag operation not approved for tag 't'
+2026-03-02 13:53:13,768 - semo.validator - INFO - Val: Tag Exists '/': False
+2026-03-02 13:53:13,768 - semo.backend - INFO - List files for tag operation not approved for tag '/'
+2026-03-02 13:53:13,768 - semo.validator - INFO - Val: Tag Exists 'd': False
+2026-03-02 13:53:13,768 - semo.backend - INFO - List files for tag operation not approved for tag 'd'
+2026-03-02 13:53:13,768 - semo.validator - INFO - Val: Tag Exists 'a': False
+2026-03-02 13:53:13,768 - semo.backend - INFO - List files for tag operation not approved for tag 'a'
+2026-03-02 13:53:13,768 - semo.validator - INFO - Val: Tag Exists 't': False
+2026-03-02 13:53:13,768 - semo.backend - INFO - List files for tag operation not approved for tag 't'
+2026-03-02 13:53:13,768 - semo.validator - INFO - Val: Tag Exists 'a': False
+2026-03-02 13:53:13,768 - semo.backend - INFO - List files for tag operation not approved for tag 'a'
+2026-03-02 13:53:13,768 - semo.validator - INFO - Val: Tag Exists '/': False
+2026-03-02 13:53:13,768 - semo.backend - INFO - List files for tag operation not approved for tag '/'
+2026-03-02 13:53:13,768 - semo.validator - INFO - Val: Tag Exists 'e': False
+2026-03-02 13:53:13,768 - semo.backend - INFO - List files for tag operation not approved for tag 'e'
+2026-03-02 13:53:13,768 - semo.validator - INFO - Val: Tag Exists 'm': False
+2026-03-02 13:53:13,769 - semo.backend - INFO - List files for tag operation not approved for tag 'm'
+2026-03-02 13:53:13,769 - semo.validator - INFO - Val: Tag Exists 'p': False
+2026-03-02 13:53:13,769 - semo.backend - INFO - List files for tag operation not approved for tag 'p'
+2026-03-02 13:53:13,769 - semo.validator - INFO - Val: Tag Exists 't': False
+2026-03-02 13:53:13,769 - semo.backend - INFO - List files for tag operation not approved for tag 't'
+2026-03-02 13:53:13,769 - semo.validator - INFO - Val: Tag Exists 'y': False
+2026-03-02 13:53:13,769 - semo.backend - INFO - List files for tag operation not approved for tag 'y'
+2026-03-02 13:53:13,769 - semo.validator - INFO - Val: Tag Exists '1': False
+2026-03-02 13:53:13,769 - semo.backend - INFO - List files for tag operation not approved for tag '1'
+2026-03-02 13:53:13,769 - semo.validator - INFO - Val: Tag Exists '.': False
+2026-03-02 13:53:13,769 - semo.backend - INFO - List files for tag operation not approved for tag '.'
+2026-03-02 13:53:13,769 - semo.validator - INFO - Val: Tag Exists 't': False
+2026-03-02 13:53:13,769 - semo.backend - INFO - List files for tag operation not approved for tag 't'
+2026-03-02 13:53:13,769 - semo.validator - INFO - Val: Tag Exists 'x': False
+2026-03-02 13:53:13,769 - semo.backend - INFO - List files for tag operation not approved for tag 'x'
+2026-03-02 13:53:13,769 - semo.validator - INFO - Val: Tag Exists 't': False
+2026-03-02 13:53:13,769 - semo.backend - INFO - List files for tag operation not approved for tag 't'
+2026-03-02 13:53:26,039 - semo.validator - INFO - Val: File Exists (0, 36211281): True
+2026-03-02 13:54:05,852 - semo.validator - INFO - Val: File Exists (0, 36211281): True
+2026-03-02 13:54:30,221 - semo.validator - INFO - Val: File Exists (0, 36211281): True

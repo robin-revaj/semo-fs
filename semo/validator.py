@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from . import database, settings
+import pyparsing
 import logging 
 
 logger = logging.getLogger(__name__)
@@ -49,6 +50,21 @@ class Validator:
         logger.info(f"Tag '{super_tag_name}' has superiority over '{inf_tag_name}': False")
         return False
     
+    def __confirm_path_accuracy(self, file_system, inode, filename):
+        existing_filename = self.database.get_file_name(file_system, inode)
+        if existing_filename != filename:
+            self.database.set_file_name(file_system, inode, filename)
+
+    def __approve_string(self, string : str) -> bool:
+        pattern = pyparsing.Word(pyparsing.alphanums + "_-")
+        try:
+            pattern.parse_string(string, parse_all=True)
+            logger.info(f"String '{string}' approved by validator")
+            return True
+        except pyparsing.ParseException:
+            logger.info(f"String '{string}' rejected by validator")
+            return False
+    
     def file_is_isolated(self, file_system, inode : int) -> bool:
         output = len(self.database.list_tags_for_file(file_system, inode)) == 0
         logger.info(f"File ({file_system}, {inode}) is isolated: {output}")
@@ -60,11 +76,6 @@ class Validator:
         no_inferiors = len(self.database.list_subtags_for_tag(tag_name)) == 0
         logger.info(f"Tag '{tag_name}' has no attached files: {no_attached_files} and no_superiors: {no_superiors} and no_inferiors: {no_inferiors}")
         return no_attached_files and no_superiors and no_inferiors
-
-    def __confirm_path_accuracy(self, file_system, inode, filename):
-        existing_filename = self.database.get_file_name(file_system, inode)
-        if existing_filename != filename:
-            self.database.set_file_name(file_system, inode, filename)
 
     def approved_tag_operation(self, file_system, inode, filename, tag) -> bool:
         if not self.__tag_exists(tag):
@@ -120,5 +131,46 @@ class Validator:
         permit = self.__tag_has_direct_superiority(super_tag_name, inf_tag_name)
         logger.info(f"Approval for unsubtag operation for superior tag '{super_tag_name}' and inferior tag '{inf_tag_name}': {permit}")
         return permit
+    
+    def parse_query(self, query : str) -> list:
+        # config
+
+        atom = pyparsing.Word(pyparsing.alphanums + "_")
+        operator = pyparsing.one_of("& | -")
+
+        # parsers
+
+        unsplitable_particle = pyparsing.Or(( atom, operator ))
+        wrapped_entity = pyparsing.Suppress("(") + ... + pyparsing.Suppress(")")
+        parser = pyparsing.Or((
+                atom,
+                wrapped_entity,
+                atom + operator + atom,
+                atom + operator + wrapped_entity,
+                wrapped_entity + operator + atom,
+                wrapped_entity + operator + wrapped_entity ))
+
+        def split_expression(string):
+                try:
+                    unsplitable_particle.parse_string(string, parse_all=True)
+                    return string
+                except:
+                    partitioned = parser.parse_string(string).as_list()
+                    for i, item in enumerate(partitioned):
+                        if isinstance(item, str):
+                            partitioned[i] = split_expression(item)
+                    if len(partitioned) == 1:
+                        partitioned = partitioned[0]
+                    return partitioned
+
+        output = split_expression(query)
+        if isinstance(output, str) : return [output]
+        return output
+            
+
+        
+
+
+
 
    

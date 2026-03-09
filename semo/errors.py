@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+class NecessaryUpstreamInterrupt(Exception):
+    pass
+
 class FileNotInDatabaseError(Exception):
     pass
 

@@ -1,0 +1,2 @@
+fuse-python==1.0.9
+pyparsing==3.3.2

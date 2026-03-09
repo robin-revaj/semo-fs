@@ -29,7 +29,7 @@ def main():
     list_tags_parser.set_defaults(func=cli.interface_translate_LISTTAGS)
 
     list_files_parser = subparsers.add_parser("list_files", help="list all files or list files for given tags")
-    list_files_parser.add_argument("-q", "--query", nargs='+')
+    list_files_parser.add_argument("-q", "--query", nargs='?', default="")
     list_files_parser.set_defaults(func=cli.interface_translate_LISTFILES)
 
     delete_tag_parser = subparsers.add_parser("del_tag", help="delete tag [tagname] from all files")

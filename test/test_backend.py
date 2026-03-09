@@ -11,7 +11,15 @@ class TestCommandBackend(unittest.TestCase):
         self.testDB2.init_create_script()
         self.location = "test/data/"
 
-    
+    def test_tag_ok(self):
+        filepath = self.location + "file1.txt"
+        backend.command_TAG(filepath, "tag1")
+        table = self.testDB2.dump_tables()
+        self.assertListEqual(table['tag'], [(1, "tag1")])
+        self.assertEqual(len(table['file']), 1)
+        self.assertEqual(table['file'][0][0], 1)
+        self.assertListEqual(table['rel_file_tag'], [(1, 1, 1)])
+
     # def test_tag_untag(self):
     #     backend.command_TAG(filepath, "tag1")
     #     backend.command_TAG(filepath, "tag2")

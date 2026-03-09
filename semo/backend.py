@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from . import database as db, os_calls, validator as v, settings
+from . import database as db, os_calls, validator as v, settings, errors
 import logging 
 
 logger = logging.getLogger(__name__)
@@ -129,18 +129,58 @@ def query_LIST_TAGS_FOR_FILE(file_name : str) -> list[str]:
         return []
     
     return database.list_tags_for_file(file_system, inode)
-
-def query_LIST_FILES(query) -> list[tuple[int, int]]:
+    
+def query_LIST_FILES(query : str) -> list[str]:
     database = db.Database(settings.database_path)
     validator = v.Validator(database)
 
-    output = []
-    for tag in query:
-        if not validator.approved_list_for_tag_operation(tag):
-            logger.info(f"List files for tag operation not approved for tag '{tag}'")
-            continue
-        output.extend(database.list_files_for_tag(tag))
-    return output
+    if not query:
+        logger.info(f"List files operation with empty query. Outputting all files.")
+        raw_output = database.list_files()
+        user_output = [x[2] for x in raw_output]
+        return user_output
+
+    instruction_list = validator.parse_query(query)
+    
+    return list(process_query_instruction(instruction_list))
+
+
+
+def process_query_instruction(level_data):
+    if isinstance(level_data, set):
+        return level_data
+    if isinstance(level_data, str):
+        return query_LIST_FILES_FOR_TAG(level_data)
+    
+    if len(level_data) != 3:
+        raise errors.NecessaryUpstreamInterrupt("Incorrect instruction level: " + level_data)
+    
+    operator = level_data[1]
+    operand1 = process_query_instruction(level_data[0])
+    operand2 = process_query_instruction(level_data[2])
+
+    match(operator):
+        case "&":
+            return operand1.intersection(operand2)
+        case "|":
+            return operand1.union(operand2)
+        case "/":
+            return operand1.difference(operand2)
+        case _:
+            raise errors.NecessaryUpstreamInterrupt("Incorrect operator: " + operator + ", in expression: " + level_data)
+        
+
+def query_LIST_FILES_FOR_TAG(tag_name : str) -> set:
+    database = db.Database(settings.database_path)
+    validator = v.Validator(database)
+
+    if not validator.approved_list_for_tag_operation(tag_name):
+        logger.info(f"List files for tag operation not approved for tag '{tag_name}'")
+        raise errors.NecessaryUpstreamInterrupt
+    
+    raw_output = database.list_files_for_tag(tag_name)
+    output_as_set = set(raw_output)
+    return output_as_set
 
 def query_LIST_DIRECT_SUBTAGS(superior_tag_name : str) -> list[str]:
     database = db.Database(settings.database_path)

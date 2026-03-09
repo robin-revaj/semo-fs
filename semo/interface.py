@@ -38,9 +38,14 @@ def interface_translate_LISTTAGS(args):
     raise SystemExit(0)
 
 def interface_translate_LISTFILES(args):
-    query : list[str] = args.query
+    query : str = args.query
+    output = backend.query_LIST_FILES(query)
+    if query:
+        print("Files corresponding: {0}".format(output))
+    else:
+        print("All files: {0}".format(output))
+    raise SystemExit(0)
 
-    
 
 def construct_hierarchy_tree(hierarchy):
     lines = []
