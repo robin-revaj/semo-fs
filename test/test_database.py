@@ -1,24 +1,22 @@
 import unittest
+import os
 from semo import database as db 
 
 class TestDatabaseCommands(unittest.TestCase):
     def setUp(self):
-        self.testDB = db.Database("test/data/testDB.db")
+        self.path = "test/data/testDB.db"
+        self.testDB = db.Database(self.path)
         self.testDB.init_create_script()
         self.file_system = 0
     def tearDown(self):
-        self.testDB.clear_contents()
+        os.remove(self.path)
         
     def test_verify_empty_db(self):
         con = db.sql.connect("test/data/emptyDB.db")
         cur = con.cursor()
         empty_db = db.Database("test/data/emptyDB.db")
         self.assertTrue(empty_db.verify_db())
-        cur.execute("DROP TABLE tag")
-        cur.execute("DROP TABLE file")
-        cur.execute("DROP TABLE rel_file_tag")
-        cur.execute("DROP TABLE rel_tag_tag")
-        con.commit()
+        os.remove("test/data/emptyDB.db")
 
     def test_verify_correct_db(self):
         con = db.sql.connect("test/data/correctDB.db")
@@ -32,7 +30,7 @@ class TestDatabaseCommands(unittest.TestCase):
                               id INTEGER PRIMARY KEY, \
                               file_system, \
                               inode INTEGER NOT NULL, \
-                              name VARCHAR(255), \
+                              path VARCHAR(255), \
                               UNIQUE (file_system, inode)\
                               )")
         cur.execute("CREATE TABLE IF NOT EXISTS rel_file_tag(\
@@ -48,6 +46,7 @@ class TestDatabaseCommands(unittest.TestCase):
         con.commit()
         correct_db = db.Database("test/data/correctDB.db")
         self.assertTrue(correct_db.verify_db())
+        os.remove("test/data/correctDB.db")
 
     def test_verify_incorrect_db(self):
         con = db.sql.connect("test/data/incorrectDB.db")
@@ -60,6 +59,7 @@ class TestDatabaseCommands(unittest.TestCase):
         con.commit()
         incorrect_db = db.Database("test/data/incorrectDB.db")
         self.assertFalse(incorrect_db.verify_db())
+        os.remove("test/data/incorrectDB.db")
 
     def test_dump_tables(self):
         pattern = {'tag' : [], 'file' : [], 'rel_file_tag' : [], 'rel_tag_tag' : []}
@@ -216,14 +216,14 @@ class TestDatabaseCommands(unittest.TestCase):
     def test_list_tags(self):
         tag_name = 'test_list_tags'
         self.testDB.new_tag(tag_name)
-        self.assertListEqual([tag_name], self.testDB.list_tags())
+        self.assertSetEqual({tag_name}, self.testDB.get_tags())
         self.testDB.delete_tag(tag_name)
 
     def test_list_files(self):
         inode = 1
         filename = 'test_list_files'
         self.testDB.new_file(self.file_system, inode, filename)
-        self.assertListEqual([(self.file_system, inode, filename)], self.testDB.list_files())
+        self.assertSetEqual({(self.file_system, inode, filename)}, self.testDB.get_filepaths())
         self.testDB.delete_file(self.file_system, inode)
 
     def test_list_tags_for_file(self):
@@ -235,7 +235,7 @@ class TestDatabaseCommands(unittest.TestCase):
         self.testDB.new_file(self.file_system, inode, filename)
         self.testDB.new_rel_file_tag(self.file_system, inode, tag_name)
 
-        self.assertListEqual([tag_name], self.testDB.list_tags_for_file(self.file_system, inode))
+        self.assertSetEqual({tag_name}, self.testDB.get_tags_for_file(self.file_system, inode))
 
         self.testDB.delete_rel_file_tag(self.file_system, inode, tag_name)
         self.testDB.delete_tag(tag_name)
@@ -250,7 +250,8 @@ class TestDatabaseCommands(unittest.TestCase):
         self.testDB.new_file(self.file_system, inode, filename)
         self.testDB.new_rel_file_tag(self.file_system, inode, tag_name)
 
-        self.assertListEqual([(self.file_system, inode, filename)], self.testDB.list_files_for_tag(tag_name))
+        table = self.testDB.dump_tables()
+        self.assertSetEqual({(self.file_system, inode, filename)}, self.testDB.get_files_for_tag(tag_name))
 
         self.testDB.delete_rel_file_tag(self.file_system, inode, tag_name)
         self.testDB.delete_tag(tag_name)
@@ -264,7 +265,7 @@ class TestDatabaseCommands(unittest.TestCase):
         self.testDB.new_tag(subtag_name)
         self.testDB.new_rel_tag_tag(root_name, subtag_name)
 
-        self.assertListEqual([subtag_name], self.testDB.list_subtags_for_tag(root_name))
+        self.assertSetEqual({subtag_name}, self.testDB._direct_inferiors_for_tag(root_name))
 
         self.testDB.delete_rel_tag_tag(root_name, subtag_name)
         self.testDB.delete_tag(root_name)
@@ -278,7 +279,7 @@ class TestDatabaseCommands(unittest.TestCase):
         self.testDB.new_tag(subtag_name)
         self.testDB.new_rel_tag_tag(root_name, subtag_name)
 
-        self.assertListEqual([root_name], self.testDB.list_superior_tags_for_tag(subtag_name))
+        self.assertSetEqual({root_name}, self.testDB._direct_superiors_for_tag(subtag_name))
 
         self.testDB.delete_rel_tag_tag(root_name, subtag_name)
         self.testDB.delete_tag(root_name)
@@ -295,10 +296,34 @@ class TestDatabaseCommands(unittest.TestCase):
         self.testDB.new_rel_tag_tag(root1_name, subtag_name)
         self.testDB.new_rel_tag_tag(root2_name, subtag_name)
 
-        self.assertListEqual([root1_name, root2_name], self.testDB.list_root_tags())
+        self.assertSetEqual({root1_name, root2_name}, self.testDB.get_root_tags())
 
         self.testDB.delete_rel_tag_tag(root1_name, subtag_name)
         self.testDB.delete_rel_tag_tag(root2_name, subtag_name)
         self.testDB.delete_tag(root1_name)
         self.testDB.delete_tag(root2_name)
         self.testDB.delete_tag(subtag_name)
+
+    def test_list_inferiors_tree(self):
+        names = ["t1", "t2", "t3", "t4", "t5"]
+        for i in range(5):
+            self.testDB.new_tag(names[i])
+        self.testDB.new_rel_tag_tag("t1", "t2")
+        self.testDB.new_rel_tag_tag("t2", "t3")
+        self.testDB.new_rel_tag_tag("t3", "t4")
+        self.testDB.new_rel_tag_tag("t4", "t5")
+        self.assertSetEqual(set(names[1:]), self.testDB.get_inferiors_tree("t1"))
+        self.assertSetEqual(set(), self.testDB.get_inferiors_tree("t5"))
+        self.testDB.clear_contents()
+
+    def test_list_superiors_tree(self):
+        names = ["t1", "t2", "t3", "t4", "t5"]
+        for i in range(5):
+            self.testDB.new_tag(names[i])
+        self.testDB.new_rel_tag_tag("t1", "t2")
+        self.testDB.new_rel_tag_tag("t2", "t3")
+        self.testDB.new_rel_tag_tag("t3", "t4")
+        self.testDB.new_rel_tag_tag("t4", "t5")
+        self.assertSetEqual(set(names[:4]), self.testDB.get_superiors_tree("t5"))
+        self.assertSetEqual(set(), self.testDB.get_superiors_tree("t1"))
+        self.testDB.clear_contents()

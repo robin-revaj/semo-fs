@@ -46,22 +46,6 @@ def interface_translate_LISTFILES(args):
         print("All files: {0}".format(output))
     raise SystemExit(0)
 
-
-def construct_hierarchy_tree(hierarchy):
-    lines = []
-
-    def read_level(dictionairy, offset):
-        if not dictionairy:
-            return
-        for item in dictionairy:
-            prefix = "|"
-            if offset == 0: prefix = ""
-            lines.append((prefix + "————") * offset + item)
-            read_level(dictionairy[item], offset + 1)
-
-    read_level(hierarchy, [0])
-    return lines
-
 def interface_translate_DELTAG(args):
     tag_name : str = args.tagname
     if not backend.command_DEL_TAG(tag_name):
@@ -75,10 +59,10 @@ def interface_translate_SUBTAG(args):
     inferior_tags : list[str] = args.inferior_tag
     if inferior_tags:
         if unassign_flag:
-            backend.command_UNASSIGN_SUBTAG(superior_tag, inferior_tags)
+            backend.command_UNASSIGN_SUBTAGS(superior_tag, inferior_tags)
             print(f"")
         else:
-            backend.command_ASSIGN_SUBTAG(superior_tag, inferior_tags)
+            backend.command_ASSIGN_SUBTAGS(superior_tag, inferior_tags)
     raise SystemExit(0)
     
 

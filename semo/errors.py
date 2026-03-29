@@ -3,6 +3,9 @@
 class NecessaryUpstreamInterrupt(Exception):
     pass
 
+class ValidationError(Exception):
+    pass
+
 class FileNotInDatabaseError(Exception):
     pass
 

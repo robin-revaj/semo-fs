@@ -11,8 +11,8 @@ class semoStat(fuse.Stat):
         self.st_mode = 0
         self.st_nlink = 0
         self.st_atime = 0.0
-        self.st_mtime = 0.0
-        self.st_ctime = 0.0
+        self.st_mtime = 0.0 
+        self.st_ctime = 0.0 
 
         self.tags : list[str] = []
 
