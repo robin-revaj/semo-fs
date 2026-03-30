@@ -161,6 +161,11 @@ class Validator:
 
     def approved_subtag_operation(self, super_tag_name, inf_tag_name) -> Validation:
         permit = Validation()
+        if super_tag_name == inf_tag_name:
+            permit.approved = False
+            permit.data.append("Cannot assign tag as subtag of itself.")
+            logger.info(f"Approval for subtag operation for superior tag '{super_tag_name}' and inferior tag '{inf_tag_name}': {permit.approved}")
+            return permit
         if not self.__tag_exists(super_tag_name):
             permit.approved = False
             permit.data.append(f"Superior tag '{super_tag_name}' does not exist.")

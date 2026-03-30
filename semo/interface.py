@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
+import os
+
 from . import backend, errors as e, settings
 import re
 
 def interface_translate_TAG(args):
-    file_name : str = args.filename
+    file_name : str = os.getcwd() + "/" + args.filename
     tag_name : str = args.tagname
 
     response = backend.command_TAG(file_name, tag_name)
@@ -15,7 +17,7 @@ def interface_translate_TAG(args):
     return
 
 def interface_translate_UNTAG(args):
-    file_name : str = args.filename
+    file_name : str = os.getcwd() + "/" + args.filename
     tag_name : str = args.tagname
 
     response = backend.command_UNTAG(file_name, tag_name)
@@ -26,7 +28,7 @@ def interface_translate_UNTAG(args):
     return
 
 def interface_translate_LISTTAGS(args):
-    file_name : str = args.filename
+    file_name : str = os.getcwd() + "/" + args.filename
     if file_name:
         output = backend.query_LIST_TAGS_FOR_FILE(file_name) 
         print("File {0} tagged with: {1}".format(file_name, output))
