@@ -7,35 +7,34 @@ def interface_translate_TAG(args):
     file_name : str = args.filename
     tag_name : str = args.tagname
 
-    print(backend.command_TAG(file_name, tag_name))
-    if not backend.command_TAG(file_name, tag_name):
-        print("Failed due to reasons")
-        raise SystemExit(1)
+    response = backend.command_TAG(file_name, tag_name)
+    if response == []:
+        return
     
-    print("File {0} now tagged with: {1}".format(file_name, tag_name))
-    raise SystemExit(0)
+    print("Failed tag due to reasons: ", response)
+    return
 
 def interface_translate_UNTAG(args):
     file_name : str = args.filename
     tag_name : str = args.tagname
 
-    if not backend.command_UNTAG(file_name, tag_name):
-        print("Failed due to reasons")
-        raise SystemExit(1)
-
-    print("File {0} no longer tagged with {1}".format(file_name, tag_name))
-    raise SystemExit(0)
+    response = backend.command_UNTAG(file_name, tag_name)
+    if response == []:
+        return
+    
+    print("Failed untag due to reasons: ", response)
+    return
 
 def interface_translate_LISTTAGS(args):
     file_name : str = args.filename
     if file_name:
         output = backend.query_LIST_TAGS_FOR_FILE(file_name) 
         print("File {0} tagged with: {1}".format(file_name, output))
-        raise SystemExit(0)
-    output1 = backend.query_LIST_EXISTING_TAGS()
+        return output
+    output1 = backend.query_LIST_ALL_TAGS()
     print("All existing tags: {0}".format(output1))
 
-    raise SystemExit(0)
+    return output1
 
 def interface_translate_LISTFILES(args):
     query : str = args.query
@@ -44,14 +43,15 @@ def interface_translate_LISTFILES(args):
         print("Files corresponding: {0}".format(output))
     else:
         print("All files: {0}".format(output))
-    raise SystemExit(0)
+    return output
 
 def interface_translate_DELTAG(args):
     tag_name : str = args.tagname
-    if not backend.command_DEL_TAG(tag_name):
-        print("Failed to delete tag due to reasons")
-        raise SystemExit(1)
-    raise SystemExit(0)
+    response = backend.command_DEL_TAG(tag_name)
+    if response == []:
+        return
+    print("Failed delete tag due to reasons: ", response)
+    return
 
 def interface_translate_SUBTAG(args):
     superior_tag : str = args.superior_tag
@@ -59,12 +59,22 @@ def interface_translate_SUBTAG(args):
     inferior_tags : list[str] = args.inferior_tag
     if inferior_tags:
         if unassign_flag:
-            backend.command_UNASSIGN_SUBTAGS(superior_tag, inferior_tags)
-            print(f"")
-        else:
-            backend.command_ASSIGN_SUBTAGS(superior_tag, inferior_tags)
-    raise SystemExit(0)
+            response = backend.command_UNASSIGN_SUBTAGS(superior_tag, inferior_tags)
+            if response == []:
+                return
+            print("Failed unassign subtag due to reasons: ", response)
+            return
+        response = backend.command_ASSIGN_SUBTAGS(superior_tag, inferior_tags)
+        if response == []:
+            return
+        print("Failed assign subtag due to reasons: ", response)
+    return
     
+def interface_translate_LISTSUBTAGS(args):
+    root_tag : str = args.root_tag
+    output = backend.query_LIST_ALL_SUBTAGS(root_tag)
+    print("Subtags for root '{0}': {1}".format(root_tag, output))
+    return output
 
 def user_confirmation(message : str) -> bool:
     pattern = re.compile("[Yy]+[Ee]?[Ss]?")

@@ -117,7 +117,7 @@ def command_UNASSIGN_SUBTAGS(superior_tag_name : str, inferior_tags : list[str])
         logger.info(f"Unassigned inferior tag '{inferior_tag_name}' from superior tag '{superior_tag_name}'")
     return failures
 
-def query_LIST_EXISTING_TAGS() -> set[str]:
+def query_LIST_ALL_TAGS() -> set[str]:
     database = db.Database(settings.database_path)
     return database.get_tags()
 
@@ -137,22 +137,19 @@ def query_LIST_TAGS_FOR_FILE(file_name : str) -> set[str]:
     
     output = database.get_tags_for_file(file_system, inode)
     return output
-    
-def query_LIST_FILES(query : str) -> list[str]:
+
+def query_LIST_FILES(query : str) -> set[str]:
     database = db.Database(settings.database_path)
     validator = v.Validator(database)
 
-    if not query:
-        logger.info(f"List files operation with empty query. Outputting all files.")
-        raw_output = database.get_filepaths()
-        user_output = [x[2] for x in raw_output]
-        return user_output
+    if query:
+        instruction_list = validator.parse_query(query)
+        return process_query_instruction(instruction_list)
 
-    instruction_list = validator.parse_query(query)
-    
-    return list(process_query_instruction(instruction_list))
-
-
+    logger.info(f"List files operation with empty query. Outputting all files.")
+    raw_output = database.get_files_with_paths()
+    user_output = { verified_path(file_system, inode, unconfirmed_path) for (file_system, inode, unconfirmed_path) in raw_output }
+    return user_output
 
 def process_query_instruction(level_data):
     if isinstance(level_data, set):
@@ -160,8 +157,10 @@ def process_query_instruction(level_data):
     if isinstance(level_data, str):
         return query_LIST_FILES_FOR_TAG(level_data)
     
+    if len(level_data) == 1:
+        return process_query_instruction(level_data[0])
     if len(level_data) != 3:
-        raise errors.NecessaryUpstreamInterrupt("Incorrect instruction level: " + level_data)
+        raise errors.NecessaryUpstreamInterrupt("Incorrect instruction level: " + str(level_data))
     
     operator = level_data[1]
     operand1 = process_query_instruction(level_data[0])
@@ -170,40 +169,53 @@ def process_query_instruction(level_data):
     match(operator):
         case "&":
             return operand1.intersection(operand2)
-        case "|":
+        case "|" | "+":
             return operand1.union(operand2)
-        case "/":
+        case "/" | "-":
             return operand1.difference(operand2)
         case _:
-            raise errors.NecessaryUpstreamInterrupt("Incorrect operator: " + operator + ", in expression: " + level_data)
+            raise errors.NecessaryUpstreamInterrupt("Incorrect operator: " + operator + ", in expression: " + " ".join(level_data))
         
+def verified_path(file_system, inode, unconfirmed_path):
+    try:
+        file_system_check, inode_check = os_calls.retrieve_inode_from_path(unconfirmed_path)
+        if file_system_check != file_system or inode_check != inode:
+            raise errors.NecessaryUpstreamInterrupt(f"File no longer available at {unconfirmed_path}.")
+        return unconfirmed_path
+    except Exception as e:
+        logger.info(f"Failed to verify path for file ({file_system}, {inode}). Error: {type(e).__name__} - {str(e)}. Returning unconfirmed path '{unconfirmed_path}'")
+        raise errors.NecessaryUpstreamInterrupt(f"File no longer available at {unconfirmed_path}.")
 
 def query_LIST_FILES_FOR_TAG(tag_name : str) -> set:
     database = db.Database(settings.database_path)
     validator = v.Validator(database)
 
-    if not validator.approved_list_for_tag_operation(tag_name):
-        logger.info(f"List files for tag operation not approved for tag '{tag_name}'")
-        raise errors.NecessaryUpstreamInterrupt
+    permit = validator.approved_list_for_tag_operation(tag_name)
+    if not permit.approved:
+        logger.info(permit.data)
+        return set()
     
-    output = database.get_files_for_tag(tag_name)
-    return output
+    raw_output = database.get_files_for_tag(tag_name)
+    user_output = { verified_path(file_system, inode, unconfirmed_path) for (file_system, inode, unconfirmed_path) in raw_output }
+    return user_output
 
 def query_LIST_DIRECT_SUBTAGS(superior_tag_name : str) -> set[str]:
     database = db.Database(settings.database_path)
     validator = v.Validator(database)
 
-    if not validator.approved_list_for_tag_operation(superior_tag_name):
+    permit = validator.approved_list_for_tag_operation(superior_tag_name)
+    if not permit.approved:
         logger.info(f"List direct subtags operation not approved for tag '{superior_tag_name}'")
         return set()
     return database._direct_inferiors_for_tag(superior_tag_name)
     
-def query_LIST_RECURSIVE_SUBTAGS(root_tag_name : str) -> dict[str, dict]:
+def query_LIST_ALL_SUBTAGS(root_tag_name : str) -> dict[str, dict]:
     database = db.Database(settings.database_path)
     validator = v.Validator(database)
 
     def get_subtag_dict(super_tag):
-        if not validator.approved_list_for_tag_operation(super_tag):
+        permit = validator.approved_list_for_tag_operation(super_tag)
+        if not permit.approved:
             return {}
         subtag_dict = {}
         queue = database._direct_inferiors_for_tag(super_tag)
@@ -217,11 +229,3 @@ def query_LIST_RECURSIVE_SUBTAGS(root_tag_name : str) -> dict[str, dict]:
 def query_LIST_ROOTS() -> set[str]:
     database = db.Database(settings.database_path)
     return database.get_root_tags()
-
-def query_LIST_HIERARCHY() -> dict[str, dict]: 
-    hierarchy = {}
-    for root_tag in query_LIST_ROOTS():
-        hierarchy[root_tag] = query_LIST_RECURSIVE_SUBTAGS(root_tag)
-    return hierarchy
-
-

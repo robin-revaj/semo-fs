@@ -20,33 +20,11 @@ class TestDatabaseCommands(unittest.TestCase):
 
     def test_verify_correct_db(self):
         con = db.sql.connect("test/data/correctDB.db")
-        cur = con.cursor()
-        cur.execute("PRAGMA foreign_keys = ON")
-        cur.execute("CREATE TABLE IF NOT EXISTS tag(\
-                              id INTEGER PRIMARY KEY, \
-                              name VARCHAR(50) NOT NULL UNIQUE\
-                              )")
-        cur.execute("CREATE TABLE IF NOT EXISTS file(\
-                              id INTEGER PRIMARY KEY, \
-                              file_system, \
-                              inode INTEGER NOT NULL, \
-                              path VARCHAR(255), \
-                              UNIQUE (file_system, inode)\
-                              )")
-        cur.execute("CREATE TABLE IF NOT EXISTS rel_file_tag(\
-                              id INTEGER PRIMARY KEY, \
-                              file_id REFERENCES file ON DELETE CASCADE NOT NULL, \
-                              tag_id REFERENCES tag ON DELETE CASCADE NOT NULL\
-                              )")
-        cur.execute("CREATE TABLE IF NOT EXISTS rel_tag_tag(\
-                              id INTEGER PRIMARY KEY, \
-                              superior_id REFERENCES tag ON DELETE CASCADE NOT NULL, \
-                              inferior_id REFERENCES tag ON DELETE CASCADE NOT NULL\
-                              )")
-        con.commit()
+        db_init = db.Database("test/data/correctDB.db")
+        db_init.init_create_script()
+
         correct_db = db.Database("test/data/correctDB.db")
         self.assertTrue(correct_db.verify_db())
-        os.remove("test/data/correctDB.db")
 
     def test_verify_incorrect_db(self):
         con = db.sql.connect("test/data/incorrectDB.db")
@@ -223,7 +201,7 @@ class TestDatabaseCommands(unittest.TestCase):
         inode = 1
         filename = 'test_list_files'
         self.testDB.new_file(self.file_system, inode, filename)
-        self.assertSetEqual({(self.file_system, inode, filename)}, self.testDB.get_filepaths())
+        self.assertSetEqual({(self.file_system, inode)}, self.testDB.get_files())
         self.testDB.delete_file(self.file_system, inode)
 
     def test_list_tags_for_file(self):

@@ -62,7 +62,7 @@ class Validator:
         # return False
         return super_tag_name in self.database.get_superiors_tree(inf_tag_name)
     
-    def __confirm_path_accuracy(self, file_system, inode, filename):
+    def __refresh_path_from_access(self, file_system, inode, filename):
         existing_filename = self.database.get_file_path(file_system, inode)
         if existing_filename != filename:
             self.database.set_file_path(file_system, inode, filename)
@@ -99,7 +99,7 @@ class Validator:
             logger.info(f"File ({file_system}, {inode}) not in database. Creating file record.")
             self.database.new_file(file_system, inode, filepath)
         else:
-            self.__confirm_path_accuracy(file_system, inode, filepath)
+            self.__refresh_path_from_access(file_system, inode, filepath)
 
         permit.approved = not self.__file_indirectly_has_tag(file_system, inode, tag)
         if not permit.approved:
@@ -194,16 +194,25 @@ class Validator:
         logger.info(f"Approval for unsubtag operation for superior tag '{super_tag_name}' and inferior tag '{inf_tag_name}': {permit.approved}")
         return permit
     
-    def parse_query(self, query : str) -> list:
+    def parse_query(self, query : str) -> list[str] | str:
         # config
 
-        atom = pyparsing.Word(pyparsing.alphanums + "_")
-        operator = pyparsing.one_of("& | -")
+        word = pyparsing.Word(pyparsing.alphanums + "_")
+        operator = pyparsing.one_of("& | + / -")
+        expression = pyparsing.Forward()
+        atom = word | pyparsing.Group(pyparsing.Literal("(").suppress() + expression + pyparsing.Literal(")").suppress())
+        expression <<= atom + pyparsing.Optional(operator + atom)
 
+        wrapped_entity = pyparsing.Suppress("(") + expression + pyparsing.Suppress(")")
         # parsers
 
-        unsplitable_particle = pyparsing.Or(( atom, operator ))
-        wrapped_entity = pyparsing.Suppress("(") + ... + pyparsing.Suppress(")")
+        unsplitable_particle = pyparsing.Or(( word, operator ))
+
+        # output = expression.parse_string(query, parse_all=True).as_list()
+        # if len(output) == 1:
+        #     return output[0]
+        # return output
+    
         parser = pyparsing.Or((
                 atom,
                 wrapped_entity,
@@ -211,23 +220,8 @@ class Validator:
                 atom + operator + wrapped_entity,
                 wrapped_entity + operator + atom,
                 wrapped_entity + operator + wrapped_entity ))
-
-        def split_expression(string):
-                try:
-                    unsplitable_particle.parse_string(string, parse_all=True)
-                    return string
-                except:
-                    partitioned = parser.parse_string(string).as_list()
-                    for i, item in enumerate(partitioned):
-                        if isinstance(item, str):
-                            partitioned[i] = split_expression(item)
-                    if len(partitioned) == 1:
-                        partitioned = partitioned[0]
-                    return partitioned
-
-        output = split_expression(query)
-        if isinstance(output, str) : return [output]
-        return output
+        
+        return expression.parse_string(query, parse_all=True).as_list()
             
 
         

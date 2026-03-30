@@ -6,17 +6,37 @@ class Database:
     def __init__(self, path : str):
         self.__connection : sql.Connection = sql.connect(path)
         self.__cursor : sql.Cursor = self.__connection.cursor()
+        self.verify_db()
 
-    def verify_db(self) -> bool:
+    def verify_db(self):
+        required_tables = {'tag', 'file', 'rel_file_tag', 'rel_tag_tag'}
+        required_indices = {'idx_tag', 'idx_file', 'idx_rel_ft', 'idx_rel_tt'}
+
         res = self.__cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
         tables = set(x[0] for x in res.fetchall())
         if len(tables) == 0:
             self.init_create_script()
             return True
-        if tables != {'tag', 'file', 'rel_file_tag', 'rel_tag_tag'}:
+        if tables != required_tables:
             return False
-        # TODO check if tables have correct columns
-
+        res = self.__cursor.execute("SELECT name FROM sqlite_master WHERE type='index'")
+        indices = set(x[0] for x in res.fetchall())
+        if not required_indices <= indices:
+            return False
+        
+        tag_columns = self.__cursor.execute("SELECT name FROM PRAGMA_TABLE_INFO('tag')")
+        if set(x[0] for x in tag_columns.fetchall()) != {'id', 'name'}:
+            return False
+        file_columns = self.__cursor.execute("SELECT name FROM PRAGMA_TABLE_INFO('file')")
+        if set(x[0] for x in file_columns.fetchall()) != {'id', 'file_system', 'inode', 'path'}:
+            return False
+        rel_file_tag_columns = self.__cursor.execute("SELECT name FROM PRAGMA_TABLE_INFO('rel_file_tag')")
+        if set(x[0] for x in rel_file_tag_columns.fetchall()) != {'id', 'file_id', 'tag_id'}:
+            return False
+        rel_tag_tag_columns = self.__cursor.execute("SELECT name FROM PRAGMA_TABLE_INFO('rel_tag_tag')")
+        if set(x[0] for x in rel_tag_tag_columns.fetchall()) != {'id', 'superior_id', 'inferior_id'}:
+            return False
+        
         return True
         
     def init_create_script(self):
@@ -30,7 +50,7 @@ class Database:
 
         self.__cursor.execute("CREATE TABLE IF NOT EXISTS file(\
                               id INTEGER PRIMARY KEY, \
-                              file_system, \
+                              file_system INTEGER NOT NULL, \
                               inode INTEGER NOT NULL, \
                               path VARCHAR(255), \
                               UNIQUE (file_system, inode)\
@@ -50,6 +70,7 @@ class Database:
                               id INTEGER PRIMARY KEY, \
                               superior_id REFERENCES tag ON DELETE CASCADE NOT NULL, \
                               inferior_id REFERENCES tag ON DELETE CASCADE NOT NULL, \
+                              CONSTRAINT check_not_duplicate_tag CHECK (superior_id != inferior_id), \
                               UNIQUE (superior_id, inferior_id) \
                               )")
         self.__cursor.execute("CREATE INDEX IF NOT EXISTS idx_rel_tt ON rel_tag_tag (inferior_id, superior_id)")
@@ -163,7 +184,7 @@ class Database:
     def get_files(self) -> set[tuple[str, int]]:
         res = self.__cursor.execute ("SELECT file_system, inode, path FROM file")
         return set([(x[0], x[1]) for x in res.fetchall()])
-    def get_filepaths(self) -> set[tuple[str, int, str]]:
+    def get_files_with_paths(self) -> set[tuple[str, int, str]]:
         res = self.__cursor.execute ("SELECT file_system, inode, path FROM file")
         return set([(x[0], x[1], x[2]) for x in res.fetchall()])
     
