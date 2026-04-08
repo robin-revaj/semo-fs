@@ -172535,3 +172535,1592 @@ FileNotFoundError: [Errno 2] No such file or directory: 'test/data/nonexistent_f
 2026-04-08 02:20:01,037 - semo.backend - INFO - Untagged file (test/data/file2.txt) from tag 'test_tag_tagged_with_superior_superior'
 2026-04-08 02:20:01,037 - semo.validator - INFO - File (3874604374702157863, 36216520) is isolated: True
 2026-04-08 02:20:01,037 - semo.backend - INFO - File (test/data/file2.txt) is now isolated. Deleting file record.
+2026-04-08 13:59:13,978 - semo.validator - INFO - Tag Exists 'test_del_tag_nonexistent': False
+2026-04-08 13:59:13,978 - semo.validator - INFO - Approval for delete tag operation for tag 'test_del_tag_nonexistent': False
+2026-04-08 13:59:13,978 - semo.backend - INFO - Delete tag operation not approved for tag 'test_del_tag_nonexistent'
+2026-04-08 13:59:14,022 - semo.validator - INFO - Tag Exists 'test_del_tag_ok': False
+2026-04-08 13:59:14,022 - semo.validator - INFO - Tag 'test_del_tag_ok' does not exist. Creating tag record.
+2026-04-08 13:59:14,025 - semo.validator - INFO - File Exists (3874604374702157863, 36218194): False
+2026-04-08 13:59:14,025 - semo.validator - INFO - File (3874604374702157863, 36218194) not in database. Creating file record.
+2026-04-08 13:59:14,028 - semo.validator - INFO - File (3874604374702157863, 36218194) has tag 'test_del_tag_ok': False
+2026-04-08 13:59:14,028 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218194) and tag 'test_del_tag_ok': True
+2026-04-08 13:59:14,030 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_del_tag_ok'
+2026-04-08 13:59:14,031 - semo.validator - INFO - Tag Exists 'test_del_tag_ok': True
+2026-04-08 13:59:14,031 - semo.validator - INFO - Approval for delete tag operation for tag 'test_del_tag_ok': True
+2026-04-08 13:59:14,033 - semo.backend - INFO - Deleted tag 'test_del_tag_ok' from database.
+2026-04-08 13:59:14,034 - semo.validator - INFO - File (3874604374702157863, 36218194) is isolated: True
+2026-04-08 13:59:14,034 - semo.backend - INFO - File is now isolated. Deleting file record.
+2026-04-08 13:59:14,067 - semo.validator - INFO - Tag Exists 'test_del_tag_with_overtags_superior': False
+2026-04-08 13:59:14,067 - semo.validator - INFO - Tag 'test_del_tag_with_overtags_superior' does not exist. Creating tag record.
+2026-04-08 13:59:14,069 - semo.validator - INFO - File Exists (3874604374702157863, 36218194): False
+2026-04-08 13:59:14,069 - semo.validator - INFO - File (3874604374702157863, 36218194) not in database. Creating file record.
+2026-04-08 13:59:14,072 - semo.validator - INFO - File (3874604374702157863, 36218194) has tag 'test_del_tag_with_overtags_superior': False
+2026-04-08 13:59:14,072 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218194) and tag 'test_del_tag_with_overtags_superior': True
+2026-04-08 13:59:14,075 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_del_tag_with_overtags_superior'
+2026-04-08 13:59:14,075 - semo.validator - INFO - Tag Exists 'test_del_tag_with_overtags_inferior': False
+2026-04-08 13:59:14,075 - semo.validator - INFO - Tag 'test_del_tag_with_overtags_inferior' does not exist. Creating tag record.
+2026-04-08 13:59:14,078 - semo.validator - INFO - File Exists (3874604374702157863, 36218197): False
+2026-04-08 13:59:14,078 - semo.validator - INFO - File (3874604374702157863, 36218197) not in database. Creating file record.
+2026-04-08 13:59:14,081 - semo.validator - INFO - File (3874604374702157863, 36218197) has tag 'test_del_tag_with_overtags_inferior': False
+2026-04-08 13:59:14,081 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218197) and tag 'test_del_tag_with_overtags_inferior': True
+2026-04-08 13:59:14,084 - semo.backend - INFO - Tagged file (test/data/file2.txt) with tag 'test_del_tag_with_overtags_inferior'
+2026-04-08 13:59:14,084 - semo.validator - INFO - Tag Exists 'test_del_tag_with_overtags_superior': True
+2026-04-08 13:59:14,084 - semo.validator - INFO - Tag Exists 'test_del_tag_with_overtags_inferior': True
+2026-04-08 13:59:14,084 - semo.validator - INFO - Approval for subtag operation for superior tag 'test_del_tag_with_overtags_superior' and inferior tag 'test_del_tag_with_overtags_inferior': True
+2026-04-08 13:59:14,087 - semo.backend - INFO - Assigned inferior tag 'test_del_tag_with_overtags_inferior' to superior tag 'test_del_tag_with_overtags_superior'
+2026-04-08 13:59:14,088 - semo.validator - INFO - File Exists (3874604374702157863, 36218197): True
+2026-04-08 13:59:14,088 - semo.validator - INFO - File (3874604374702157863, 36218197) has tag 'test_del_tag_with_overtags_superior': False
+2026-04-08 13:59:14,088 - semo.validator - INFO - Approval for direct untag operation for file (3874604374702157863, 36218197) and tag 'test_del_tag_with_overtags_superior': False
+2026-04-08 13:59:14,088 - semo.backend - INFO - Untagged file (test/data/file2.txt) from subtag 'test_del_tag_with_overtags_superior'
+2026-04-08 13:59:14,088 - semo.validator - INFO - Tag Exists 'test_del_tag_with_overtags_inferior': True
+2026-04-08 13:59:14,088 - semo.validator - INFO - Approval for delete tag operation for tag 'test_del_tag_with_overtags_inferior': True
+2026-04-08 13:59:14,091 - semo.backend - INFO - Deleted tag 'test_del_tag_with_overtags_inferior' from database.
+2026-04-08 13:59:14,091 - semo.validator - INFO - File (3874604374702157863, 36218197) is isolated: True
+2026-04-08 13:59:14,091 - semo.backend - INFO - File is now isolated. Deleting file record.
+2026-04-08 13:59:14,123 - semo.validator - INFO - Tag Exists 'test_del_tag_with_subtags_superior': False
+2026-04-08 13:59:14,123 - semo.validator - INFO - Tag 'test_del_tag_with_subtags_superior' does not exist. Creating tag record.
+2026-04-08 13:59:14,126 - semo.validator - INFO - File Exists (3874604374702157863, 36218197): False
+2026-04-08 13:59:14,126 - semo.validator - INFO - File (3874604374702157863, 36218197) not in database. Creating file record.
+2026-04-08 13:59:14,129 - semo.validator - INFO - File (3874604374702157863, 36218197) has tag 'test_del_tag_with_subtags_superior': False
+2026-04-08 13:59:14,129 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218197) and tag 'test_del_tag_with_subtags_superior': True
+2026-04-08 13:59:14,132 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_del_tag_with_subtags_superior'
+2026-04-08 13:59:14,132 - semo.validator - INFO - Tag Exists 'test_del_tag_with_subtags_inferior': False
+2026-04-08 13:59:14,132 - semo.validator - INFO - Tag 'test_del_tag_with_subtags_inferior' does not exist. Creating tag record.
+2026-04-08 13:59:14,135 - semo.validator - INFO - File Exists (3874604374702157863, 36218202): False
+2026-04-08 13:59:14,135 - semo.validator - INFO - File (3874604374702157863, 36218202) not in database. Creating file record.
+2026-04-08 13:59:14,137 - semo.validator - INFO - File (3874604374702157863, 36218202) has tag 'test_del_tag_with_subtags_inferior': False
+2026-04-08 13:59:14,137 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218202) and tag 'test_del_tag_with_subtags_inferior': True
+2026-04-08 13:59:14,144 - semo.backend - INFO - Tagged file (test/data/file2.txt) with tag 'test_del_tag_with_subtags_inferior'
+2026-04-08 13:59:14,144 - semo.validator - INFO - Tag Exists 'test_del_tag_with_subtags_superior': True
+2026-04-08 13:59:14,144 - semo.validator - INFO - Tag Exists 'test_del_tag_with_subtags_inferior': True
+2026-04-08 13:59:14,144 - semo.validator - INFO - Approval for subtag operation for superior tag 'test_del_tag_with_subtags_superior' and inferior tag 'test_del_tag_with_subtags_inferior': True
+2026-04-08 13:59:14,147 - semo.backend - INFO - Assigned inferior tag 'test_del_tag_with_subtags_inferior' to superior tag 'test_del_tag_with_subtags_superior'
+2026-04-08 13:59:14,147 - semo.validator - INFO - File Exists (3874604374702157863, 36218202): True
+2026-04-08 13:59:14,147 - semo.validator - INFO - File (3874604374702157863, 36218202) has tag 'test_del_tag_with_subtags_superior': False
+2026-04-08 13:59:14,147 - semo.validator - INFO - Approval for direct untag operation for file (3874604374702157863, 36218202) and tag 'test_del_tag_with_subtags_superior': False
+2026-04-08 13:59:14,147 - semo.backend - INFO - Untagged file (test/data/file2.txt) from subtag 'test_del_tag_with_subtags_superior'
+2026-04-08 13:59:14,147 - semo.validator - INFO - Tag Exists 'test_del_tag_with_subtags_superior': True
+2026-04-08 13:59:14,147 - semo.validator - INFO - Approval for delete tag operation for tag 'test_del_tag_with_subtags_superior': True
+2026-04-08 13:59:14,150 - semo.backend - INFO - Deleted tag 'test_del_tag_with_subtags_superior' from database.
+2026-04-08 13:59:14,150 - semo.validator - INFO - File (3874604374702157863, 36218197) is isolated: True
+2026-04-08 13:59:14,150 - semo.backend - INFO - File is now isolated. Deleting file record.
+2026-04-08 13:59:14,187 - semo.validator - INFO - Tag Exists 'test_list_all_tags1': False
+2026-04-08 13:59:14,187 - semo.validator - INFO - Tag 'test_list_all_tags1' does not exist. Creating tag record.
+2026-04-08 13:59:14,191 - semo.validator - INFO - File Exists (3874604374702157863, 36218202): False
+2026-04-08 13:59:14,191 - semo.validator - INFO - File (3874604374702157863, 36218202) not in database. Creating file record.
+2026-04-08 13:59:14,195 - semo.validator - INFO - File (3874604374702157863, 36218202) has tag 'test_list_all_tags1': False
+2026-04-08 13:59:14,195 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218202) and tag 'test_list_all_tags1': True
+2026-04-08 13:59:14,198 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_list_all_tags1'
+2026-04-08 13:59:14,198 - semo.validator - INFO - Tag Exists 'test_list_all_tags2': False
+2026-04-08 13:59:14,198 - semo.validator - INFO - Tag 'test_list_all_tags2' does not exist. Creating tag record.
+2026-04-08 13:59:14,201 - semo.validator - INFO - File Exists (3874604374702157863, 36218204): False
+2026-04-08 13:59:14,201 - semo.validator - INFO - File (3874604374702157863, 36218204) not in database. Creating file record.
+2026-04-08 13:59:14,204 - semo.validator - INFO - File (3874604374702157863, 36218204) has tag 'test_list_all_tags2': False
+2026-04-08 13:59:14,204 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218204) and tag 'test_list_all_tags2': True
+2026-04-08 13:59:14,207 - semo.backend - INFO - Tagged file (test/data/file2.txt) with tag 'test_list_all_tags2'
+2026-04-08 13:59:14,238 - semo.validator - INFO - Tag Exists 'test_list_files_no_query1': False
+2026-04-08 13:59:14,239 - semo.validator - INFO - Tag 'test_list_files_no_query1' does not exist. Creating tag record.
+2026-04-08 13:59:14,245 - semo.validator - INFO - File Exists (3874604374702157863, 36218204): False
+2026-04-08 13:59:14,245 - semo.validator - INFO - File (3874604374702157863, 36218204) not in database. Creating file record.
+2026-04-08 13:59:14,248 - semo.validator - INFO - File (3874604374702157863, 36218204) has tag 'test_list_files_no_query1': False
+2026-04-08 13:59:14,248 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218204) and tag 'test_list_files_no_query1': True
+2026-04-08 13:59:14,250 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_list_files_no_query1'
+2026-04-08 13:59:14,251 - semo.validator - INFO - Tag Exists 'test_list_files_no_query2': False
+2026-04-08 13:59:14,251 - semo.validator - INFO - Tag 'test_list_files_no_query2' does not exist. Creating tag record.
+2026-04-08 13:59:14,253 - semo.validator - INFO - File Exists (3874604374702157863, 36218211): False
+2026-04-08 13:59:14,253 - semo.validator - INFO - File (3874604374702157863, 36218211) not in database. Creating file record.
+2026-04-08 13:59:14,256 - semo.validator - INFO - File (3874604374702157863, 36218211) has tag 'test_list_files_no_query2': False
+2026-04-08 13:59:14,256 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218211) and tag 'test_list_files_no_query2': True
+2026-04-08 13:59:14,259 - semo.backend - INFO - Tagged file (test/data/file2.txt) with tag 'test_list_files_no_query2'
+2026-04-08 13:59:14,259 - semo.backend - INFO - List files operation with empty query. Outputting all files.
+2026-04-08 13:59:14,292 - semo.validator - INFO - Tag Exists 'test_list_files_query_AND1': False
+2026-04-08 13:59:14,292 - semo.validator - INFO - Tag 'test_list_files_query_AND1' does not exist. Creating tag record.
+2026-04-08 13:59:14,294 - semo.validator - INFO - File Exists (3874604374702157863, 36218211): False
+2026-04-08 13:59:14,294 - semo.validator - INFO - File (3874604374702157863, 36218211) not in database. Creating file record.
+2026-04-08 13:59:14,297 - semo.validator - INFO - File (3874604374702157863, 36218211) has tag 'test_list_files_query_AND1': False
+2026-04-08 13:59:14,297 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218211) and tag 'test_list_files_query_AND1': True
+2026-04-08 13:59:14,300 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_list_files_query_AND1'
+2026-04-08 13:59:14,300 - semo.validator - INFO - Tag Exists 'test_list_files_query_AND2': False
+2026-04-08 13:59:14,300 - semo.validator - INFO - Tag 'test_list_files_query_AND2' does not exist. Creating tag record.
+2026-04-08 13:59:14,303 - semo.validator - INFO - File Exists (3874604374702157863, 36218211): True
+2026-04-08 13:59:14,303 - semo.validator - INFO - File (3874604374702157863, 36218211) has tag 'test_list_files_query_AND2': False
+2026-04-08 13:59:14,303 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218211) and tag 'test_list_files_query_AND2': True
+2026-04-08 13:59:14,305 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_list_files_query_AND2'
+2026-04-08 13:59:14,306 - semo.validator - INFO - Tag Exists 'test_list_files_query_AND1': True
+2026-04-08 13:59:14,306 - semo.validator - INFO - File Exists (3874604374702157863, 36218213): False
+2026-04-08 13:59:14,306 - semo.validator - INFO - File (3874604374702157863, 36218213) not in database. Creating file record.
+2026-04-08 13:59:14,308 - semo.validator - INFO - File (3874604374702157863, 36218213) has tag 'test_list_files_query_AND1': False
+2026-04-08 13:59:14,309 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218213) and tag 'test_list_files_query_AND1': True
+2026-04-08 13:59:14,311 - semo.backend - INFO - Tagged file (test/data/file2.txt) with tag 'test_list_files_query_AND1'
+2026-04-08 13:59:14,313 - semo.validator - INFO - Tag Exists 'test_list_files_query_AND1': True
+2026-04-08 13:59:14,313 - semo.validator - INFO - Tag Exists 'test_list_files_query_AND2': True
+2026-04-08 13:59:14,344 - semo.validator - INFO - Tag Exists 'test_list_files_query_AND_nonexistent1': False
+2026-04-08 13:59:14,344 - semo.backend - INFO - ["Tag 'test_list_files_query_AND_nonexistent1' does not exist."]
+2026-04-08 13:59:14,345 - semo.validator - INFO - Tag Exists 'test_list_files_query_AND_nonexistent2': False
+2026-04-08 13:59:14,345 - semo.backend - INFO - ["Tag 'test_list_files_query_AND_nonexistent2' does not exist."]
+2026-04-08 13:59:14,345 - semo.validator - INFO - Tag Exists 'test_list_files_query_AND_nonexistent1': False
+2026-04-08 13:59:14,345 - semo.validator - INFO - Tag 'test_list_files_query_AND_nonexistent1' does not exist. Creating tag record.
+2026-04-08 13:59:14,348 - semo.validator - INFO - File Exists (3874604374702157863, 36218213): False
+2026-04-08 13:59:14,348 - semo.validator - INFO - File (3874604374702157863, 36218213) not in database. Creating file record.
+2026-04-08 13:59:14,351 - semo.validator - INFO - File (3874604374702157863, 36218213) has tag 'test_list_files_query_AND_nonexistent1': False
+2026-04-08 13:59:14,351 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218213) and tag 'test_list_files_query_AND_nonexistent1': True
+2026-04-08 13:59:14,354 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_list_files_query_AND_nonexistent1'
+2026-04-08 13:59:14,356 - semo.validator - INFO - Tag Exists 'test_list_files_query_AND_nonexistent1': True
+2026-04-08 13:59:14,357 - semo.validator - INFO - Tag Exists 'test_list_files_query_AND_nonexistent2': False
+2026-04-08 13:59:14,357 - semo.backend - INFO - ["Tag 'test_list_files_query_AND_nonexistent2' does not exist."]
+2026-04-08 13:59:14,357 - semo.validator - INFO - Tag Exists 'test_list_files_query_AND_nonexistent1': True
+2026-04-08 13:59:14,357 - semo.validator - INFO - Approval for delete tag operation for tag 'test_list_files_query_AND_nonexistent1': True
+2026-04-08 13:59:14,360 - semo.backend - INFO - Deleted tag 'test_list_files_query_AND_nonexistent1' from database.
+2026-04-08 13:59:14,360 - semo.validator - INFO - File (3874604374702157863, 36218213) is isolated: True
+2026-04-08 13:59:14,360 - semo.backend - INFO - File is now isolated. Deleting file record.
+2026-04-08 13:59:14,363 - semo.validator - INFO - Tag Exists 'test_list_files_query_AND_nonexistent2': False
+2026-04-08 13:59:14,363 - semo.validator - INFO - Tag 'test_list_files_query_AND_nonexistent2' does not exist. Creating tag record.
+2026-04-08 13:59:14,366 - semo.validator - INFO - File Exists (3874604374702157863, 36218213): False
+2026-04-08 13:59:14,366 - semo.validator - INFO - File (3874604374702157863, 36218213) not in database. Creating file record.
+2026-04-08 13:59:14,369 - semo.validator - INFO - File (3874604374702157863, 36218213) has tag 'test_list_files_query_AND_nonexistent2': False
+2026-04-08 13:59:14,369 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218213) and tag 'test_list_files_query_AND_nonexistent2': True
+2026-04-08 13:59:14,372 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_list_files_query_AND_nonexistent2'
+2026-04-08 13:59:14,373 - semo.validator - INFO - Tag Exists 'test_list_files_query_AND_nonexistent1': False
+2026-04-08 13:59:14,373 - semo.backend - INFO - ["Tag 'test_list_files_query_AND_nonexistent1' does not exist."]
+2026-04-08 13:59:14,373 - semo.validator - INFO - Tag Exists 'test_list_files_query_AND_nonexistent2': True
+2026-04-08 13:59:14,403 - semo.validator - INFO - Tag Exists 'test_list_files_query_AND_parentheses1': False
+2026-04-08 13:59:14,403 - semo.validator - INFO - Tag 'test_list_files_query_AND_parentheses1' does not exist. Creating tag record.
+2026-04-08 13:59:14,406 - semo.validator - INFO - File Exists (3874604374702157863, 36218194): False
+2026-04-08 13:59:14,406 - semo.validator - INFO - File (3874604374702157863, 36218194) not in database. Creating file record.
+2026-04-08 13:59:14,409 - semo.validator - INFO - File (3874604374702157863, 36218194) has tag 'test_list_files_query_AND_parentheses1': False
+2026-04-08 13:59:14,409 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218194) and tag 'test_list_files_query_AND_parentheses1': True
+2026-04-08 13:59:14,411 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_list_files_query_AND_parentheses1'
+2026-04-08 13:59:14,412 - semo.validator - INFO - Tag Exists 'test_list_files_query_AND_parentheses2': False
+2026-04-08 13:59:14,412 - semo.validator - INFO - Tag 'test_list_files_query_AND_parentheses2' does not exist. Creating tag record.
+2026-04-08 13:59:14,416 - semo.validator - INFO - File Exists (3874604374702157863, 36218194): True
+2026-04-08 13:59:14,416 - semo.validator - INFO - File (3874604374702157863, 36218194) has tag 'test_list_files_query_AND_parentheses2': False
+2026-04-08 13:59:14,416 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218194) and tag 'test_list_files_query_AND_parentheses2': True
+2026-04-08 13:59:14,420 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_list_files_query_AND_parentheses2'
+2026-04-08 13:59:14,420 - semo.validator - INFO - Tag Exists 'test_list_files_query_AND_parentheses1': True
+2026-04-08 13:59:14,420 - semo.validator - INFO - File Exists (3874604374702157863, 36218197): False
+2026-04-08 13:59:14,420 - semo.validator - INFO - File (3874604374702157863, 36218197) not in database. Creating file record.
+2026-04-08 13:59:14,425 - semo.validator - INFO - File (3874604374702157863, 36218197) has tag 'test_list_files_query_AND_parentheses1': False
+2026-04-08 13:59:14,425 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218197) and tag 'test_list_files_query_AND_parentheses1': True
+2026-04-08 13:59:14,429 - semo.backend - INFO - Tagged file (test/data/file2.txt) with tag 'test_list_files_query_AND_parentheses1'
+2026-04-08 13:59:14,430 - semo.validator - INFO - Tag Exists 'test_list_files_query_AND_parentheses1': True
+2026-04-08 13:59:14,431 - semo.validator - INFO - Tag Exists 'test_list_files_query_AND_parentheses2': True
+2026-04-08 13:59:14,471 - semo.validator - INFO - Tag Exists 'test_list_files_query_NOT1': False
+2026-04-08 13:59:14,471 - semo.validator - INFO - Tag 'test_list_files_query_NOT1' does not exist. Creating tag record.
+2026-04-08 13:59:14,475 - semo.validator - INFO - File Exists (3874604374702157863, 36218197): False
+2026-04-08 13:59:14,475 - semo.validator - INFO - File (3874604374702157863, 36218197) not in database. Creating file record.
+2026-04-08 13:59:14,479 - semo.validator - INFO - File (3874604374702157863, 36218197) has tag 'test_list_files_query_NOT1': False
+2026-04-08 13:59:14,480 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218197) and tag 'test_list_files_query_NOT1': True
+2026-04-08 13:59:14,484 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_list_files_query_NOT1'
+2026-04-08 13:59:14,484 - semo.validator - INFO - Tag Exists 'test_list_files_query_NOT2': False
+2026-04-08 13:59:14,484 - semo.validator - INFO - Tag 'test_list_files_query_NOT2' does not exist. Creating tag record.
+2026-04-08 13:59:14,488 - semo.validator - INFO - File Exists (3874604374702157863, 36218197): True
+2026-04-08 13:59:14,488 - semo.validator - INFO - File (3874604374702157863, 36218197) has tag 'test_list_files_query_NOT2': False
+2026-04-08 13:59:14,488 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218197) and tag 'test_list_files_query_NOT2': True
+2026-04-08 13:59:14,492 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_list_files_query_NOT2'
+2026-04-08 13:59:14,493 - semo.validator - INFO - Tag Exists 'test_list_files_query_NOT1': True
+2026-04-08 13:59:14,493 - semo.validator - INFO - File Exists (3874604374702157863, 36218202): False
+2026-04-08 13:59:14,493 - semo.validator - INFO - File (3874604374702157863, 36218202) not in database. Creating file record.
+2026-04-08 13:59:14,498 - semo.validator - INFO - File (3874604374702157863, 36218202) has tag 'test_list_files_query_NOT1': False
+2026-04-08 13:59:14,498 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218202) and tag 'test_list_files_query_NOT1': True
+2026-04-08 13:59:14,501 - semo.backend - INFO - Tagged file (test/data/file2.txt) with tag 'test_list_files_query_NOT1'
+2026-04-08 13:59:14,502 - semo.validator - INFO - Tag Exists 'test_list_files_query_NOT1': True
+2026-04-08 13:59:14,502 - semo.validator - INFO - Tag Exists 'test_list_files_query_NOT2': True
+2026-04-08 13:59:14,503 - semo.validator - INFO - Tag Exists 'test_list_files_query_NOT2': True
+2026-04-08 13:59:14,504 - semo.validator - INFO - Tag Exists 'test_list_files_query_NOT1': True
+2026-04-08 13:59:14,546 - semo.validator - INFO - Tag Exists 'test_list_files_query_NOT_nonexistent1': False
+2026-04-08 13:59:14,546 - semo.backend - INFO - ["Tag 'test_list_files_query_NOT_nonexistent1' does not exist."]
+2026-04-08 13:59:14,546 - semo.validator - INFO - Tag Exists 'test_list_files_query_NOT_nonexistent2': False
+2026-04-08 13:59:14,546 - semo.backend - INFO - ["Tag 'test_list_files_query_NOT_nonexistent2' does not exist."]
+2026-04-08 13:59:14,546 - semo.validator - INFO - Tag Exists 'test_list_files_query_NOT_nonexistent1': False
+2026-04-08 13:59:14,546 - semo.validator - INFO - Tag 'test_list_files_query_NOT_nonexistent1' does not exist. Creating tag record.
+2026-04-08 13:59:14,549 - semo.validator - INFO - File Exists (3874604374702157863, 36218202): False
+2026-04-08 13:59:14,549 - semo.validator - INFO - File (3874604374702157863, 36218202) not in database. Creating file record.
+2026-04-08 13:59:14,552 - semo.validator - INFO - File (3874604374702157863, 36218202) has tag 'test_list_files_query_NOT_nonexistent1': False
+2026-04-08 13:59:14,552 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218202) and tag 'test_list_files_query_NOT_nonexistent1': True
+2026-04-08 13:59:14,555 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_list_files_query_NOT_nonexistent1'
+2026-04-08 13:59:14,557 - semo.validator - INFO - Tag Exists 'test_list_files_query_NOT_nonexistent1': True
+2026-04-08 13:59:14,558 - semo.validator - INFO - Tag Exists 'test_list_files_query_NOT_nonexistent2': False
+2026-04-08 13:59:14,558 - semo.backend - INFO - ["Tag 'test_list_files_query_NOT_nonexistent2' does not exist."]
+2026-04-08 13:59:14,558 - semo.validator - INFO - Tag Exists 'test_list_files_query_NOT_nonexistent1': True
+2026-04-08 13:59:14,558 - semo.validator - INFO - Approval for delete tag operation for tag 'test_list_files_query_NOT_nonexistent1': True
+2026-04-08 13:59:14,561 - semo.backend - INFO - Deleted tag 'test_list_files_query_NOT_nonexistent1' from database.
+2026-04-08 13:59:14,561 - semo.validator - INFO - File (3874604374702157863, 36218202) is isolated: True
+2026-04-08 13:59:14,561 - semo.backend - INFO - File is now isolated. Deleting file record.
+2026-04-08 13:59:14,564 - semo.validator - INFO - Tag Exists 'test_list_files_query_NOT_nonexistent2': False
+2026-04-08 13:59:14,564 - semo.validator - INFO - Tag 'test_list_files_query_NOT_nonexistent2' does not exist. Creating tag record.
+2026-04-08 13:59:14,567 - semo.validator - INFO - File Exists (3874604374702157863, 36218202): False
+2026-04-08 13:59:14,567 - semo.validator - INFO - File (3874604374702157863, 36218202) not in database. Creating file record.
+2026-04-08 13:59:14,570 - semo.validator - INFO - File (3874604374702157863, 36218202) has tag 'test_list_files_query_NOT_nonexistent2': False
+2026-04-08 13:59:14,570 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218202) and tag 'test_list_files_query_NOT_nonexistent2': True
+2026-04-08 13:59:14,572 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_list_files_query_NOT_nonexistent2'
+2026-04-08 13:59:14,574 - semo.validator - INFO - Tag Exists 'test_list_files_query_NOT_nonexistent1': False
+2026-04-08 13:59:14,575 - semo.backend - INFO - ["Tag 'test_list_files_query_NOT_nonexistent1' does not exist."]
+2026-04-08 13:59:14,575 - semo.validator - INFO - Tag Exists 'test_list_files_query_NOT_nonexistent2': True
+2026-04-08 13:59:14,604 - semo.validator - INFO - Tag Exists 'test_list_files_query_NOT_parentheses1': False
+2026-04-08 13:59:14,604 - semo.validator - INFO - Tag 'test_list_files_query_NOT_parentheses1' does not exist. Creating tag record.
+2026-04-08 13:59:14,607 - semo.validator - INFO - File Exists (3874604374702157863, 36218204): False
+2026-04-08 13:59:14,607 - semo.validator - INFO - File (3874604374702157863, 36218204) not in database. Creating file record.
+2026-04-08 13:59:14,610 - semo.validator - INFO - File (3874604374702157863, 36218204) has tag 'test_list_files_query_NOT_parentheses1': False
+2026-04-08 13:59:14,610 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218204) and tag 'test_list_files_query_NOT_parentheses1': True
+2026-04-08 13:59:14,612 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_list_files_query_NOT_parentheses1'
+2026-04-08 13:59:14,613 - semo.validator - INFO - Tag Exists 'test_list_files_query_NOT_parentheses2': False
+2026-04-08 13:59:14,613 - semo.validator - INFO - Tag 'test_list_files_query_NOT_parentheses2' does not exist. Creating tag record.
+2026-04-08 13:59:14,616 - semo.validator - INFO - File Exists (3874604374702157863, 36218204): True
+2026-04-08 13:59:14,616 - semo.validator - INFO - File (3874604374702157863, 36218204) has tag 'test_list_files_query_NOT_parentheses2': False
+2026-04-08 13:59:14,616 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218204) and tag 'test_list_files_query_NOT_parentheses2': True
+2026-04-08 13:59:14,619 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_list_files_query_NOT_parentheses2'
+2026-04-08 13:59:14,619 - semo.validator - INFO - Tag Exists 'test_list_files_query_NOT_parentheses1': True
+2026-04-08 13:59:14,619 - semo.validator - INFO - File Exists (3874604374702157863, 36218213): False
+2026-04-08 13:59:14,619 - semo.validator - INFO - File (3874604374702157863, 36218213) not in database. Creating file record.
+2026-04-08 13:59:14,622 - semo.validator - INFO - File (3874604374702157863, 36218213) has tag 'test_list_files_query_NOT_parentheses1': False
+2026-04-08 13:59:14,622 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218213) and tag 'test_list_files_query_NOT_parentheses1': True
+2026-04-08 13:59:14,625 - semo.backend - INFO - Tagged file (test/data/file2.txt) with tag 'test_list_files_query_NOT_parentheses1'
+2026-04-08 13:59:14,626 - semo.validator - INFO - Tag Exists 'test_list_files_query_NOT_parentheses1': True
+2026-04-08 13:59:14,626 - semo.validator - INFO - Tag Exists 'test_list_files_query_NOT_parentheses2': True
+2026-04-08 13:59:14,628 - semo.validator - INFO - Tag Exists 'test_list_files_query_NOT_parentheses2': True
+2026-04-08 13:59:14,628 - semo.validator - INFO - Tag Exists 'test_list_files_query_NOT_parentheses1': True
+2026-04-08 13:59:14,660 - semo.validator - INFO - Tag Exists 'test_list_files_query_OR1': False
+2026-04-08 13:59:14,660 - semo.validator - INFO - Tag 'test_list_files_query_OR1' does not exist. Creating tag record.
+2026-04-08 13:59:14,663 - semo.validator - INFO - File Exists (3874604374702157863, 36218213): False
+2026-04-08 13:59:14,663 - semo.validator - INFO - File (3874604374702157863, 36218213) not in database. Creating file record.
+2026-04-08 13:59:14,666 - semo.validator - INFO - File (3874604374702157863, 36218213) has tag 'test_list_files_query_OR1': False
+2026-04-08 13:59:14,666 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218213) and tag 'test_list_files_query_OR1': True
+2026-04-08 13:59:14,669 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_list_files_query_OR1'
+2026-04-08 13:59:14,669 - semo.validator - INFO - Tag Exists 'test_list_files_query_OR2': False
+2026-04-08 13:59:14,669 - semo.validator - INFO - Tag 'test_list_files_query_OR2' does not exist. Creating tag record.
+2026-04-08 13:59:14,672 - semo.validator - INFO - File Exists (3874604374702157863, 36218216): False
+2026-04-08 13:59:14,672 - semo.validator - INFO - File (3874604374702157863, 36218216) not in database. Creating file record.
+2026-04-08 13:59:14,675 - semo.validator - INFO - File (3874604374702157863, 36218216) has tag 'test_list_files_query_OR2': False
+2026-04-08 13:59:14,675 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218216) and tag 'test_list_files_query_OR2': True
+2026-04-08 13:59:14,677 - semo.backend - INFO - Tagged file (test/data/file2.txt) with tag 'test_list_files_query_OR2'
+2026-04-08 13:59:14,679 - semo.validator - INFO - Tag Exists 'test_list_files_query_OR1': True
+2026-04-08 13:59:14,679 - semo.validator - INFO - Tag Exists 'test_list_files_query_OR2': True
+2026-04-08 13:59:14,709 - semo.validator - INFO - Tag Exists 'test_list_files_query_OR_nonexistent1': False
+2026-04-08 13:59:14,709 - semo.backend - INFO - ["Tag 'test_list_files_query_OR_nonexistent1' does not exist."]
+2026-04-08 13:59:14,710 - semo.validator - INFO - Tag Exists 'test_list_files_query_OR_nonexistent2': False
+2026-04-08 13:59:14,710 - semo.backend - INFO - ["Tag 'test_list_files_query_OR_nonexistent2' does not exist."]
+2026-04-08 13:59:14,710 - semo.validator - INFO - Tag Exists 'test_list_files_query_OR_nonexistent1': False
+2026-04-08 13:59:14,710 - semo.validator - INFO - Tag 'test_list_files_query_OR_nonexistent1' does not exist. Creating tag record.
+2026-04-08 13:59:14,713 - semo.validator - INFO - File Exists (3874604374702157863, 36218216): False
+2026-04-08 13:59:14,713 - semo.validator - INFO - File (3874604374702157863, 36218216) not in database. Creating file record.
+2026-04-08 13:59:14,715 - semo.validator - INFO - File (3874604374702157863, 36218216) has tag 'test_list_files_query_OR_nonexistent1': False
+2026-04-08 13:59:14,715 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218216) and tag 'test_list_files_query_OR_nonexistent1': True
+2026-04-08 13:59:14,718 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_list_files_query_OR_nonexistent1'
+2026-04-08 13:59:14,719 - semo.validator - INFO - Tag Exists 'test_list_files_query_OR_nonexistent1': True
+2026-04-08 13:59:14,719 - semo.validator - INFO - Tag Exists 'test_list_files_query_OR_nonexistent2': False
+2026-04-08 13:59:14,719 - semo.backend - INFO - ["Tag 'test_list_files_query_OR_nonexistent2' does not exist."]
+2026-04-08 13:59:14,720 - semo.validator - INFO - Tag Exists 'test_list_files_query_OR_nonexistent1': True
+2026-04-08 13:59:14,720 - semo.validator - INFO - Approval for delete tag operation for tag 'test_list_files_query_OR_nonexistent1': True
+2026-04-08 13:59:14,722 - semo.backend - INFO - Deleted tag 'test_list_files_query_OR_nonexistent1' from database.
+2026-04-08 13:59:14,722 - semo.validator - INFO - File (3874604374702157863, 36218216) is isolated: True
+2026-04-08 13:59:14,722 - semo.backend - INFO - File is now isolated. Deleting file record.
+2026-04-08 13:59:14,725 - semo.validator - INFO - Tag Exists 'test_list_files_query_OR_nonexistent2': False
+2026-04-08 13:59:14,725 - semo.validator - INFO - Tag 'test_list_files_query_OR_nonexistent2' does not exist. Creating tag record.
+2026-04-08 13:59:14,728 - semo.validator - INFO - File Exists (3874604374702157863, 36218216): False
+2026-04-08 13:59:14,728 - semo.validator - INFO - File (3874604374702157863, 36218216) not in database. Creating file record.
+2026-04-08 13:59:14,730 - semo.validator - INFO - File (3874604374702157863, 36218216) has tag 'test_list_files_query_OR_nonexistent2': False
+2026-04-08 13:59:14,731 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218216) and tag 'test_list_files_query_OR_nonexistent2': True
+2026-04-08 13:59:14,733 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_list_files_query_OR_nonexistent2'
+2026-04-08 13:59:14,735 - semo.validator - INFO - Tag Exists 'test_list_files_query_OR_nonexistent1': False
+2026-04-08 13:59:14,735 - semo.backend - INFO - ["Tag 'test_list_files_query_OR_nonexistent1' does not exist."]
+2026-04-08 13:59:14,735 - semo.validator - INFO - Tag Exists 'test_list_files_query_OR_nonexistent2': True
+2026-04-08 13:59:14,778 - semo.validator - INFO - Tag Exists 'test_list_files_query_OR_parentheses1': False
+2026-04-08 13:59:14,778 - semo.validator - INFO - Tag 'test_list_files_query_OR_parentheses1' does not exist. Creating tag record.
+2026-04-08 13:59:14,782 - semo.validator - INFO - File Exists (3874604374702157863, 36218216): False
+2026-04-08 13:59:14,782 - semo.validator - INFO - File (3874604374702157863, 36218216) not in database. Creating file record.
+2026-04-08 13:59:14,786 - semo.validator - INFO - File (3874604374702157863, 36218216) has tag 'test_list_files_query_OR_parentheses1': False
+2026-04-08 13:59:14,786 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218216) and tag 'test_list_files_query_OR_parentheses1': True
+2026-04-08 13:59:14,789 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_list_files_query_OR_parentheses1'
+2026-04-08 13:59:14,790 - semo.validator - INFO - Tag Exists 'test_list_files_query_OR_parentheses2': False
+2026-04-08 13:59:14,790 - semo.validator - INFO - Tag 'test_list_files_query_OR_parentheses2' does not exist. Creating tag record.
+2026-04-08 13:59:14,794 - semo.validator - INFO - File Exists (3874604374702157863, 36218217): False
+2026-04-08 13:59:14,794 - semo.validator - INFO - File (3874604374702157863, 36218217) not in database. Creating file record.
+2026-04-08 13:59:14,802 - semo.validator - INFO - File (3874604374702157863, 36218217) has tag 'test_list_files_query_OR_parentheses2': False
+2026-04-08 13:59:14,802 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218217) and tag 'test_list_files_query_OR_parentheses2': True
+2026-04-08 13:59:14,807 - semo.backend - INFO - Tagged file (test/data/file2.txt) with tag 'test_list_files_query_OR_parentheses2'
+2026-04-08 13:59:14,809 - semo.validator - INFO - Tag Exists 'test_list_files_query_OR_parentheses1': True
+2026-04-08 13:59:14,814 - semo.validator - INFO - Tag Exists 'test_list_files_query_OR_parentheses2': True
+2026-04-08 13:59:14,853 - semo.validator - INFO - Tag Exists 'test_list_files_query_combined1': False
+2026-04-08 13:59:14,853 - semo.validator - INFO - Tag 'test_list_files_query_combined1' does not exist. Creating tag record.
+2026-04-08 13:59:14,856 - semo.validator - INFO - File Exists (3874604374702157863, 36218217): False
+2026-04-08 13:59:14,856 - semo.validator - INFO - File (3874604374702157863, 36218217) not in database. Creating file record.
+2026-04-08 13:59:14,859 - semo.validator - INFO - File (3874604374702157863, 36218217) has tag 'test_list_files_query_combined1': False
+2026-04-08 13:59:14,859 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218217) and tag 'test_list_files_query_combined1': True
+2026-04-08 13:59:14,865 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_list_files_query_combined1'
+2026-04-08 13:59:14,866 - semo.validator - INFO - Tag Exists 'test_list_files_query_combined2': False
+2026-04-08 13:59:14,866 - semo.validator - INFO - Tag 'test_list_files_query_combined2' does not exist. Creating tag record.
+2026-04-08 13:59:14,869 - semo.validator - INFO - File Exists (3874604374702157863, 36218217): True
+2026-04-08 13:59:14,869 - semo.validator - INFO - File (3874604374702157863, 36218217) has tag 'test_list_files_query_combined2': False
+2026-04-08 13:59:14,869 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218217) and tag 'test_list_files_query_combined2': True
+2026-04-08 13:59:14,872 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_list_files_query_combined2'
+2026-04-08 13:59:14,872 - semo.validator - INFO - Tag Exists 'test_list_files_query_combined3': False
+2026-04-08 13:59:14,872 - semo.validator - INFO - Tag 'test_list_files_query_combined3' does not exist. Creating tag record.
+2026-04-08 13:59:14,875 - semo.validator - INFO - File Exists (3874604374702157863, 36218218): False
+2026-04-08 13:59:14,875 - semo.validator - INFO - File (3874604374702157863, 36218218) not in database. Creating file record.
+2026-04-08 13:59:14,878 - semo.validator - INFO - File (3874604374702157863, 36218218) has tag 'test_list_files_query_combined3': False
+2026-04-08 13:59:14,878 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218218) and tag 'test_list_files_query_combined3': True
+2026-04-08 13:59:14,881 - semo.backend - INFO - Tagged file (test/data/file2.txt) with tag 'test_list_files_query_combined3'
+2026-04-08 13:59:14,881 - semo.validator - INFO - Tag Exists 'test_list_files_query_combined1': True
+2026-04-08 13:59:14,881 - semo.validator - INFO - File Exists (3874604374702157863, 36218218): True
+2026-04-08 13:59:14,881 - semo.validator - INFO - File (3874604374702157863, 36218218) has tag 'test_list_files_query_combined1': False
+2026-04-08 13:59:14,881 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218218) and tag 'test_list_files_query_combined1': True
+2026-04-08 13:59:14,884 - semo.backend - INFO - Tagged file (test/data/file2.txt) with tag 'test_list_files_query_combined1'
+2026-04-08 13:59:14,884 - semo.validator - INFO - Tag Exists 'test_list_files_query_combined2': True
+2026-04-08 13:59:14,884 - semo.validator - INFO - File Exists (3874604374702157863, 36218218): True
+2026-04-08 13:59:14,884 - semo.validator - INFO - File (3874604374702157863, 36218218) has tag 'test_list_files_query_combined2': False
+2026-04-08 13:59:14,884 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218218) and tag 'test_list_files_query_combined2': True
+2026-04-08 13:59:14,887 - semo.backend - INFO - Tagged file (test/data/file2.txt) with tag 'test_list_files_query_combined2'
+2026-04-08 13:59:14,888 - semo.validator - INFO - Tag Exists 'test_list_files_query_combined1': True
+2026-04-08 13:59:14,889 - semo.validator - INFO - Tag Exists 'test_list_files_query_combined2': True
+2026-04-08 13:59:14,889 - semo.validator - INFO - Tag Exists 'test_list_files_query_combined3': True
+2026-04-08 13:59:14,890 - semo.validator - INFO - Tag Exists 'test_list_files_query_combined1': True
+2026-04-08 13:59:14,890 - semo.validator - INFO - Tag Exists 'test_list_files_query_combined2': True
+2026-04-08 13:59:14,891 - semo.validator - INFO - Tag Exists 'test_list_files_query_combined1': True
+2026-04-08 13:59:14,892 - semo.validator - INFO - Tag Exists 'test_list_files_query_combined2': True
+2026-04-08 13:59:14,892 - semo.validator - INFO - Tag Exists 'test_list_files_query_combined3': True
+2026-04-08 13:59:14,894 - semo.validator - INFO - Tag Exists 'test_list_files_query_combined1': True
+2026-04-08 13:59:14,895 - semo.validator - INFO - Tag Exists 'test_list_files_query_combined2': True
+2026-04-08 13:59:14,895 - semo.validator - INFO - Tag Exists 'test_list_files_query_combined1': True
+2026-04-08 13:59:14,895 - semo.validator - INFO - Tag Exists 'test_list_files_query_combined3': True
+2026-04-08 13:59:14,934 - semo.validator - INFO - Tag Exists 'test_list_files_query_singular1': False
+2026-04-08 13:59:14,934 - semo.validator - INFO - Tag 'test_list_files_query_singular1' does not exist. Creating tag record.
+2026-04-08 13:59:14,937 - semo.validator - INFO - File Exists (3874604374702157863, 36218191): False
+2026-04-08 13:59:14,937 - semo.validator - INFO - File (3874604374702157863, 36218191) not in database. Creating file record.
+2026-04-08 13:59:14,940 - semo.validator - INFO - File (3874604374702157863, 36218191) has tag 'test_list_files_query_singular1': False
+2026-04-08 13:59:14,940 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218191) and tag 'test_list_files_query_singular1': True
+2026-04-08 13:59:14,944 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_list_files_query_singular1'
+2026-04-08 13:59:14,945 - semo.validator - INFO - Tag Exists 'test_list_files_query_singular2': False
+2026-04-08 13:59:14,945 - semo.validator - INFO - Tag 'test_list_files_query_singular2' does not exist. Creating tag record.
+2026-04-08 13:59:14,947 - semo.validator - INFO - File Exists (3874604374702157863, 36218194): False
+2026-04-08 13:59:14,947 - semo.validator - INFO - File (3874604374702157863, 36218194) not in database. Creating file record.
+2026-04-08 13:59:14,950 - semo.validator - INFO - File (3874604374702157863, 36218194) has tag 'test_list_files_query_singular2': False
+2026-04-08 13:59:14,950 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218194) and tag 'test_list_files_query_singular2': True
+2026-04-08 13:59:14,953 - semo.backend - INFO - Tagged file (test/data/file2.txt) with tag 'test_list_files_query_singular2'
+2026-04-08 13:59:14,954 - semo.validator - INFO - Tag Exists 'test_list_files_query_singular1': True
+2026-04-08 13:59:14,955 - semo.validator - INFO - Tag Exists 'test_list_files_query_singular2': True
+2026-04-08 13:59:14,986 - semo.validator - INFO - Tag Exists 'test_list_files_query_singular_nonexistent': False
+2026-04-08 13:59:14,986 - semo.backend - INFO - ["Tag 'test_list_files_query_singular_nonexistent' does not exist."]
+2026-04-08 13:59:15,015 - semo.validator - INFO - Tag Exists 'test_list_files_query_wrong1': False
+2026-04-08 13:59:15,015 - semo.validator - INFO - Tag 'test_list_files_query_wrong1' does not exist. Creating tag record.
+2026-04-08 13:59:15,018 - semo.validator - INFO - File Exists (3874604374702157863, 36218194): False
+2026-04-08 13:59:15,018 - semo.validator - INFO - File (3874604374702157863, 36218194) not in database. Creating file record.
+2026-04-08 13:59:15,021 - semo.validator - INFO - File (3874604374702157863, 36218194) has tag 'test_list_files_query_wrong1': False
+2026-04-08 13:59:15,021 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218194) and tag 'test_list_files_query_wrong1': True
+2026-04-08 13:59:15,023 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_list_files_query_wrong1'
+2026-04-08 13:59:15,024 - semo.validator - INFO - Tag Exists 'test_list_files_query_wrong2': False
+2026-04-08 13:59:15,024 - semo.validator - INFO - Tag 'test_list_files_query_wrong2' does not exist. Creating tag record.
+2026-04-08 13:59:15,027 - semo.validator - INFO - File Exists (3874604374702157863, 36218197): False
+2026-04-08 13:59:15,027 - semo.validator - INFO - File (3874604374702157863, 36218197) not in database. Creating file record.
+2026-04-08 13:59:15,029 - semo.validator - INFO - File (3874604374702157863, 36218197) has tag 'test_list_files_query_wrong2': False
+2026-04-08 13:59:15,029 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218197) and tag 'test_list_files_query_wrong2': True
+2026-04-08 13:59:15,032 - semo.backend - INFO - Tagged file (test/data/file2.txt) with tag 'test_list_files_query_wrong2'
+2026-04-08 13:59:15,068 - semo.validator - INFO - Tag Exists 'test_list_subtags_direct_nonexistent_superior': False
+2026-04-08 13:59:15,068 - semo.backend - INFO - List direct subtags operation not approved for tag 'test_list_subtags_direct_nonexistent_superior'
+2026-04-08 13:59:15,098 - semo.validator - INFO - Tag Exists 'test_list_subtags_ok_superior': False
+2026-04-08 13:59:15,098 - semo.validator - INFO - Tag 'test_list_subtags_ok_superior' does not exist. Creating tag record.
+2026-04-08 13:59:15,100 - semo.validator - INFO - File Exists (3874604374702157863, 36218202): False
+2026-04-08 13:59:15,100 - semo.validator - INFO - File (3874604374702157863, 36218202) not in database. Creating file record.
+2026-04-08 13:59:15,103 - semo.validator - INFO - File (3874604374702157863, 36218202) has tag 'test_list_subtags_ok_superior': False
+2026-04-08 13:59:15,103 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218202) and tag 'test_list_subtags_ok_superior': True
+2026-04-08 13:59:15,106 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_list_subtags_ok_superior'
+2026-04-08 13:59:15,107 - semo.validator - INFO - Tag Exists 'test_list_subtags_ok_inferior1': False
+2026-04-08 13:59:15,107 - semo.validator - INFO - Tag 'test_list_subtags_ok_inferior1' does not exist. Creating tag record.
+2026-04-08 13:59:15,110 - semo.validator - INFO - File Exists (3874604374702157863, 36218204): False
+2026-04-08 13:59:15,110 - semo.validator - INFO - File (3874604374702157863, 36218204) not in database. Creating file record.
+2026-04-08 13:59:15,116 - semo.validator - INFO - File (3874604374702157863, 36218204) has tag 'test_list_subtags_ok_inferior1': False
+2026-04-08 13:59:15,116 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218204) and tag 'test_list_subtags_ok_inferior1': True
+2026-04-08 13:59:15,119 - semo.backend - INFO - Tagged file (test/data/file2.txt) with tag 'test_list_subtags_ok_inferior1'
+2026-04-08 13:59:15,119 - semo.validator - INFO - Tag Exists 'test_list_subtags_ok_inferior2': False
+2026-04-08 13:59:15,119 - semo.validator - INFO - Tag 'test_list_subtags_ok_inferior2' does not exist. Creating tag record.
+2026-04-08 13:59:15,122 - semo.validator - INFO - File Exists (3874604374702157863, 36218211): False
+2026-04-08 13:59:15,122 - semo.validator - INFO - File (3874604374702157863, 36218211) not in database. Creating file record.
+2026-04-08 13:59:15,124 - semo.validator - INFO - File (3874604374702157863, 36218211) has tag 'test_list_subtags_ok_inferior2': False
+2026-04-08 13:59:15,125 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218211) and tag 'test_list_subtags_ok_inferior2': True
+2026-04-08 13:59:15,127 - semo.backend - INFO - Tagged file (test/data/file3.txt) with tag 'test_list_subtags_ok_inferior2'
+2026-04-08 13:59:15,128 - semo.validator - INFO - Tag Exists 'test_list_subtags_ok_superior': True
+2026-04-08 13:59:15,128 - semo.validator - INFO - Tag Exists 'test_list_subtags_ok_inferior1': True
+2026-04-08 13:59:15,128 - semo.validator - INFO - Approval for subtag operation for superior tag 'test_list_subtags_ok_superior' and inferior tag 'test_list_subtags_ok_inferior1': True
+2026-04-08 13:59:15,130 - semo.backend - INFO - Assigned inferior tag 'test_list_subtags_ok_inferior1' to superior tag 'test_list_subtags_ok_superior'
+2026-04-08 13:59:15,131 - semo.validator - INFO - File Exists (3874604374702157863, 36218204): True
+2026-04-08 13:59:15,131 - semo.validator - INFO - File (3874604374702157863, 36218204) has tag 'test_list_subtags_ok_superior': False
+2026-04-08 13:59:15,131 - semo.validator - INFO - Approval for direct untag operation for file (3874604374702157863, 36218204) and tag 'test_list_subtags_ok_superior': False
+2026-04-08 13:59:15,131 - semo.backend - INFO - Untagged file (test/data/file2.txt) from subtag 'test_list_subtags_ok_superior'
+2026-04-08 13:59:15,131 - semo.validator - INFO - Tag Exists 'test_list_subtags_ok_superior': True
+2026-04-08 13:59:15,131 - semo.validator - INFO - Tag Exists 'test_list_subtags_ok_inferior2': True
+2026-04-08 13:59:15,131 - semo.validator - INFO - Approval for subtag operation for superior tag 'test_list_subtags_ok_superior' and inferior tag 'test_list_subtags_ok_inferior2': True
+2026-04-08 13:59:15,133 - semo.backend - INFO - Assigned inferior tag 'test_list_subtags_ok_inferior2' to superior tag 'test_list_subtags_ok_superior'
+2026-04-08 13:59:15,133 - semo.validator - INFO - File Exists (3874604374702157863, 36218211): True
+2026-04-08 13:59:15,133 - semo.validator - INFO - File (3874604374702157863, 36218211) has tag 'test_list_subtags_ok_superior': False
+2026-04-08 13:59:15,133 - semo.validator - INFO - Approval for direct untag operation for file (3874604374702157863, 36218211) and tag 'test_list_subtags_ok_superior': False
+2026-04-08 13:59:15,133 - semo.backend - INFO - Untagged file (test/data/file3.txt) from subtag 'test_list_subtags_ok_superior'
+2026-04-08 13:59:15,134 - semo.validator - INFO - Tag Exists 'test_list_subtags_ok_superior': True
+2026-04-08 13:59:15,184 - semo.validator - INFO - Tag Exists 'test_list_subtags_indirect_ok_superior': False
+2026-04-08 13:59:15,184 - semo.validator - INFO - Tag 'test_list_subtags_indirect_ok_superior' does not exist. Creating tag record.
+2026-04-08 13:59:15,187 - semo.validator - INFO - File Exists (3874604374702157863, 36218204): False
+2026-04-08 13:59:15,187 - semo.validator - INFO - File (3874604374702157863, 36218204) not in database. Creating file record.
+2026-04-08 13:59:15,190 - semo.validator - INFO - File (3874604374702157863, 36218204) has tag 'test_list_subtags_indirect_ok_superior': False
+2026-04-08 13:59:15,190 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218204) and tag 'test_list_subtags_indirect_ok_superior': True
+2026-04-08 13:59:15,192 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_list_subtags_indirect_ok_superior'
+2026-04-08 13:59:15,193 - semo.validator - INFO - Tag Exists 'test_list_subtags_indirect_ok_inferior1': False
+2026-04-08 13:59:15,193 - semo.validator - INFO - Tag 'test_list_subtags_indirect_ok_inferior1' does not exist. Creating tag record.
+2026-04-08 13:59:15,195 - semo.validator - INFO - File Exists (3874604374702157863, 36218211): False
+2026-04-08 13:59:15,195 - semo.validator - INFO - File (3874604374702157863, 36218211) not in database. Creating file record.
+2026-04-08 13:59:15,198 - semo.validator - INFO - File (3874604374702157863, 36218211) has tag 'test_list_subtags_indirect_ok_inferior1': False
+2026-04-08 13:59:15,198 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218211) and tag 'test_list_subtags_indirect_ok_inferior1': True
+2026-04-08 13:59:15,201 - semo.backend - INFO - Tagged file (test/data/file2.txt) with tag 'test_list_subtags_indirect_ok_inferior1'
+2026-04-08 13:59:15,201 - semo.validator - INFO - Tag Exists 'test_list_subtags_indirect_ok_inferior2': False
+2026-04-08 13:59:15,201 - semo.validator - INFO - Tag 'test_list_subtags_indirect_ok_inferior2' does not exist. Creating tag record.
+2026-04-08 13:59:15,204 - semo.validator - INFO - File Exists (3874604374702157863, 36218213): False
+2026-04-08 13:59:15,204 - semo.validator - INFO - File (3874604374702157863, 36218213) not in database. Creating file record.
+2026-04-08 13:59:15,207 - semo.validator - INFO - File (3874604374702157863, 36218213) has tag 'test_list_subtags_indirect_ok_inferior2': False
+2026-04-08 13:59:15,207 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218213) and tag 'test_list_subtags_indirect_ok_inferior2': True
+2026-04-08 13:59:15,209 - semo.backend - INFO - Tagged file (test/data/file3.txt) with tag 'test_list_subtags_indirect_ok_inferior2'
+2026-04-08 13:59:15,210 - semo.validator - INFO - Tag Exists 'test_list_subtags_indirect_ok_superior': True
+2026-04-08 13:59:15,210 - semo.validator - INFO - Tag Exists 'test_list_subtags_indirect_ok_inferior1': True
+2026-04-08 13:59:15,210 - semo.validator - INFO - Approval for subtag operation for superior tag 'test_list_subtags_indirect_ok_superior' and inferior tag 'test_list_subtags_indirect_ok_inferior1': True
+2026-04-08 13:59:15,212 - semo.backend - INFO - Assigned inferior tag 'test_list_subtags_indirect_ok_inferior1' to superior tag 'test_list_subtags_indirect_ok_superior'
+2026-04-08 13:59:15,212 - semo.validator - INFO - File Exists (3874604374702157863, 36218211): True
+2026-04-08 13:59:15,213 - semo.validator - INFO - File (3874604374702157863, 36218211) has tag 'test_list_subtags_indirect_ok_superior': False
+2026-04-08 13:59:15,213 - semo.validator - INFO - Approval for direct untag operation for file (3874604374702157863, 36218211) and tag 'test_list_subtags_indirect_ok_superior': False
+2026-04-08 13:59:15,213 - semo.backend - INFO - Untagged file (test/data/file2.txt) from subtag 'test_list_subtags_indirect_ok_superior'
+2026-04-08 13:59:15,213 - semo.validator - INFO - Tag Exists 'test_list_subtags_indirect_ok_inferior1': True
+2026-04-08 13:59:15,213 - semo.validator - INFO - Tag Exists 'test_list_subtags_indirect_ok_inferior2': True
+2026-04-08 13:59:15,213 - semo.validator - INFO - Approval for subtag operation for superior tag 'test_list_subtags_indirect_ok_inferior1' and inferior tag 'test_list_subtags_indirect_ok_inferior2': True
+2026-04-08 13:59:15,216 - semo.backend - INFO - Assigned inferior tag 'test_list_subtags_indirect_ok_inferior2' to superior tag 'test_list_subtags_indirect_ok_inferior1'
+2026-04-08 13:59:15,216 - semo.validator - INFO - File Exists (3874604374702157863, 36218213): True
+2026-04-08 13:59:15,216 - semo.validator - INFO - File (3874604374702157863, 36218213) has tag 'test_list_subtags_indirect_ok_inferior1': False
+2026-04-08 13:59:15,216 - semo.validator - INFO - Approval for direct untag operation for file (3874604374702157863, 36218213) and tag 'test_list_subtags_indirect_ok_inferior1': False
+2026-04-08 13:59:15,216 - semo.backend - INFO - Untagged file (test/data/file3.txt) from subtag 'test_list_subtags_indirect_ok_inferior1'
+2026-04-08 13:59:15,216 - semo.validator - INFO - Tag Exists 'test_list_subtags_indirect_ok_superior': True
+2026-04-08 13:59:15,216 - semo.validator - INFO - Tag Exists 'test_list_subtags_indirect_ok_superior': True
+2026-04-08 13:59:15,216 - semo.validator - INFO - Tag Exists 'test_list_subtags_indirect_ok_inferior1': True
+2026-04-08 13:59:15,216 - semo.validator - INFO - Tag Exists 'test_list_subtags_indirect_ok_inferior2': True
+2026-04-08 13:59:15,249 - semo.validator - INFO - Tag Exists 'test_list_tags_for_file_inherited_superior': False
+2026-04-08 13:59:15,249 - semo.validator - INFO - Tag 'test_list_tags_for_file_inherited_superior' does not exist. Creating tag record.
+2026-04-08 13:59:15,252 - semo.validator - INFO - File Exists (3874604374702157863, 36218211): False
+2026-04-08 13:59:15,252 - semo.validator - INFO - File (3874604374702157863, 36218211) not in database. Creating file record.
+2026-04-08 13:59:15,255 - semo.validator - INFO - File (3874604374702157863, 36218211) has tag 'test_list_tags_for_file_inherited_superior': False
+2026-04-08 13:59:15,255 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218211) and tag 'test_list_tags_for_file_inherited_superior': True
+2026-04-08 13:59:15,257 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_list_tags_for_file_inherited_superior'
+2026-04-08 13:59:15,258 - semo.validator - INFO - Tag Exists 'test_list_tags_for_file_inherited_inferior': False
+2026-04-08 13:59:15,258 - semo.validator - INFO - Tag 'test_list_tags_for_file_inherited_inferior' does not exist. Creating tag record.
+2026-04-08 13:59:15,260 - semo.validator - INFO - File Exists (3874604374702157863, 36218213): False
+2026-04-08 13:59:15,260 - semo.validator - INFO - File (3874604374702157863, 36218213) not in database. Creating file record.
+2026-04-08 13:59:15,263 - semo.validator - INFO - File (3874604374702157863, 36218213) has tag 'test_list_tags_for_file_inherited_inferior': False
+2026-04-08 13:59:15,263 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218213) and tag 'test_list_tags_for_file_inherited_inferior': True
+2026-04-08 13:59:15,266 - semo.backend - INFO - Tagged file (test/data/file2.txt) with tag 'test_list_tags_for_file_inherited_inferior'
+2026-04-08 13:59:15,266 - semo.validator - INFO - Tag Exists 'test_list_tags_for_file_inherited_superior': True
+2026-04-08 13:59:15,266 - semo.validator - INFO - Tag Exists 'test_list_tags_for_file_inherited_inferior': True
+2026-04-08 13:59:15,266 - semo.validator - INFO - Approval for subtag operation for superior tag 'test_list_tags_for_file_inherited_superior' and inferior tag 'test_list_tags_for_file_inherited_inferior': True
+2026-04-08 13:59:15,269 - semo.backend - INFO - Assigned inferior tag 'test_list_tags_for_file_inherited_inferior' to superior tag 'test_list_tags_for_file_inherited_superior'
+2026-04-08 13:59:15,269 - semo.validator - INFO - File Exists (3874604374702157863, 36218213): True
+2026-04-08 13:59:15,269 - semo.validator - INFO - File (3874604374702157863, 36218213) has tag 'test_list_tags_for_file_inherited_superior': False
+2026-04-08 13:59:15,269 - semo.validator - INFO - Approval for direct untag operation for file (3874604374702157863, 36218213) and tag 'test_list_tags_for_file_inherited_superior': False
+2026-04-08 13:59:15,269 - semo.backend - INFO - Untagged file (test/data/file2.txt) from subtag 'test_list_tags_for_file_inherited_superior'
+2026-04-08 13:59:15,270 - semo.validator - INFO - File Exists (3874604374702157863, 36218213): True
+2026-04-08 13:59:15,270 - semo.validator - INFO - Approval for list for file operation for file (3874604374702157863, 36218213): True
+2026-04-08 13:59:15,302 - semo.os_calls - ERROR - Error retrieving fsid, inode for file 'test/data/nonexistent_file.txt'
+Traceback (most recent call last):
+  File "/home/mercury/Documents/Motherboard/Semester/BC_THESIS/semo_root/semo/os_calls.py", line 17, in retrieve_inode_from_path
+    return (os.statvfs(filename).f_fsid, os.stat(filename).st_ino)
+            ^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'test/data/nonexistent_file.txt'
+2026-04-08 13:59:15,344 - semo.validator - INFO - Tag Exists 'test_list_tags_for_file_ok1': False
+2026-04-08 13:59:15,344 - semo.validator - INFO - Tag 'test_list_tags_for_file_ok1' does not exist. Creating tag record.
+2026-04-08 13:59:15,347 - semo.validator - INFO - File Exists (3874604374702157863, 36218217): False
+2026-04-08 13:59:15,347 - semo.validator - INFO - File (3874604374702157863, 36218217) not in database. Creating file record.
+2026-04-08 13:59:15,350 - semo.validator - INFO - File (3874604374702157863, 36218217) has tag 'test_list_tags_for_file_ok1': False
+2026-04-08 13:59:15,350 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218217) and tag 'test_list_tags_for_file_ok1': True
+2026-04-08 13:59:15,353 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_list_tags_for_file_ok1'
+2026-04-08 13:59:15,353 - semo.validator - INFO - Tag Exists 'test_list_tags_for_file_ok2': False
+2026-04-08 13:59:15,353 - semo.validator - INFO - Tag 'test_list_tags_for_file_ok2' does not exist. Creating tag record.
+2026-04-08 13:59:15,356 - semo.validator - INFO - File Exists (3874604374702157863, 36218217): True
+2026-04-08 13:59:15,356 - semo.validator - INFO - File (3874604374702157863, 36218217) has tag 'test_list_tags_for_file_ok2': False
+2026-04-08 13:59:15,356 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218217) and tag 'test_list_tags_for_file_ok2': True
+2026-04-08 13:59:15,360 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_list_tags_for_file_ok2'
+2026-04-08 13:59:15,361 - semo.validator - INFO - File Exists (3874604374702157863, 36218217): True
+2026-04-08 13:59:15,361 - semo.validator - INFO - Approval for list for file operation for file (3874604374702157863, 36218217): True
+2026-04-08 13:59:15,393 - semo.validator - INFO - Tag Exists 'test_subtag_already_subtagged_superior': False
+2026-04-08 13:59:15,393 - semo.validator - INFO - Tag 'test_subtag_already_subtagged_superior' does not exist. Creating tag record.
+2026-04-08 13:59:15,396 - semo.validator - INFO - File Exists (3874604374702157863, 36218197): False
+2026-04-08 13:59:15,396 - semo.validator - INFO - File (3874604374702157863, 36218197) not in database. Creating file record.
+2026-04-08 13:59:15,399 - semo.validator - INFO - File (3874604374702157863, 36218197) has tag 'test_subtag_already_subtagged_superior': False
+2026-04-08 13:59:15,399 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218197) and tag 'test_subtag_already_subtagged_superior': True
+2026-04-08 13:59:15,402 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_subtag_already_subtagged_superior'
+2026-04-08 13:59:15,402 - semo.validator - INFO - Tag Exists 'test_subtag_already_subtagged_inferior': False
+2026-04-08 13:59:15,402 - semo.validator - INFO - Tag 'test_subtag_already_subtagged_inferior' does not exist. Creating tag record.
+2026-04-08 13:59:15,405 - semo.validator - INFO - File Exists (3874604374702157863, 36218202): False
+2026-04-08 13:59:15,405 - semo.validator - INFO - File (3874604374702157863, 36218202) not in database. Creating file record.
+2026-04-08 13:59:15,408 - semo.validator - INFO - File (3874604374702157863, 36218202) has tag 'test_subtag_already_subtagged_inferior': False
+2026-04-08 13:59:15,408 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218202) and tag 'test_subtag_already_subtagged_inferior': True
+2026-04-08 13:59:15,411 - semo.backend - INFO - Tagged file (test/data/file2.txt) with tag 'test_subtag_already_subtagged_inferior'
+2026-04-08 13:59:15,411 - semo.validator - INFO - Tag Exists 'test_subtag_already_subtagged_superior': True
+2026-04-08 13:59:15,411 - semo.validator - INFO - Tag Exists 'test_subtag_already_subtagged_inferior': True
+2026-04-08 13:59:15,411 - semo.validator - INFO - Approval for subtag operation for superior tag 'test_subtag_already_subtagged_superior' and inferior tag 'test_subtag_already_subtagged_inferior': True
+2026-04-08 13:59:15,414 - semo.backend - INFO - Assigned inferior tag 'test_subtag_already_subtagged_inferior' to superior tag 'test_subtag_already_subtagged_superior'
+2026-04-08 13:59:15,414 - semo.validator - INFO - File Exists (3874604374702157863, 36218202): True
+2026-04-08 13:59:15,414 - semo.validator - INFO - File (3874604374702157863, 36218202) has tag 'test_subtag_already_subtagged_superior': False
+2026-04-08 13:59:15,414 - semo.validator - INFO - Approval for direct untag operation for file (3874604374702157863, 36218202) and tag 'test_subtag_already_subtagged_superior': False
+2026-04-08 13:59:15,414 - semo.backend - INFO - Untagged file (test/data/file2.txt) from subtag 'test_subtag_already_subtagged_superior'
+2026-04-08 13:59:15,414 - semo.validator - INFO - Tag Exists 'test_subtag_already_subtagged_superior': True
+2026-04-08 13:59:15,414 - semo.validator - INFO - Tag Exists 'test_subtag_already_subtagged_inferior': True
+2026-04-08 13:59:15,415 - semo.validator - INFO - Approval for subtag operation for superior tag 'test_subtag_already_subtagged_superior' and inferior tag 'test_subtag_already_subtagged_inferior': False
+2026-04-08 13:59:15,415 - semo.backend - INFO - Assign subtag operation not approved for superior tag 'test_subtag_already_subtagged_superior' and inferior tag 'test_subtag_already_subtagged_inferior'
+2026-04-08 13:59:15,445 - semo.validator - INFO - Tag Exists 'test_subtag_nonexistent_inferior_superior': False
+2026-04-08 13:59:15,445 - semo.validator - INFO - Tag 'test_subtag_nonexistent_inferior_superior' does not exist. Creating tag record.
+2026-04-08 13:59:15,452 - semo.validator - INFO - File Exists (3874604374702157863, 36218202): False
+2026-04-08 13:59:15,452 - semo.validator - INFO - File (3874604374702157863, 36218202) not in database. Creating file record.
+2026-04-08 13:59:15,455 - semo.validator - INFO - File (3874604374702157863, 36218202) has tag 'test_subtag_nonexistent_inferior_superior': False
+2026-04-08 13:59:15,455 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218202) and tag 'test_subtag_nonexistent_inferior_superior': True
+2026-04-08 13:59:15,458 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_subtag_nonexistent_inferior_superior'
+2026-04-08 13:59:15,458 - semo.validator - INFO - Tag Exists 'test_subtag_nonexistent_inferior_superior': True
+2026-04-08 13:59:15,458 - semo.validator - INFO - Tag Exists 'test_subtag_nonexistent_inferior_inferior': False
+2026-04-08 13:59:15,458 - semo.validator - INFO - Approval for subtag operation for superior tag 'test_subtag_nonexistent_inferior_superior' and inferior tag 'test_subtag_nonexistent_inferior_inferior': False
+2026-04-08 13:59:15,458 - semo.backend - INFO - Assign subtag operation not approved for superior tag 'test_subtag_nonexistent_inferior_superior' and inferior tag 'test_subtag_nonexistent_inferior_inferior'
+2026-04-08 13:59:15,490 - semo.validator - INFO - Tag Exists 'test_subtag_nonexistent_superior_inferior': False
+2026-04-08 13:59:15,490 - semo.validator - INFO - Tag 'test_subtag_nonexistent_superior_inferior' does not exist. Creating tag record.
+2026-04-08 13:59:15,492 - semo.validator - INFO - File Exists (3874604374702157863, 36218204): False
+2026-04-08 13:59:15,492 - semo.validator - INFO - File (3874604374702157863, 36218204) not in database. Creating file record.
+2026-04-08 13:59:15,495 - semo.validator - INFO - File (3874604374702157863, 36218204) has tag 'test_subtag_nonexistent_superior_inferior': False
+2026-04-08 13:59:15,495 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218204) and tag 'test_subtag_nonexistent_superior_inferior': True
+2026-04-08 13:59:15,498 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_subtag_nonexistent_superior_inferior'
+2026-04-08 13:59:15,498 - semo.validator - INFO - Tag Exists 'test_subtag_nonexistent_superior_superior': False
+2026-04-08 13:59:15,498 - semo.validator - INFO - Tag Exists 'test_subtag_nonexistent_superior_inferior': True
+2026-04-08 13:59:15,498 - semo.validator - INFO - Approval for subtag operation for superior tag 'test_subtag_nonexistent_superior_superior' and inferior tag 'test_subtag_nonexistent_superior_inferior': False
+2026-04-08 13:59:15,498 - semo.backend - INFO - Assign subtag operation not approved for superior tag 'test_subtag_nonexistent_superior_superior' and inferior tag 'test_subtag_nonexistent_superior_inferior'
+2026-04-08 13:59:15,528 - semo.validator - INFO - Tag Exists 'test_subtag_ok_superior': False
+2026-04-08 13:59:15,528 - semo.validator - INFO - Tag 'test_subtag_ok_superior' does not exist. Creating tag record.
+2026-04-08 13:59:15,531 - semo.validator - INFO - File Exists (3874604374702157863, 36218211): False
+2026-04-08 13:59:15,531 - semo.validator - INFO - File (3874604374702157863, 36218211) not in database. Creating file record.
+2026-04-08 13:59:15,534 - semo.validator - INFO - File (3874604374702157863, 36218211) has tag 'test_subtag_ok_superior': False
+2026-04-08 13:59:15,534 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218211) and tag 'test_subtag_ok_superior': True
+2026-04-08 13:59:15,537 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_subtag_ok_superior'
+2026-04-08 13:59:15,537 - semo.validator - INFO - Tag Exists 'test_subtag_ok_inferior': False
+2026-04-08 13:59:15,537 - semo.validator - INFO - Tag 'test_subtag_ok_inferior' does not exist. Creating tag record.
+2026-04-08 13:59:15,540 - semo.validator - INFO - File Exists (3874604374702157863, 36218217): False
+2026-04-08 13:59:15,540 - semo.validator - INFO - File (3874604374702157863, 36218217) not in database. Creating file record.
+2026-04-08 13:59:15,543 - semo.validator - INFO - File (3874604374702157863, 36218217) has tag 'test_subtag_ok_inferior': False
+2026-04-08 13:59:15,543 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218217) and tag 'test_subtag_ok_inferior': True
+2026-04-08 13:59:15,545 - semo.backend - INFO - Tagged file (test/data/file2.txt) with tag 'test_subtag_ok_inferior'
+2026-04-08 13:59:15,546 - semo.validator - INFO - Tag Exists 'test_subtag_ok_superior': True
+2026-04-08 13:59:15,546 - semo.validator - INFO - Tag Exists 'test_subtag_ok_inferior': True
+2026-04-08 13:59:15,546 - semo.validator - INFO - Approval for subtag operation for superior tag 'test_subtag_ok_superior' and inferior tag 'test_subtag_ok_inferior': True
+2026-04-08 13:59:15,548 - semo.backend - INFO - Assigned inferior tag 'test_subtag_ok_inferior' to superior tag 'test_subtag_ok_superior'
+2026-04-08 13:59:15,548 - semo.validator - INFO - File Exists (3874604374702157863, 36218217): True
+2026-04-08 13:59:15,548 - semo.validator - INFO - File (3874604374702157863, 36218217) has tag 'test_subtag_ok_superior': False
+2026-04-08 13:59:15,549 - semo.validator - INFO - Approval for direct untag operation for file (3874604374702157863, 36218217) and tag 'test_subtag_ok_superior': False
+2026-04-08 13:59:15,549 - semo.backend - INFO - Untagged file (test/data/file2.txt) from subtag 'test_subtag_ok_superior'
+2026-04-08 13:59:15,579 - semo.validator - INFO - Tag Exists 'test_subtag_ok_and_common_file_superior': False
+2026-04-08 13:59:15,579 - semo.validator - INFO - Tag 'test_subtag_ok_and_common_file_superior' does not exist. Creating tag record.
+2026-04-08 13:59:15,582 - semo.validator - INFO - File Exists (3874604374702157863, 36218217): False
+2026-04-08 13:59:15,582 - semo.validator - INFO - File (3874604374702157863, 36218217) not in database. Creating file record.
+2026-04-08 13:59:15,585 - semo.validator - INFO - File (3874604374702157863, 36218217) has tag 'test_subtag_ok_and_common_file_superior': False
+2026-04-08 13:59:15,585 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218217) and tag 'test_subtag_ok_and_common_file_superior': True
+2026-04-08 13:59:15,587 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_subtag_ok_and_common_file_superior'
+2026-04-08 13:59:15,588 - semo.validator - INFO - Tag Exists 'test_subtag_ok_and_common_file_inferior': False
+2026-04-08 13:59:15,588 - semo.validator - INFO - Tag 'test_subtag_ok_and_common_file_inferior' does not exist. Creating tag record.
+2026-04-08 13:59:15,591 - semo.validator - INFO - File Exists (3874604374702157863, 36218217): True
+2026-04-08 13:59:15,591 - semo.validator - INFO - File (3874604374702157863, 36218217) has tag 'test_subtag_ok_and_common_file_inferior': False
+2026-04-08 13:59:15,591 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218217) and tag 'test_subtag_ok_and_common_file_inferior': True
+2026-04-08 13:59:15,593 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_subtag_ok_and_common_file_inferior'
+2026-04-08 13:59:15,594 - semo.validator - INFO - Tag Exists 'test_subtag_ok_and_common_file_superior': True
+2026-04-08 13:59:15,594 - semo.validator - INFO - Tag Exists 'test_subtag_ok_and_common_file_inferior': True
+2026-04-08 13:59:15,594 - semo.validator - INFO - Approval for subtag operation for superior tag 'test_subtag_ok_and_common_file_superior' and inferior tag 'test_subtag_ok_and_common_file_inferior': True
+2026-04-08 13:59:15,598 - semo.backend - INFO - Assigned inferior tag 'test_subtag_ok_and_common_file_inferior' to superior tag 'test_subtag_ok_and_common_file_superior'
+2026-04-08 13:59:15,598 - semo.validator - INFO - File Exists (3874604374702157863, 36218217): True
+2026-04-08 13:59:15,598 - semo.validator - INFO - File (3874604374702157863, 36218217) has tag 'test_subtag_ok_and_common_file_superior': True
+2026-04-08 13:59:15,598 - semo.validator - INFO - Approval for direct untag operation for file (3874604374702157863, 36218217) and tag 'test_subtag_ok_and_common_file_superior': True
+2026-04-08 13:59:15,602 - semo.backend - INFO - Untagged file (test/data/file1.txt) from subtag 'test_subtag_ok_and_common_file_superior'
+2026-04-08 13:59:15,642 - semo.validator - INFO - Tag Exists 'test_subtag_reverse_subtagged_superior': False
+2026-04-08 13:59:15,642 - semo.validator - INFO - Tag 'test_subtag_reverse_subtagged_superior' does not exist. Creating tag record.
+2026-04-08 13:59:15,647 - semo.validator - INFO - File Exists (3874604374702157863, 36218218): False
+2026-04-08 13:59:15,647 - semo.validator - INFO - File (3874604374702157863, 36218218) not in database. Creating file record.
+2026-04-08 13:59:15,651 - semo.validator - INFO - File (3874604374702157863, 36218218) has tag 'test_subtag_reverse_subtagged_superior': False
+2026-04-08 13:59:15,651 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218218) and tag 'test_subtag_reverse_subtagged_superior': True
+2026-04-08 13:59:15,656 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_subtag_reverse_subtagged_superior'
+2026-04-08 13:59:15,656 - semo.validator - INFO - Tag Exists 'test_subtag_reverse_subtagged_inferior': False
+2026-04-08 13:59:15,656 - semo.validator - INFO - Tag 'test_subtag_reverse_subtagged_inferior' does not exist. Creating tag record.
+2026-04-08 13:59:15,660 - semo.validator - INFO - File Exists (3874604374702157863, 36218220): False
+2026-04-08 13:59:15,660 - semo.validator - INFO - File (3874604374702157863, 36218220) not in database. Creating file record.
+2026-04-08 13:59:15,664 - semo.validator - INFO - File (3874604374702157863, 36218220) has tag 'test_subtag_reverse_subtagged_inferior': False
+2026-04-08 13:59:15,664 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218220) and tag 'test_subtag_reverse_subtagged_inferior': True
+2026-04-08 13:59:15,668 - semo.backend - INFO - Tagged file (test/data/file2.txt) with tag 'test_subtag_reverse_subtagged_inferior'
+2026-04-08 13:59:15,669 - semo.validator - INFO - Tag Exists 'test_subtag_reverse_subtagged_superior': True
+2026-04-08 13:59:15,669 - semo.validator - INFO - Tag Exists 'test_subtag_reverse_subtagged_inferior': True
+2026-04-08 13:59:15,669 - semo.validator - INFO - Approval for subtag operation for superior tag 'test_subtag_reverse_subtagged_superior' and inferior tag 'test_subtag_reverse_subtagged_inferior': True
+2026-04-08 13:59:15,673 - semo.backend - INFO - Assigned inferior tag 'test_subtag_reverse_subtagged_inferior' to superior tag 'test_subtag_reverse_subtagged_superior'
+2026-04-08 13:59:15,673 - semo.validator - INFO - File Exists (3874604374702157863, 36218220): True
+2026-04-08 13:59:15,673 - semo.validator - INFO - File (3874604374702157863, 36218220) has tag 'test_subtag_reverse_subtagged_superior': False
+2026-04-08 13:59:15,673 - semo.validator - INFO - Approval for direct untag operation for file (3874604374702157863, 36218220) and tag 'test_subtag_reverse_subtagged_superior': False
+2026-04-08 13:59:15,673 - semo.backend - INFO - Untagged file (test/data/file2.txt) from subtag 'test_subtag_reverse_subtagged_superior'
+2026-04-08 13:59:15,674 - semo.validator - INFO - Tag Exists 'test_subtag_reverse_subtagged_inferior': True
+2026-04-08 13:59:15,674 - semo.validator - INFO - Tag Exists 'test_subtag_reverse_subtagged_superior': True
+2026-04-08 13:59:15,674 - semo.validator - INFO - Approval for subtag operation for superior tag 'test_subtag_reverse_subtagged_inferior' and inferior tag 'test_subtag_reverse_subtagged_superior': False
+2026-04-08 13:59:15,674 - semo.backend - INFO - Assign subtag operation not approved for superior tag 'test_subtag_reverse_subtagged_inferior' and inferior tag 'test_subtag_reverse_subtagged_superior'
+2026-04-08 13:59:15,713 - semo.validator - INFO - Tag Exists 'test_tag_already_tagged': False
+2026-04-08 13:59:15,713 - semo.validator - INFO - Tag 'test_tag_already_tagged' does not exist. Creating tag record.
+2026-04-08 13:59:15,717 - semo.validator - INFO - File Exists (3874604374702157863, 36218220): False
+2026-04-08 13:59:15,717 - semo.validator - INFO - File (3874604374702157863, 36218220) not in database. Creating file record.
+2026-04-08 13:59:15,720 - semo.validator - INFO - File (3874604374702157863, 36218220) has tag 'test_tag_already_tagged': False
+2026-04-08 13:59:15,720 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218220) and tag 'test_tag_already_tagged': True
+2026-04-08 13:59:15,723 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_tag_already_tagged'
+2026-04-08 13:59:15,724 - semo.validator - INFO - Tag Exists 'test_tag_already_tagged': True
+2026-04-08 13:59:15,724 - semo.validator - INFO - File Exists (3874604374702157863, 36218220): True
+2026-04-08 13:59:15,724 - semo.validator - INFO - File (3874604374702157863, 36218220) has tag 'test_tag_already_tagged': True
+2026-04-08 13:59:15,724 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218220) and tag 'test_tag_already_tagged': False
+2026-04-08 13:59:15,724 - semo.backend - INFO - Tag operation not approved for file (test/data/file1.txt) and tag 'test_tag_already_tagged'
+2026-04-08 13:59:15,754 - semo.os_calls - ERROR - Error retrieving fsid, inode for file 'test/data/nonexistent_file.txt'
+Traceback (most recent call last):
+  File "/home/mercury/Documents/Motherboard/Semester/BC_THESIS/semo_root/semo/os_calls.py", line 17, in retrieve_inode_from_path
+    return (os.statvfs(filename).f_fsid, os.stat(filename).st_ino)
+            ^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'test/data/nonexistent_file.txt'
+2026-04-08 13:59:15,791 - semo.validator - INFO - Tag Exists 'test_tag_ok': False
+2026-04-08 13:59:15,791 - semo.validator - INFO - Tag 'test_tag_ok' does not exist. Creating tag record.
+2026-04-08 13:59:15,794 - semo.validator - INFO - File Exists (3874604374702157863, 36218223): False
+2026-04-08 13:59:15,794 - semo.validator - INFO - File (3874604374702157863, 36218223) not in database. Creating file record.
+2026-04-08 13:59:15,797 - semo.validator - INFO - File (3874604374702157863, 36218223) has tag 'test_tag_ok': False
+2026-04-08 13:59:15,797 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218223) and tag 'test_tag_ok': True
+2026-04-08 13:59:15,800 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_tag_ok'
+2026-04-08 13:59:15,832 - semo.validator - INFO - Tag Exists 'test_tag_tagged_with_superior_superior': False
+2026-04-08 13:59:15,832 - semo.validator - INFO - Tag 'test_tag_tagged_with_superior_superior' does not exist. Creating tag record.
+2026-04-08 13:59:15,835 - semo.validator - INFO - File Exists (3874604374702157863, 36218197): False
+2026-04-08 13:59:15,835 - semo.validator - INFO - File (3874604374702157863, 36218197) not in database. Creating file record.
+2026-04-08 13:59:15,838 - semo.validator - INFO - File (3874604374702157863, 36218197) has tag 'test_tag_tagged_with_superior_superior': False
+2026-04-08 13:59:15,839 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218197) and tag 'test_tag_tagged_with_superior_superior': True
+2026-04-08 13:59:15,842 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_tag_tagged_with_superior_superior'
+2026-04-08 13:59:15,842 - semo.validator - INFO - Tag Exists 'test_tag_tagged_with_superior_inferior': False
+2026-04-08 13:59:15,842 - semo.validator - INFO - Tag 'test_tag_tagged_with_superior_inferior' does not exist. Creating tag record.
+2026-04-08 13:59:15,845 - semo.validator - INFO - File Exists (3874604374702157863, 36218202): False
+2026-04-08 13:59:15,845 - semo.validator - INFO - File (3874604374702157863, 36218202) not in database. Creating file record.
+2026-04-08 13:59:15,848 - semo.validator - INFO - File (3874604374702157863, 36218202) has tag 'test_tag_tagged_with_superior_inferior': False
+2026-04-08 13:59:15,848 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218202) and tag 'test_tag_tagged_with_superior_inferior': True
+2026-04-08 13:59:15,850 - semo.backend - INFO - Tagged file (test/data/file2.txt) with tag 'test_tag_tagged_with_superior_inferior'
+2026-04-08 13:59:15,851 - semo.validator - INFO - Tag Exists 'test_tag_tagged_with_superior_superior': True
+2026-04-08 13:59:15,851 - semo.validator - INFO - Tag Exists 'test_tag_tagged_with_superior_inferior': True
+2026-04-08 13:59:15,851 - semo.validator - INFO - Approval for subtag operation for superior tag 'test_tag_tagged_with_superior_superior' and inferior tag 'test_tag_tagged_with_superior_inferior': True
+2026-04-08 13:59:15,854 - semo.backend - INFO - Assigned inferior tag 'test_tag_tagged_with_superior_inferior' to superior tag 'test_tag_tagged_with_superior_superior'
+2026-04-08 13:59:15,854 - semo.validator - INFO - File Exists (3874604374702157863, 36218202): True
+2026-04-08 13:59:15,854 - semo.validator - INFO - File (3874604374702157863, 36218202) has tag 'test_tag_tagged_with_superior_superior': False
+2026-04-08 13:59:15,854 - semo.validator - INFO - Approval for direct untag operation for file (3874604374702157863, 36218202) and tag 'test_tag_tagged_with_superior_superior': False
+2026-04-08 13:59:15,854 - semo.backend - INFO - Untagged file (test/data/file2.txt) from subtag 'test_tag_tagged_with_superior_superior'
+2026-04-08 13:59:15,854 - semo.validator - INFO - Tag Exists 'test_tag_tagged_with_superior_superior': True
+2026-04-08 13:59:15,854 - semo.validator - INFO - File Exists (3874604374702157863, 36218202): True
+2026-04-08 13:59:15,855 - semo.validator - INFO - File (3874604374702157863, 36218202) has tag 'test_tag_tagged_with_superior_superior': True
+2026-04-08 13:59:15,855 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218202) and tag 'test_tag_tagged_with_superior_superior': False
+2026-04-08 13:59:15,855 - semo.backend - INFO - Tag operation not approved for file (test/data/file2.txt) and tag 'test_tag_tagged_with_superior_superior'
+2026-04-08 13:59:15,890 - semo.validator - INFO - Tag Exists 'test_tag_tagged_with_superior_superior': False
+2026-04-08 13:59:15,890 - semo.validator - INFO - Tag 'test_tag_tagged_with_superior_superior' does not exist. Creating tag record.
+2026-04-08 13:59:15,893 - semo.validator - INFO - File Exists (3874604374702157863, 36218202): False
+2026-04-08 13:59:15,893 - semo.validator - INFO - File (3874604374702157863, 36218202) not in database. Creating file record.
+2026-04-08 13:59:15,896 - semo.validator - INFO - File (3874604374702157863, 36218202) has tag 'test_tag_tagged_with_superior_superior': False
+2026-04-08 13:59:15,896 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218202) and tag 'test_tag_tagged_with_superior_superior': True
+2026-04-08 13:59:15,899 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_tag_tagged_with_superior_superior'
+2026-04-08 13:59:15,899 - semo.validator - INFO - Tag Exists 'test_tag_tagged_with_superior_inferior': False
+2026-04-08 13:59:15,899 - semo.validator - INFO - Tag 'test_tag_tagged_with_superior_inferior' does not exist. Creating tag record.
+2026-04-08 13:59:15,902 - semo.validator - INFO - File Exists (3874604374702157863, 36218204): False
+2026-04-08 13:59:15,902 - semo.validator - INFO - File (3874604374702157863, 36218204) not in database. Creating file record.
+2026-04-08 13:59:15,905 - semo.validator - INFO - File (3874604374702157863, 36218204) has tag 'test_tag_tagged_with_superior_inferior': False
+2026-04-08 13:59:15,906 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218204) and tag 'test_tag_tagged_with_superior_inferior': True
+2026-04-08 13:59:15,908 - semo.backend - INFO - Tagged file (test/data/file2.txt) with tag 'test_tag_tagged_with_superior_inferior'
+2026-04-08 13:59:15,909 - semo.validator - INFO - Tag Exists 'test_tag_tagged_with_superior_superior': True
+2026-04-08 13:59:15,909 - semo.validator - INFO - Tag Exists 'test_tag_tagged_with_superior_inferior': True
+2026-04-08 13:59:15,909 - semo.validator - INFO - Approval for subtag operation for superior tag 'test_tag_tagged_with_superior_superior' and inferior tag 'test_tag_tagged_with_superior_inferior': True
+2026-04-08 13:59:15,912 - semo.backend - INFO - Assigned inferior tag 'test_tag_tagged_with_superior_inferior' to superior tag 'test_tag_tagged_with_superior_superior'
+2026-04-08 13:59:15,912 - semo.validator - INFO - File Exists (3874604374702157863, 36218204): True
+2026-04-08 13:59:15,912 - semo.validator - INFO - File (3874604374702157863, 36218204) has tag 'test_tag_tagged_with_superior_superior': False
+2026-04-08 13:59:15,912 - semo.validator - INFO - Approval for direct untag operation for file (3874604374702157863, 36218204) and tag 'test_tag_tagged_with_superior_superior': False
+2026-04-08 13:59:15,912 - semo.backend - INFO - Untagged file (test/data/file2.txt) from subtag 'test_tag_tagged_with_superior_superior'
+2026-04-08 13:59:15,912 - semo.validator - INFO - Tag Exists 'test_tag_tagged_with_superior_inferior': True
+2026-04-08 13:59:15,912 - semo.validator - INFO - File Exists (3874604374702157863, 36218202): True
+2026-04-08 13:59:15,912 - semo.validator - INFO - File (3874604374702157863, 36218202) has tag 'test_tag_tagged_with_superior_inferior': False
+2026-04-08 13:59:15,912 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218202) and tag 'test_tag_tagged_with_superior_inferior': True
+2026-04-08 13:59:15,915 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_tag_tagged_with_superior_inferior'
+2026-04-08 13:59:15,916 - semo.validator - INFO - File Exists (3874604374702157863, 36218202): True
+2026-04-08 13:59:15,916 - semo.validator - INFO - File (3874604374702157863, 36218202) has tag 'test_tag_tagged_with_superior_superior': True
+2026-04-08 13:59:15,916 - semo.validator - INFO - Approval for untag operation for file (3874604374702157863, 36218202) and tag 'test_tag_tagged_with_superior_superior': True
+2026-04-08 13:59:15,918 - semo.backend - INFO - Untagged file (test/data/file1.txt) from subtag 'test_tag_tagged_with_superior_superior'
+2026-04-08 13:59:15,919 - semo.backend - INFO - Untagged file (test/data/file1.txt) from tag 'test_tag_tagged_with_superior_superior'
+2026-04-08 13:59:15,919 - semo.validator - INFO - File (3874604374702157863, 36218202) is isolated: False
+2026-04-08 13:59:15,951 - semo.validator - INFO - Tag Exists 'test_unsubtag_nonexistent_inferior_superior': False
+2026-04-08 13:59:15,951 - semo.validator - INFO - Tag 'test_unsubtag_nonexistent_inferior_superior' does not exist. Creating tag record.
+2026-04-08 13:59:15,953 - semo.validator - INFO - File Exists (3874604374702157863, 36218204): False
+2026-04-08 13:59:15,954 - semo.validator - INFO - File (3874604374702157863, 36218204) not in database. Creating file record.
+2026-04-08 13:59:15,956 - semo.validator - INFO - File (3874604374702157863, 36218204) has tag 'test_unsubtag_nonexistent_inferior_superior': False
+2026-04-08 13:59:15,957 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218204) and tag 'test_unsubtag_nonexistent_inferior_superior': True
+2026-04-08 13:59:15,959 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_unsubtag_nonexistent_inferior_superior'
+2026-04-08 13:59:15,960 - semo.validator - INFO - Tag Exists 'test_unsubtag_nonexistent_inferior_superior': True
+2026-04-08 13:59:15,960 - semo.validator - INFO - Tag Exists 'test_unsubtag_nonexistent_inferior_inferior': False
+2026-04-08 13:59:15,960 - semo.validator - INFO - Approval for unsubtag operation for superior tag 'test_unsubtag_nonexistent_inferior_superior' and inferior tag 'test_unsubtag_nonexistent_inferior_inferior': False
+2026-04-08 13:59:15,960 - semo.backend - INFO - Unassign subtag operation not approved for superior tag 'test_unsubtag_nonexistent_inferior_superior' and inferior tag 'test_unsubtag_nonexistent_inferior_inferior'
+2026-04-08 13:59:15,991 - semo.validator - INFO - Tag Exists 'test_unsubtag_nonexistent_superior_inferior': False
+2026-04-08 13:59:15,991 - semo.validator - INFO - Tag 'test_unsubtag_nonexistent_superior_inferior' does not exist. Creating tag record.
+2026-04-08 13:59:15,994 - semo.validator - INFO - File Exists (3874604374702157863, 36218211): False
+2026-04-08 13:59:15,994 - semo.validator - INFO - File (3874604374702157863, 36218211) not in database. Creating file record.
+2026-04-08 13:59:15,996 - semo.validator - INFO - File (3874604374702157863, 36218211) has tag 'test_unsubtag_nonexistent_superior_inferior': False
+2026-04-08 13:59:15,996 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218211) and tag 'test_unsubtag_nonexistent_superior_inferior': True
+2026-04-08 13:59:15,999 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_unsubtag_nonexistent_superior_inferior'
+2026-04-08 13:59:16,000 - semo.validator - INFO - Tag Exists 'test_unsubtag_nonexistent_superior_superior': False
+2026-04-08 13:59:16,000 - semo.validator - INFO - Tag Exists 'test_unsubtag_nonexistent_superior_inferior': True
+2026-04-08 13:59:16,000 - semo.validator - INFO - Approval for unsubtag operation for superior tag 'test_unsubtag_nonexistent_superior_superior' and inferior tag 'test_unsubtag_nonexistent_superior_inferior': False
+2026-04-08 13:59:16,000 - semo.backend - INFO - Unassign subtag operation not approved for superior tag 'test_unsubtag_nonexistent_superior_superior' and inferior tag 'test_unsubtag_nonexistent_superior_inferior'
+2026-04-08 13:59:16,033 - semo.validator - INFO - Tag Exists 'test_unsubtag_not_subtagged_superior': False
+2026-04-08 13:59:16,033 - semo.validator - INFO - Tag 'test_unsubtag_not_subtagged_superior' does not exist. Creating tag record.
+2026-04-08 13:59:16,036 - semo.validator - INFO - File Exists (3874604374702157863, 36218217): False
+2026-04-08 13:59:16,036 - semo.validator - INFO - File (3874604374702157863, 36218217) not in database. Creating file record.
+2026-04-08 13:59:16,039 - semo.validator - INFO - File (3874604374702157863, 36218217) has tag 'test_unsubtag_not_subtagged_superior': False
+2026-04-08 13:59:16,039 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218217) and tag 'test_unsubtag_not_subtagged_superior': True
+2026-04-08 13:59:16,042 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_unsubtag_not_subtagged_superior'
+2026-04-08 13:59:16,042 - semo.validator - INFO - Tag Exists 'test_unsubtag_not_subtagged_inferior': False
+2026-04-08 13:59:16,042 - semo.validator - INFO - Tag 'test_unsubtag_not_subtagged_inferior' does not exist. Creating tag record.
+2026-04-08 13:59:16,045 - semo.validator - INFO - File Exists (3874604374702157863, 36218218): False
+2026-04-08 13:59:16,045 - semo.validator - INFO - File (3874604374702157863, 36218218) not in database. Creating file record.
+2026-04-08 13:59:16,048 - semo.validator - INFO - File (3874604374702157863, 36218218) has tag 'test_unsubtag_not_subtagged_inferior': False
+2026-04-08 13:59:16,048 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218218) and tag 'test_unsubtag_not_subtagged_inferior': True
+2026-04-08 13:59:16,050 - semo.backend - INFO - Tagged file (test/data/file2.txt) with tag 'test_unsubtag_not_subtagged_inferior'
+2026-04-08 13:59:16,051 - semo.validator - INFO - Tag Exists 'test_unsubtag_not_subtagged_superior': True
+2026-04-08 13:59:16,051 - semo.validator - INFO - Tag Exists 'test_unsubtag_not_subtagged_inferior': True
+2026-04-08 13:59:16,051 - semo.validator - INFO - Tag 'test_unsubtag_not_subtagged_superior' has direct superiority over 'test_unsubtag_not_subtagged_inferior': False
+2026-04-08 13:59:16,051 - semo.validator - INFO - Approval for unsubtag operation for superior tag 'test_unsubtag_not_subtagged_superior' and inferior tag 'test_unsubtag_not_subtagged_inferior': False
+2026-04-08 13:59:16,051 - semo.backend - INFO - Unassign subtag operation not approved for superior tag 'test_unsubtag_not_subtagged_superior' and inferior tag 'test_unsubtag_not_subtagged_inferior'
+2026-04-08 13:59:16,085 - semo.validator - INFO - Tag Exists 'test_unsubtag_ok_superior': False
+2026-04-08 13:59:16,085 - semo.validator - INFO - Tag 'test_unsubtag_ok_superior' does not exist. Creating tag record.
+2026-04-08 13:59:16,088 - semo.validator - INFO - File Exists (3874604374702157863, 36218218): False
+2026-04-08 13:59:16,088 - semo.validator - INFO - File (3874604374702157863, 36218218) not in database. Creating file record.
+2026-04-08 13:59:16,091 - semo.validator - INFO - File (3874604374702157863, 36218218) has tag 'test_unsubtag_ok_superior': False
+2026-04-08 13:59:16,091 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218218) and tag 'test_unsubtag_ok_superior': True
+2026-04-08 13:59:16,093 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_unsubtag_ok_superior'
+2026-04-08 13:59:16,094 - semo.validator - INFO - Tag Exists 'test_unsubtag_ok_inferior': False
+2026-04-08 13:59:16,094 - semo.validator - INFO - Tag 'test_unsubtag_ok_inferior' does not exist. Creating tag record.
+2026-04-08 13:59:16,096 - semo.validator - INFO - File Exists (3874604374702157863, 36218220): False
+2026-04-08 13:59:16,097 - semo.validator - INFO - File (3874604374702157863, 36218220) not in database. Creating file record.
+2026-04-08 13:59:16,099 - semo.validator - INFO - File (3874604374702157863, 36218220) has tag 'test_unsubtag_ok_inferior': False
+2026-04-08 13:59:16,099 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218220) and tag 'test_unsubtag_ok_inferior': True
+2026-04-08 13:59:16,102 - semo.backend - INFO - Tagged file (test/data/file2.txt) with tag 'test_unsubtag_ok_inferior'
+2026-04-08 13:59:16,103 - semo.validator - INFO - Tag Exists 'test_unsubtag_ok_superior': True
+2026-04-08 13:59:16,103 - semo.validator - INFO - Tag Exists 'test_unsubtag_ok_inferior': True
+2026-04-08 13:59:16,103 - semo.validator - INFO - Approval for subtag operation for superior tag 'test_unsubtag_ok_superior' and inferior tag 'test_unsubtag_ok_inferior': True
+2026-04-08 13:59:16,105 - semo.backend - INFO - Assigned inferior tag 'test_unsubtag_ok_inferior' to superior tag 'test_unsubtag_ok_superior'
+2026-04-08 13:59:16,106 - semo.validator - INFO - File Exists (3874604374702157863, 36218220): True
+2026-04-08 13:59:16,106 - semo.validator - INFO - File (3874604374702157863, 36218220) has tag 'test_unsubtag_ok_superior': False
+2026-04-08 13:59:16,106 - semo.validator - INFO - Approval for direct untag operation for file (3874604374702157863, 36218220) and tag 'test_unsubtag_ok_superior': False
+2026-04-08 13:59:16,106 - semo.backend - INFO - Untagged file (test/data/file2.txt) from subtag 'test_unsubtag_ok_superior'
+2026-04-08 13:59:16,106 - semo.validator - INFO - Tag Exists 'test_unsubtag_ok_superior': True
+2026-04-08 13:59:16,106 - semo.validator - INFO - Tag Exists 'test_unsubtag_ok_inferior': True
+2026-04-08 13:59:16,106 - semo.validator - INFO - Tag 'test_unsubtag_ok_superior' has direct superiority over 'test_unsubtag_ok_inferior': True
+2026-04-08 13:59:16,106 - semo.validator - INFO - Approval for unsubtag operation for superior tag 'test_unsubtag_ok_superior' and inferior tag 'test_unsubtag_ok_inferior': True
+2026-04-08 13:59:16,109 - semo.backend - INFO - Unassigned inferior tag 'test_unsubtag_ok_inferior' from superior tag 'test_unsubtag_ok_superior'
+2026-04-08 13:59:16,140 - semo.validator - INFO - Tag Exists 'test_untag_direct_ok': False
+2026-04-08 13:59:16,140 - semo.validator - INFO - Tag 'test_untag_direct_ok' does not exist. Creating tag record.
+2026-04-08 13:59:16,143 - semo.validator - INFO - File Exists (3874604374702157863, 36218220): False
+2026-04-08 13:59:16,143 - semo.validator - INFO - File (3874604374702157863, 36218220) not in database. Creating file record.
+2026-04-08 13:59:16,146 - semo.validator - INFO - File (3874604374702157863, 36218220) has tag 'test_untag_direct_ok': False
+2026-04-08 13:59:16,146 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218220) and tag 'test_untag_direct_ok': True
+2026-04-08 13:59:16,148 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_untag_direct_ok'
+2026-04-08 13:59:16,149 - semo.validator - INFO - File Exists (3874604374702157863, 36218220): True
+2026-04-08 13:59:16,149 - semo.validator - INFO - File (3874604374702157863, 36218220) has tag 'test_untag_direct_ok': True
+2026-04-08 13:59:16,149 - semo.validator - INFO - Approval for untag operation for file (3874604374702157863, 36218220) and tag 'test_untag_direct_ok': True
+2026-04-08 13:59:16,152 - semo.backend - INFO - Untagged file (test/data/file1.txt) from subtag 'test_untag_direct_ok'
+2026-04-08 13:59:16,152 - semo.backend - INFO - Untagged file (test/data/file1.txt) from tag 'test_untag_direct_ok'
+2026-04-08 13:59:16,152 - semo.validator - INFO - File (3874604374702157863, 36218220) is isolated: True
+2026-04-08 13:59:16,152 - semo.backend - INFO - File (test/data/file1.txt) is now isolated. Deleting file record.
+2026-04-08 13:59:16,186 - semo.validator - INFO - Tag Exists 'test_untag_indirect__ok1': False
+2026-04-08 13:59:16,186 - semo.validator - INFO - Tag 'test_untag_indirect__ok1' does not exist. Creating tag record.
+2026-04-08 13:59:16,190 - semo.validator - INFO - File Exists (3874604374702157863, 36218223): False
+2026-04-08 13:59:16,190 - semo.validator - INFO - File (3874604374702157863, 36218223) not in database. Creating file record.
+2026-04-08 13:59:16,192 - semo.validator - INFO - File (3874604374702157863, 36218223) has tag 'test_untag_indirect__ok1': False
+2026-04-08 13:59:16,193 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218223) and tag 'test_untag_indirect__ok1': True
+2026-04-08 13:59:16,195 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_untag_indirect__ok1'
+2026-04-08 13:59:16,196 - semo.validator - INFO - Tag Exists 'test_untag_indirect__ok2': False
+2026-04-08 13:59:16,196 - semo.validator - INFO - Tag 'test_untag_indirect__ok2' does not exist. Creating tag record.
+2026-04-08 13:59:16,201 - semo.validator - INFO - File Exists (3874604374702157863, 36218224): False
+2026-04-08 13:59:16,201 - semo.validator - INFO - File (3874604374702157863, 36218224) not in database. Creating file record.
+2026-04-08 13:59:16,205 - semo.validator - INFO - File (3874604374702157863, 36218224) has tag 'test_untag_indirect__ok2': False
+2026-04-08 13:59:16,205 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218224) and tag 'test_untag_indirect__ok2': True
+2026-04-08 13:59:16,207 - semo.backend - INFO - Tagged file (test/data/file2.txt) with tag 'test_untag_indirect__ok2'
+2026-04-08 13:59:16,208 - semo.validator - INFO - Tag Exists 'test_untag_indirect__ok1': True
+2026-04-08 13:59:16,208 - semo.validator - INFO - Tag Exists 'test_untag_indirect__ok2': True
+2026-04-08 13:59:16,208 - semo.validator - INFO - Approval for subtag operation for superior tag 'test_untag_indirect__ok1' and inferior tag 'test_untag_indirect__ok2': True
+2026-04-08 13:59:16,210 - semo.backend - INFO - Assigned inferior tag 'test_untag_indirect__ok2' to superior tag 'test_untag_indirect__ok1'
+2026-04-08 13:59:16,211 - semo.validator - INFO - File Exists (3874604374702157863, 36218224): True
+2026-04-08 13:59:16,211 - semo.validator - INFO - File (3874604374702157863, 36218224) has tag 'test_untag_indirect__ok1': False
+2026-04-08 13:59:16,211 - semo.validator - INFO - Approval for direct untag operation for file (3874604374702157863, 36218224) and tag 'test_untag_indirect__ok1': False
+2026-04-08 13:59:16,211 - semo.backend - INFO - Untagged file (test/data/file2.txt) from subtag 'test_untag_indirect__ok1'
+2026-04-08 13:59:16,211 - semo.validator - INFO - File Exists (3874604374702157863, 36218224): True
+2026-04-08 13:59:16,211 - semo.validator - INFO - File (3874604374702157863, 36218224) has tag 'test_untag_indirect__ok1': True
+2026-04-08 13:59:16,211 - semo.validator - INFO - Approval for untag operation for file (3874604374702157863, 36218224) and tag 'test_untag_indirect__ok1': True
+2026-04-08 13:59:16,214 - semo.backend - INFO - Untagged file (test/data/file2.txt) from subtag 'test_untag_indirect__ok2'
+2026-04-08 13:59:16,214 - semo.backend - INFO - Untagged file (test/data/file2.txt) from tag 'test_untag_indirect__ok1'
+2026-04-08 13:59:16,214 - semo.validator - INFO - File (3874604374702157863, 36218224) is isolated: True
+2026-04-08 13:59:16,214 - semo.backend - INFO - File (test/data/file2.txt) is now isolated. Deleting file record.
+2026-04-08 13:59:16,247 - semo.os_calls - ERROR - Error retrieving fsid, inode for file 'test/data/nonexistent_file.txt'
+Traceback (most recent call last):
+  File "/home/mercury/Documents/Motherboard/Semester/BC_THESIS/semo_root/semo/os_calls.py", line 17, in retrieve_inode_from_path
+    return (os.statvfs(filename).f_fsid, os.stat(filename).st_ino)
+            ^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'test/data/nonexistent_file.txt'
+2026-04-08 13:59:16,281 - semo.validator - INFO - File Exists (3874604374702157863, 36218202): False
+2026-04-08 13:59:16,281 - semo.backend - INFO - Untag operation not approved for file (test/data/file1.txt) and tag 'test_untag_not_tagged'
+2026-04-08 13:59:16,282 - semo.validator - INFO - Tag Exists 'test_untag_not_tagged': False
+2026-04-08 13:59:16,282 - semo.validator - INFO - Tag 'test_untag_not_tagged' does not exist. Creating tag record.
+2026-04-08 13:59:16,284 - semo.validator - INFO - File Exists (3874604374702157863, 36218202): False
+2026-04-08 13:59:16,285 - semo.validator - INFO - File (3874604374702157863, 36218202) not in database. Creating file record.
+2026-04-08 13:59:16,287 - semo.validator - INFO - File (3874604374702157863, 36218202) has tag 'test_untag_not_tagged': False
+2026-04-08 13:59:16,287 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218202) and tag 'test_untag_not_tagged': True
+2026-04-08 13:59:16,290 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_untag_not_tagged'
+2026-04-08 13:59:16,291 - semo.validator - INFO - File Exists (3874604374702157863, 36218202): True
+2026-04-08 13:59:16,291 - semo.validator - INFO - File (3874604374702157863, 36218202) has tag 'test_untag_not_tagged2': False
+2026-04-08 13:59:16,291 - semo.backend - INFO - Untag operation not approved for file (test/data/file1.txt) and tag 'test_untag_not_tagged2'
+2026-04-08 13:59:16,291 - semo.validator - INFO - File Exists (3874604374702157863, 36218202): True
+2026-04-08 13:59:16,292 - semo.validator - INFO - File (3874604374702157863, 36218202) has tag 'test_untag_not_tagged': True
+2026-04-08 13:59:16,292 - semo.validator - INFO - Approval for untag operation for file (3874604374702157863, 36218202) and tag 'test_untag_not_tagged': True
+2026-04-08 13:59:16,294 - semo.backend - INFO - Untagged file (test/data/file1.txt) from subtag 'test_untag_not_tagged'
+2026-04-08 13:59:16,294 - semo.backend - INFO - Untagged file (test/data/file1.txt) from tag 'test_untag_not_tagged'
+2026-04-08 13:59:16,294 - semo.validator - INFO - File (3874604374702157863, 36218202) is isolated: True
+2026-04-08 13:59:16,294 - semo.backend - INFO - File (test/data/file1.txt) is now isolated. Deleting file record.
+2026-04-08 13:59:16,330 - semo.validator - INFO - Tag Exists 'test_tag_tagged_with_superior_superior': False
+2026-04-08 13:59:16,330 - semo.validator - INFO - Tag 'test_tag_tagged_with_superior_superior' does not exist. Creating tag record.
+2026-04-08 13:59:16,333 - semo.validator - INFO - File Exists (3874604374702157863, 36218204): False
+2026-04-08 13:59:16,333 - semo.validator - INFO - File (3874604374702157863, 36218204) not in database. Creating file record.
+2026-04-08 13:59:16,335 - semo.validator - INFO - File (3874604374702157863, 36218204) has tag 'test_tag_tagged_with_superior_superior': False
+2026-04-08 13:59:16,335 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218204) and tag 'test_tag_tagged_with_superior_superior': True
+2026-04-08 13:59:16,338 - semo.backend - INFO - Tagged file (test/data/file1.txt) with tag 'test_tag_tagged_with_superior_superior'
+2026-04-08 13:59:16,339 - semo.validator - INFO - Tag Exists 'test_tag_tagged_with_superior_inferior': False
+2026-04-08 13:59:16,339 - semo.validator - INFO - Tag 'test_tag_tagged_with_superior_inferior' does not exist. Creating tag record.
+2026-04-08 13:59:16,342 - semo.validator - INFO - File Exists (3874604374702157863, 36218211): False
+2026-04-08 13:59:16,342 - semo.validator - INFO - File (3874604374702157863, 36218211) not in database. Creating file record.
+2026-04-08 13:59:16,345 - semo.validator - INFO - File (3874604374702157863, 36218211) has tag 'test_tag_tagged_with_superior_inferior': False
+2026-04-08 13:59:16,345 - semo.validator - INFO - Approval for tag operation for file (3874604374702157863, 36218211) and tag 'test_tag_tagged_with_superior_inferior': True
+2026-04-08 13:59:16,347 - semo.backend - INFO - Tagged file (test/data/file2.txt) with tag 'test_tag_tagged_with_superior_inferior'
+2026-04-08 13:59:16,348 - semo.validator - INFO - Tag Exists 'test_tag_tagged_with_superior_superior': True
+2026-04-08 13:59:16,348 - semo.validator - INFO - Tag Exists 'test_tag_tagged_with_superior_inferior': True
+2026-04-08 13:59:16,348 - semo.validator - INFO - Approval for subtag operation for superior tag 'test_tag_tagged_with_superior_superior' and inferior tag 'test_tag_tagged_with_superior_inferior': True
+2026-04-08 13:59:16,351 - semo.backend - INFO - Assigned inferior tag 'test_tag_tagged_with_superior_inferior' to superior tag 'test_tag_tagged_with_superior_superior'
+2026-04-08 13:59:16,351 - semo.validator - INFO - File Exists (3874604374702157863, 36218211): True
+2026-04-08 13:59:16,351 - semo.validator - INFO - File (3874604374702157863, 36218211) has tag 'test_tag_tagged_with_superior_superior': False
+2026-04-08 13:59:16,351 - semo.validator - INFO - Approval for direct untag operation for file (3874604374702157863, 36218211) and tag 'test_tag_tagged_with_superior_superior': False
+2026-04-08 13:59:16,351 - semo.backend - INFO - Untagged file (test/data/file2.txt) from subtag 'test_tag_tagged_with_superior_superior'
+2026-04-08 13:59:16,352 - semo.validator - INFO - File Exists (3874604374702157863, 36218211): True
+2026-04-08 13:59:16,352 - semo.validator - INFO - File (3874604374702157863, 36218211) has tag 'test_tag_tagged_with_superior_superior': True
+2026-04-08 13:59:16,352 - semo.validator - INFO - Approval for untag operation for file (3874604374702157863, 36218211) and tag 'test_tag_tagged_with_superior_superior': True
+2026-04-08 13:59:16,355 - semo.backend - INFO - Untagged file (test/data/file2.txt) from subtag 'test_tag_tagged_with_superior_inferior'
+2026-04-08 13:59:16,355 - semo.backend - INFO - Untagged file (test/data/file2.txt) from tag 'test_tag_tagged_with_superior_superior'
+2026-04-08 13:59:16,355 - semo.validator - INFO - File (3874604374702157863, 36218211) is isolated: True
+2026-04-08 13:59:16,355 - semo.backend - INFO - File (test/data/file2.txt) is now isolated. Deleting file record.
+2026-04-08 17:36:54,205 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,213 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:36:54,214 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,214 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:36:54,215 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,215 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:36:54,216 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,216 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:36:54,217 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,217 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:36:54,218 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,218 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:36:54,219 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,219 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:36:54,219 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,219 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:36:54,221 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,221 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:36:54,221 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,221 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:36:54,222 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,222 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:36:54,223 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,223 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:36:54,223 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,223 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:36:54,224 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,224 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:36:54,225 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,225 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:36:54,225 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,225 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:36:54,226 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,226 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:36:54,227 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,227 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:36:54,227 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,227 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:36:54,228 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,228 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:36:54,229 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,229 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:36:54,230 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,230 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:36:54,231 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,231 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:36:54,232 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,232 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:36:54,234 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,234 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:36:54,235 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,235 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:36:54,236 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,236 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:36:54,236 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,236 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:36:54,237 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,237 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:36:54,238 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,238 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:36:54,238 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,239 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:36:54,240 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,240 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:36:54,241 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,241 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:36:54,241 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,241 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:36:54,242 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,242 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:36:54,242 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,242 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:36:54,243 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,243 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:36:54,243 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,243 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:36:54,245 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,245 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:36:54,245 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,245 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:36:54,246 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,246 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:36:54,247 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,247 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:36:54,247 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,248 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:36:54,248 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,248 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:36:54,249 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,249 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:36:54,249 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,249 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:36:54,250 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,250 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:36:54,251 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,251 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:36:54,252 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,252 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:36:54,252 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:36:54,252 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:59:27,007 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,007 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:59:27,008 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,008 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:59:27,009 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,009 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:59:27,010 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,010 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:59:27,012 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,012 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:59:27,013 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,013 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:59:27,014 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,014 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:59:27,015 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,015 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:59:27,017 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,017 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:59:27,018 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,018 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:59:27,019 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,019 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:59:27,020 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,020 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:59:27,024 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,024 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:59:27,024 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,024 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:59:27,026 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,026 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:59:27,026 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,027 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:59:27,027 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,028 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:59:27,029 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,029 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:59:27,030 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,030 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:59:27,031 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,031 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:59:27,032 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,032 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:59:27,032 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,032 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:59:27,033 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,033 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:59:27,034 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,034 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:59:27,035 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,035 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:59:27,036 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,036 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:59:27,037 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,037 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:59:27,038 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,038 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:59:27,039 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,039 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:59:27,040 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,040 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:59:27,041 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,041 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:59:27,042 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,042 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:59:27,043 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,043 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:59:27,043 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,043 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:59:27,045 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,045 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:59:27,045 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,046 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:59:27,047 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,047 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:59:27,048 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,048 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:59:27,050 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,050 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:59:27,051 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,051 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:59:27,053 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,053 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:59:27,054 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,054 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:59:27,056 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,056 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:59:27,056 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,056 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:59:27,058 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,058 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:59:27,058 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,058 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:59:27,059 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,059 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:59:27,060 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,060 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:59:27,061 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,061 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:59:27,062 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,062 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 17:59:27,430 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,431 - semo.backend - INFO - List direct subtags operation not approved for tag '/'
+2026-04-08 17:59:27,432 - semo.validator - INFO - Tag Exists '/': False
+2026-04-08 17:59:27,433 - semo.backend - INFO - ["Tag '/' does not exist."]
+2026-04-08 18:20:30,845 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,853 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:20:30,855 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,855 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:20:30,856 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,856 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:20:30,857 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,857 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:20:30,858 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,858 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:20:30,859 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,859 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:20:30,860 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,860 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:20:30,861 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,861 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:20:30,862 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,862 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:20:30,862 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,862 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:20:30,863 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,863 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:20:30,864 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,864 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:20:30,865 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,865 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:20:30,866 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,866 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:20:30,867 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,867 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:20:30,867 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,867 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:20:30,869 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,869 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:20:30,869 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,869 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:20:30,870 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,870 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:20:30,871 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,871 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:20:30,871 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,871 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:20:30,872 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,872 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:20:30,873 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,873 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:20:30,873 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,873 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:20:30,874 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,874 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:20:30,875 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,875 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:20:30,876 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,876 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:20:30,877 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,877 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:20:30,877 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,878 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:20:30,878 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,878 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:20:30,879 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,879 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:20:30,879 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,879 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:20:30,880 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,881 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:20:30,881 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,881 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:20:30,882 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,882 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:20:30,882 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,883 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:20:30,884 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,884 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:20:30,885 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,885 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:20:30,886 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,886 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:20:30,886 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,886 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:20:30,887 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,888 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:20:30,890 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,890 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:20:30,891 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,891 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:20:30,891 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,891 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:20:30,892 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,892 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:20:30,892 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,892 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:20:30,893 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,893 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:20:30,894 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,894 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:20:30,895 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,895 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:20:30,895 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:20:30,895 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:21:23,281 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:21:23,281 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:21:23,283 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:21:23,283 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:21:36,105 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:21:36,105 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:21:36,106 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:21:36,106 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:38:16,639 - semo.validator - INFO - Tag Exists '.Trash': False
+2026-04-08 18:38:16,648 - semo.validator - INFO - Tag Exists '.xdg-volume-info': False
+2026-04-08 18:38:16,649 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,649 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:38:16,650 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,650 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:38:16,650 - semo.validator - INFO - Tag Exists 'autorun.inf': False
+2026-04-08 18:38:16,651 - semo.validator - INFO - Tag Exists '.Trash-1000': False
+2026-04-08 18:38:16,652 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,652 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:38:16,652 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,653 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:38:16,654 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,654 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:38:16,654 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,654 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:38:16,655 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,655 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:38:16,656 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,656 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:38:16,657 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,657 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:38:16,658 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,658 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:38:16,659 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,659 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:38:16,659 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,659 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:38:16,660 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,660 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:38:16,661 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,661 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:38:16,662 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,662 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:38:16,663 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,663 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:38:16,664 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,664 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:38:16,665 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,665 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:38:16,665 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,665 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:38:16,666 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,666 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:38:16,667 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,667 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:38:16,668 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,668 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:38:16,669 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,669 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:38:16,670 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,670 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:38:16,671 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,671 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:38:16,671 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,671 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:38:16,672 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,672 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:38:16,673 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,673 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:38:16,674 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,674 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:38:16,675 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,675 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:38:16,676 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,676 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:38:16,677 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,677 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:38:16,678 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,678 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:38:16,679 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,679 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:38:16,680 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,680 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:38:16,680 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,680 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:38:16,681 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,681 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:38:16,682 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,682 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:38:16,683 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,683 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:38:16,683 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,684 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:38:16,686 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,686 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:38:16,686 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,686 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:38:16,687 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,687 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:38:16,688 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,688 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:38:16,688 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,688 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:38:16,689 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,689 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:38:16,690 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,690 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:38:16,690 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,690 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:38:16,691 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,691 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:38:16,691 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,691 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:38:16,693 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,693 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:38:16,694 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:16,694 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:38:16,694 - semo.validator - INFO - Tag Exists 'autorun.inf': False
+2026-04-08 18:38:17,873 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:38:17,874 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:38:17,877 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:17,877 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:38:17,878 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:17,878 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:38:22,969 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:38:22,971 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:38:22,973 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:22,973 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:38:22,974 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:22,974 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:38:28,058 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:38:28,059 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:38:28,061 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:28,061 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:38:28,062 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:28,063 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:38:33,155 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:38:33,156 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:38:33,159 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:33,159 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:38:33,160 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:33,160 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:38:38,252 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:38:38,253 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:38:38,256 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:38,256 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:38:38,257 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:38,257 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:38:43,335 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:38:43,337 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:38:43,342 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:43,343 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:38:43,344 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:43,344 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:38:48,426 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:38:48,427 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:38:48,430 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:48,430 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:38:48,431 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:48,431 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:38:53,515 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:38:53,516 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:38:53,518 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:53,518 - semo.backend - INFO - List direct subtags operation not approved for tag ''
+2026-04-08 18:38:53,519 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:38:53,519 - semo.backend - INFO - ["Tag '' does not exist."]
+2026-04-08 18:40:03,406 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:03,406 - semo.validator - INFO - Tag Exists '.xdg-volume-info': False
+2026-04-08 18:40:03,408 - semo.validator - INFO - Tag Exists 'autorun.inf': False
+2026-04-08 18:40:03,408 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:03,409 - semo.validator - INFO - Tag Exists '.Trash': False
+2026-04-08 18:40:03,409 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:03,410 - semo.validator - INFO - Tag Exists '.Trash-1000': False
+2026-04-08 18:40:03,410 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:03,411 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:03,412 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:03,413 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:03,414 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:03,415 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:03,415 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:03,416 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:03,417 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:03,418 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:03,419 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:03,419 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:03,420 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:03,421 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:03,422 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:03,422 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:03,423 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:03,424 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:03,424 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:03,425 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:03,426 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:03,426 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:03,427 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:03,428 - semo.validator - INFO - Tag Exists 'autorun.inf': False
+2026-04-08 18:40:04,556 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:40:04,557 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:40:04,559 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:09,643 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:40:09,645 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:40:09,646 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:14,734 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:40:14,736 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:40:14,737 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:19,822 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:40:19,823 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:40:19,824 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:24,911 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:40:24,912 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:40:24,914 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:44,946 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:44,947 - semo.validator - INFO - Tag Exists '.Trash': False
+2026-04-08 18:40:44,948 - semo.validator - INFO - Tag Exists '.xdg-volume-info': False
+2026-04-08 18:40:44,948 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:44,949 - semo.validator - INFO - Tag Exists 'autorun.inf': False
+2026-04-08 18:40:44,949 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:44,950 - semo.validator - INFO - Tag Exists '.Trash-1000': False
+2026-04-08 18:40:44,950 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:44,951 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:44,952 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:44,952 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:44,953 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:44,954 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:44,955 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:44,956 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:44,956 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:44,957 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:44,958 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:44,959 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:44,960 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:44,960 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:44,961 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:44,961 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:44,962 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:44,963 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:44,964 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:44,964 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:44,965 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:44,966 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:44,966 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:44,967 - semo.validator - INFO - Tag Exists 'autorun.inf': False
+2026-04-08 18:40:47,344 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:40:47,346 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:40:47,348 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:40:52,432 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:40:52,433 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:40:52,434 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:42:39,443 - semo.validator - INFO - Tag Exists '.Trash': False
+2026-04-08 18:42:39,444 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:42:39,445 - semo.validator - INFO - Tag Exists '.xdg-volume-info': False
+2026-04-08 18:42:39,445 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:42:39,446 - semo.validator - INFO - Tag Exists 'autorun.inf': False
+2026-04-08 18:42:39,446 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:42:39,446 - semo.validator - INFO - Tag Exists '.Trash-1000': False
+2026-04-08 18:42:39,447 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:42:39,448 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:42:39,448 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:42:39,449 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:42:39,449 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:42:39,450 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:42:39,450 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:42:39,451 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:42:39,451 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:42:39,452 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:42:39,453 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:42:39,454 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:42:39,454 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:42:39,455 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:42:39,456 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:42:39,457 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:42:39,457 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:42:39,458 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:42:39,459 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:42:39,460 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:42:39,460 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:42:39,461 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:42:39,462 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:42:39,462 - semo.validator - INFO - Tag Exists 'autorun.inf': False
+2026-04-08 18:42:41,175 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:42:41,176 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:42:41,178 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:42:46,302 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:42:46,305 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:42:46,314 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:42:51,388 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:42:51,390 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:42:51,391 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:42:56,474 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:42:56,475 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:42:56,476 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:42:58,237 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:43:01,557 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:43:01,559 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:43:01,561 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:43:05,399 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:43:05,403 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:43:05,404 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:43:06,651 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:43:06,652 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:43:06,653 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:43:11,733 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:43:11,734 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:43:11,736 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:43:16,496 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:43:16,498 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:43:16,819 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:43:16,820 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:43:16,821 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:43:21,909 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:43:21,911 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:43:21,912 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:43:26,991 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:43:26,993 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:43:26,994 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:43:32,082 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:43:32,083 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:43:32,085 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:43:32,865 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:43:32,866 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:46:43,380 - semo.validator - INFO - Tag Exists '.Trash': False
+2026-04-08 18:46:43,381 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:46:43,381 - semo.validator - INFO - Tag Exists '.xdg-volume-info': False
+2026-04-08 18:46:43,381 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:46:43,382 - semo.validator - INFO - Tag Exists 'autorun.inf': False
+2026-04-08 18:46:43,382 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:46:43,382 - semo.validator - INFO - Tag Exists '.Trash-1000': False
+2026-04-08 18:46:43,383 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:46:43,383 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:46:43,383 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:46:43,384 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:46:43,384 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:46:43,385 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:46:43,385 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:46:43,386 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:46:43,389 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:46:43,390 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:46:43,393 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:46:43,393 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:46:43,394 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:46:43,395 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:46:43,396 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:46:43,397 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:46:43,397 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:46:43,398 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:46:43,398 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:46:43,398 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:46:43,399 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:46:43,399 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:46:43,400 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:46:43,401 - semo.validator - INFO - Tag Exists 'autorun.inf': False
+2026-04-08 18:46:44,516 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:46:44,517 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:46:44,518 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:46:49,598 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:46:49,599 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:46:49,600 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:46:54,677 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:46:54,678 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:46:54,679 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:46:58,563 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:46:59,767 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:46:59,768 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:46:59,769 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:47:04,863 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:47:04,864 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:47:04,865 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:47:09,947 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:47:09,950 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:47:09,951 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:47:15,040 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:47:15,040 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:47:15,041 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:47:20,126 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:47:20,126 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:47:20,127 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:47:23,816 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:47:25,215 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:47:25,216 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:47:25,217 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:47:25,241 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:47:25,241 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:47:30,300 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:47:30,301 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:47:30,302 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:47:35,389 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:47:35,390 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:47:35,391 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:47:40,479 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:47:40,480 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:47:40,481 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:47:42,084 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:47:42,085 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 18:47:45,562 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:47:45,563 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 18:47:45,564 - semo.validator - INFO - Tag Exists '': False
+2026-04-08 19:14:58,588 - semo.validator - INFO - Tag Exists '.Trash': False
+2026-04-08 19:14:58,588 - semo.validator - INFO - Tag Exists '.xdg-volume-info': False
+2026-04-08 19:14:58,589 - semo.validator - INFO - Tag Exists 'autorun.inf': False
+2026-04-08 19:14:58,590 - semo.validator - INFO - Tag Exists '.Trash-1000': False
+2026-04-08 19:14:58,611 - semo.validator - INFO - Tag Exists 'autorun.inf': False
+2026-04-08 19:14:59,718 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 19:14:59,719 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 19:15:04,809 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 19:15:04,810 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 19:15:09,900 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 19:15:09,901 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 19:15:14,964 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 19:15:14,965 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 19:15:20,049 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 19:15:20,050 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 19:15:25,130 - semo.validator - INFO - Tag Exists '.git': False
+2026-04-08 19:15:25,131 - semo.validator - INFO - Tag Exists '.git': False

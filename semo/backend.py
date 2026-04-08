@@ -1,6 +1,6 @@
 #!.venv/bin/python3
 
-from . import database as db, os_calls, validator as v, settings, errors
+from . import database as db, os_calls, validator as v, settings, errors, utils
 import logging 
 
 logger = logging.getLogger(__name__)
@@ -18,7 +18,7 @@ def command_TAG(file_name : str, tag_name : str) -> list[str]:
     except Exception as e:
         return [type(e).__name__ + ": " + str(e)]
 
-    database = db.Database(settings.database_path)
+    database = db.Database(utils.get_working_db())
     validator = v.Validator(database)
     
     permit = validator.approved_tag_operation(file_system, inode, file_name, tag_name)
@@ -44,7 +44,7 @@ def command_UNTAG(file_name : str, tag_name : str) -> list[str]:
     except Exception as e:
         return [type(e).__name__ + ": " + str(e)]
     
-    database = db.Database(settings.database_path)
+    database = db.Database(utils.get_working_db())
     validator = v.Validator(database)
     
     permit = validator.approved_untag_operation(file_system, inode, tag_name, file_name)
@@ -63,7 +63,7 @@ def command_UNTAG(file_name : str, tag_name : str) -> list[str]:
     return []
 
 def command_DEL_TAG(tag_name : str) -> list[str]:
-    database = db.Database(settings.database_path)
+    database = db.Database(utils.get_working_db())
     validator = v.Validator(database)
 
     permit = validator.approved_del_tag_operation(tag_name)
@@ -82,7 +82,7 @@ def command_DEL_TAG(tag_name : str) -> list[str]:
     return []
 
 def command_ASSIGN_SUBTAGS(superior_tag_name : str, inferior_tags : list[str]) -> list[str]:
-    database = db.Database(settings.database_path)
+    database = db.Database(utils.get_working_db())
     validator = v.Validator(database)
 
     failures = []
@@ -103,7 +103,7 @@ def command_ASSIGN_SUBTAGS(superior_tag_name : str, inferior_tags : list[str]) -
     return failures
 
 def command_UNASSIGN_SUBTAGS(superior_tag_name : str, inferior_tags : list[str]) -> list[str]:
-    database = db.Database(settings.database_path)
+    database = db.Database(utils.get_working_db())
     validator = v.Validator(database)
 
     failures = []
@@ -118,17 +118,17 @@ def command_UNASSIGN_SUBTAGS(superior_tag_name : str, inferior_tags : list[str])
     return failures
 
 def query_LIST_ALL_TAGS() -> set[str]:
-    database = db.Database(settings.database_path)
+    database = db.Database(utils.get_working_db())
     return database.get_tags()
 
 def query_LIST_TAGS_FOR_FILE(file_name : str) -> set[str]:
-    database = db.Database(settings.database_path)
+    database = db.Database(utils.get_working_db())
     try:
         file_system, inode = os_calls.retrieve_inode_from_path(file_name)
     except Exception as e:
         return {type(e).__name__ + ": " + str(e)}
     
-    database = db.Database(settings.database_path)
+    database = db.Database(utils.get_working_db())
     validator = v.Validator(database)
     permit = validator.approved_list_for_file_operation(file_system, inode, file_name)
     if not permit.approved:
@@ -139,7 +139,7 @@ def query_LIST_TAGS_FOR_FILE(file_name : str) -> set[str]:
     return output
 
 def query_LIST_FILES(query : str, long_format = False) -> set[str]:
-    database = db.Database(settings.database_path)
+    database = db.Database(utils.get_working_db())
     validator = v.Validator(database)
 
     if query:
@@ -189,8 +189,8 @@ def verified_path(file_system, inode, unconfirmed_path):
         logger.info(f"Failed to verify path for file ({file_system}, {inode}). Error: {type(e).__name__} - {str(e)}. Returning unconfirmed path '{unconfirmed_path}'")
         return f"File formerly at {unconfirmed_path}."
 
-def query_LIST_FILES_FOR_TAG(tag_name : str) -> set:
-    database = db.Database(settings.database_path)
+def query_LIST_FILES_FOR_TAG(tag_name : str, limit_to_direct : bool = False) -> set:
+    database = db.Database(utils.get_working_db())
     validator = v.Validator(database)
 
     permit = validator.approved_list_for_tag_operation(tag_name)
@@ -198,12 +198,15 @@ def query_LIST_FILES_FOR_TAG(tag_name : str) -> set:
         logger.info(permit.data)
         return set()
     
-    raw_output = database.get_files_for_tag(tag_name)
+    if limit_to_direct:
+        raw_output = database._direct_files_for_tag(tag_name)
+    else:
+        raw_output = database.get_files_for_tag(tag_name)
     user_output = { verified_path(file_system, inode, unconfirmed_path) for (file_system, inode, unconfirmed_path) in raw_output }
     return user_output
 
 def query_LIST_DIRECT_SUBTAGS(superior_tag_name : str) -> set[str]:
-    database = db.Database(settings.database_path)
+    database = db.Database(utils.get_working_db())
     validator = v.Validator(database)
 
     permit = validator.approved_list_for_tag_operation(superior_tag_name)
@@ -213,7 +216,7 @@ def query_LIST_DIRECT_SUBTAGS(superior_tag_name : str) -> set[str]:
     return database._direct_inferiors_for_tag(superior_tag_name)
     
 def query_LIST_ALL_SUBTAGS(root_tag_name : str) -> dict[str, dict]:
-    database = db.Database(settings.database_path)
+    database = db.Database(utils.get_working_db())
     validator = v.Validator(database)
 
     def get_subtag_dict(super_tag):
@@ -230,5 +233,5 @@ def query_LIST_ALL_SUBTAGS(root_tag_name : str) -> dict[str, dict]:
     return subtag_hierarchy
 
 def query_LIST_ROOTS() -> set[str]:
-    database = db.Database(settings.database_path)
+    database = db.Database(utils.get_working_db())
     return database.get_root_tags()

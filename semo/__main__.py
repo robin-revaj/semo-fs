@@ -41,6 +41,10 @@ def main():
     select_database_parser.add_argument("database_path", nargs='?', default="")
     select_database_parser.set_defaults(func=cli.interface_command_SELECTDB)
 
+    watcher_parser = subparsers.add_parser("watch", help="Watch a file or directory for changes and update tags accordingly")
+    watcher_parser.add_argument("path", nargs='?', default="")
+    watcher_parser.set_defaults(func=cli.interface_translate_WATCH)
+
     args = parser.parse_args()
     if not hasattr(args, "func"):
         parser.print_help()

@@ -3,7 +3,6 @@
 import os
 
 from . import backend, errors as e, settings
-import re
 
 def interface_translate_TAG(args):
     file_name : str = os.getcwd() + "/" + args.filename
@@ -81,10 +80,14 @@ def interface_translate_LISTSUBTAGS(args):
     print("Subtags for root '{0}': {1}".format(root_tag, output))
     return output
 
-def user_confirmation(message : str) -> bool:
-    pattern = re.compile("[Yy]+[Ee]?[Ss]?")
-    response : str = input(message + " (Y/n) ")
-    return re.fullmatch(pattern, response) is not None # TODO allow more response options
+def interface_translate_WATCH(args):
+    path : str = args.path
+    full_path = os.getcwd() + "/" + path
+    response = backend.command_WATCH(path)
+    if response == []:
+        return
+    print("Failed to watch due to reasons: ", response)
+    return
 
 def interface_command_SELECTDB(args):
     database_path : str = args.database_path

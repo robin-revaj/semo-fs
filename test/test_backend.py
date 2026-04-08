@@ -1,11 +1,13 @@
 import unittest
 import os
 from semo import backend
-from semo import database as db
+from semo import database as db, utils
 
 class TestCommandBackend(unittest.TestCase):
     def setUp(self):
-        self.DB = db.Database("test/data/testDB.db")
+        self.path = utils.get_test_db()
+        utils.set_working_db(self.path)
+        self.DB = db.Database(self.path)
         self.DB.init_create_script()
         self.loc = "test/data/"
         files = [open(self.loc + "file1.txt", "x"), open(self.loc + "file2.txt", "x"), open(self.loc + "file3.txt", "x")]
@@ -14,7 +16,8 @@ class TestCommandBackend(unittest.TestCase):
             self.files.append(f.name)
             f.close()
     def tearDown(self):
-        os.remove("test/data/testDB.db")
+        os.remove(self.path)
+        utils.set_working_db(utils.get_default_db())
         for f in self.files:
             os.remove(f)
 

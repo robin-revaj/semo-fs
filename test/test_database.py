@@ -1,14 +1,16 @@
 import unittest
 import os
-from semo import database as db 
+from semo import database as db, utils
 
 class TestDatabaseCommands(unittest.TestCase):
     def setUp(self):
-        self.path = "test/data/testDB.db"
+        self.path = utils.get_test_db()
+        utils.set_working_db(self.path)
         self.testDB = db.Database(self.path)
         self.testDB.init_create_script()
         self.file_system = 0
     def tearDown(self):
+        utils.set_working_db(utils.get_default_db())
         os.remove(self.path)
         
     def test_verify_empty_db(self):

@@ -23,31 +23,31 @@ class Validator:
     def __init__(self, database : database.Database):
         self.database = database
 
-    def __tag_exists(self, tag_name : str) -> bool:
+    def tag_exists(self, tag_name : str) -> bool:
         output = tag_name in self.database.get_tags()
         logger.info(f"Tag Exists '{tag_name}': {output}")
         return output
 
-    def __file_exists(self, file_system : int, inode : int) -> bool:
+    def file_exists(self, file_system : int, inode : int) -> bool:
         output = (file_system, inode) in self.database.get_files()
         logger.info(f"File Exists ({file_system}, {inode}): {output}")
         return output
 
-    def __file_has_tag(self, file_system : int, inode : int, tag_name : str) -> bool:
+    def file_has_tag(self, file_system : int, inode : int, tag_name : str) -> bool:
         output = tag_name in self.database._direct_tags_for_file(file_system, inode)
         logger.info(f"File ({file_system}, {inode}) has tag '{tag_name}': {output}")
         return output
-    def __file_indirectly_has_tag(self, file_system : int, inode : int, tag_name : str) -> bool:
+    def file_indirectly_has_tag(self, file_system : int, inode : int, tag_name : str) -> bool:
         output = tag_name in self.database.get_tags_for_file(file_system, inode)
         logger.info(f"File ({file_system}, {inode}) has tag '{tag_name}': {output}")
         return output
 
-    def __tag_has_direct_superiority(self, super_tag_name : str, inf_tag_name : str) -> bool:
+    def tag_has_direct_superiority(self, super_tag_name : str, inf_tag_name : str) -> bool:
         output = inf_tag_name in self.database._direct_inferiors_for_tag(super_tag_name)
         logger.info(f"Tag '{super_tag_name}' has direct superiority over '{inf_tag_name}': {output}")
         return output
 
-    def __tag_has_superiority(self, super_tag_name : str, inf_tag_name : str) -> bool:
+    def tag_has_superiority(self, super_tag_name : str, inf_tag_name : str) -> bool:
         # queue = self.database.list_subtags_for_tag(super_tag_name)
         
         # if inf_tag_name in queue:
@@ -91,17 +91,17 @@ class Validator:
 
     def approved_tag_operation(self, file_system, inode, filepath, tag) -> Validation:
         permit = Validation()
-        if not self.__tag_exists(tag):
+        if not self.tag_exists(tag):
             logger.info(f"Tag '{tag}' does not exist. Creating tag record.")
             self.database.new_tag(tag)
 
-        if not self.__file_exists(file_system, inode):
+        if not self.file_exists(file_system, inode):
             logger.info(f"File ({file_system}, {inode}) not in database. Creating file record.")
             self.database.new_file(file_system, inode, filepath)
         else:
             self.__refresh_path_from_access(file_system, inode, filepath)
 
-        permit.approved = not self.__file_indirectly_has_tag(file_system, inode, tag)
+        permit.approved = not self.file_indirectly_has_tag(file_system, inode, tag)
         if not permit.approved:
             permit.data.append(f"{filepath} already tagged {tag}")
         logger.info(f"Approval for tag operation for file ({file_system}, {inode}) and tag '{tag}': {permit.approved}")
@@ -109,12 +109,12 @@ class Validator:
 
     def approved_untag_operation(self, file_system, inode, tag, filepath) -> Validation:
         permit = Validation()
-        if not self.__file_exists(file_system, inode):
+        if not self.file_exists(file_system, inode):
             permit.approved = False
             permit.data.append(f"{filepath} does not exist in database.")
             return permit
         self.__refresh_path_from_access(file_system, inode, filepath)
-        if not self.__file_indirectly_has_tag(file_system, inode, tag):
+        if not self.file_indirectly_has_tag(file_system, inode, tag):
             permit.approved = False
             permit.data.append(f"{filepath} is not tagged {tag}")
             return permit
@@ -130,12 +130,12 @@ class Validator:
 
     def approved_direct_untag_operation(self, file_system, inode, tag, filepath) -> Validation:
         permit = Validation()
-        if not self.__file_exists(file_system, inode):
+        if not self.file_exists(file_system, inode):
             permit.approved = False
             permit.data.append(f"{filepath} does not exist in database.")
             return permit
         self.__refresh_path_from_access(file_system, inode, filepath)
-        if not self.__file_has_tag(file_system, inode, tag):
+        if not self.file_has_tag(file_system, inode, tag):
             permit.approved = False
             permit.data.append(f"{filepath} is not tagged {tag}")
         
@@ -143,7 +143,7 @@ class Validator:
         return permit
 
     def approved_list_for_tag_operation(self, tag_name) -> Validation:
-        permit = Validation(self.__tag_exists(tag_name))
+        permit = Validation(self.tag_exists(tag_name))
         
         if not permit.approved:
             permit.data.append(f"Tag '{tag_name}' does not exist.")
@@ -151,7 +151,7 @@ class Validator:
         return permit
 
     def approved_list_for_file_operation(self, file_system, inode, filepath) -> Validation:
-        permit = Validation(self.__file_exists(file_system, inode))
+        permit = Validation(self.file_exists(file_system, inode))
         logger.info(f"Approval for list for file operation for file ({file_system}, {inode}): {permit.approved}")
         if not permit.approved:
             permit.data.append(f"'{filepath}' does not exist in database.")
@@ -160,7 +160,7 @@ class Validator:
         return permit
 
     def approved_del_tag_operation(self, tag_name) -> Validation:
-        permit = Validation(self.__tag_exists(tag_name))
+        permit = Validation(self.tag_exists(tag_name))
         logger.info(f"Approval for delete tag operation for tag '{tag_name}': {permit.approved}")
         if not permit.approved:
             permit.data.append(f"Tag '{tag_name}' does not exist.")
@@ -174,18 +174,18 @@ class Validator:
             permit.data.append("Cannot assign tag as subtag of itself.")
             logger.info(f"Approval for subtag operation for superior tag '{super_tag_name}' and inferior tag '{inf_tag_name}': {permit.approved}")
             return permit
-        if not self.__tag_exists(super_tag_name):
+        if not self.tag_exists(super_tag_name):
             permit.approved = False
             permit.data.append(f"Superior tag '{super_tag_name}' does not exist.")
-        if not self.__tag_exists(inf_tag_name):
+        if not self.tag_exists(inf_tag_name):
             permit.approved = False
             permit.data.append(f"Inferior tag '{inf_tag_name}' does not exist.")
 
         if permit.approved:
-            if self.__tag_has_superiority(super_tag_name, inf_tag_name):
+            if self.tag_has_superiority(super_tag_name, inf_tag_name):
                 permit.approved = False
                 permit.data.append(f"Tag '{super_tag_name}' already has superiority over '{inf_tag_name}'.")
-            elif self.__tag_has_superiority(inf_tag_name, super_tag_name):
+            elif self.tag_has_superiority(inf_tag_name, super_tag_name):
                 permit.approved = False
                 permit.data.append(f"Tag '{inf_tag_name}' already has superiority over '{super_tag_name}' - denied cycle.")
     
@@ -194,14 +194,14 @@ class Validator:
 
     def approved_unsubtag_operation(self, super_tag_name, inf_tag_name) -> Validation:
         permit = Validation()
-        if not self.__tag_exists(super_tag_name):
+        if not self.tag_exists(super_tag_name):
             permit.approved = False
             permit.data.append(f"Superior tag '{super_tag_name}' does not exist.")
-        if not self.__tag_exists(inf_tag_name):
+        if not self.tag_exists(inf_tag_name):
             permit.approved = False
             permit.data.append(f"Inferior tag '{inf_tag_name}' does not exist.")
         if permit.approved:
-            if not self.__tag_has_direct_superiority(super_tag_name, inf_tag_name):
+            if not self.tag_has_direct_superiority(super_tag_name, inf_tag_name):
                 permit.approved = False
                 permit.data.append(f"Tag '{super_tag_name}' does not have direct superiority over '{inf_tag_name}'.")
         logger.info(f"Approval for unsubtag operation for superior tag '{super_tag_name}' and inferior tag '{inf_tag_name}': {permit.approved}")
