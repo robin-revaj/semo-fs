@@ -1,18 +1,12 @@
-#!/usr/bin/env python3
+#!.venv/bin/python3
 
 import argparse
 from . import interface as cli
 
-# TODO refactor to use a config file for settings
-# TODO add logging
-# TODO rewrite interface for changes in backend
-# TODO handle missing database file
-
-
 def main():
     parser = argparse.ArgumentParser()
 
-    subparsers = parser.add_subparsers(help="subcommand help")
+    subparsers = parser.add_subparsers(help="Welcome to the help page")
 
     tag_parser = subparsers.add_parser("tag", help="assign to file [filename] tag [tagname]")
     tag_parser.add_argument("filename")
@@ -30,6 +24,7 @@ def main():
 
     list_files_parser = subparsers.add_parser("list_files", help="list all files or list files for given tags")
     list_files_parser.add_argument("-q", "--query", nargs='?', default="")
+    list_files_parser.add_argument("-l", "--long", action="store_true", help="display long format")
     list_files_parser.set_defaults(func=cli.interface_translate_LISTFILES)
 
     delete_tag_parser = subparsers.add_parser("del_tag", help="delete tag [tagname] from all files")
@@ -47,6 +42,9 @@ def main():
     select_database_parser.set_defaults(func=cli.interface_command_SELECTDB)
 
     args = parser.parse_args()
+    if not hasattr(args, "func"):
+        parser.print_help()
+        return
     args.func(args)
 
 if __name__ == "__main__":

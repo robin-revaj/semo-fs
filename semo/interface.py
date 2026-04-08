@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!.venv/bin/python3
 
 import os
 
@@ -28,19 +28,22 @@ def interface_translate_UNTAG(args):
     return
 
 def interface_translate_LISTTAGS(args):
-    file_name : str = os.getcwd() + "/" + args.filename
-    if file_name:
+    if args.filename:
+        file_name : str = os.getcwd() + "/" + args.filename
         output = backend.query_LIST_TAGS_FOR_FILE(file_name) 
         print("File {0} tagged with: {1}".format(file_name, output))
         return output
     output1 = backend.query_LIST_ALL_TAGS()
     print("All existing tags: {0}".format(output1))
-
     return output1
 
 def interface_translate_LISTFILES(args):
     query : str = args.query
-    output = backend.query_LIST_FILES(query)
+    if hasattr(args, "long"):
+        long_format : bool = args.long
+    else:
+        long_format = False
+    output = backend.query_LIST_FILES(query, long_format)
     if query:
         print("Files corresponding: {0}".format(output))
     else:

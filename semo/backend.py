@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!.venv/bin/python3
 
 from . import database as db, os_calls, validator as v, settings, errors
 import logging 
@@ -89,7 +89,7 @@ def command_ASSIGN_SUBTAGS(superior_tag_name : str, inferior_tags : list[str]) -
     for inferior_tag_name in inferior_tags:
         permit = validator.approved_subtag_operation(superior_tag_name, inferior_tag_name)
         if not permit.approved:
-            failures.append((inferior_tag_name, permit.data))
+            failures.append((f"for pair {superior_tag_name}, {inferior_tag_name}", permit.data))
             logger.info(f"Assign subtag operation not approved for superior tag '{superior_tag_name}' and inferior tag '{inferior_tag_name}'")
             continue
         database.new_rel_tag_tag(superior_tag_name, inferior_tag_name)
@@ -111,7 +111,7 @@ def command_UNASSIGN_SUBTAGS(superior_tag_name : str, inferior_tags : list[str])
         permit = validator.approved_unsubtag_operation(superior_tag_name, inferior_tag_name)
         if not permit.approved:
             logger.info(f"Unassign subtag operation not approved for superior tag '{superior_tag_name}' and inferior tag '{inferior_tag_name}'")
-            failures.append((inferior_tag_name, permit.data))
+            failures.append((f"for pair {superior_tag_name}, {inferior_tag_name}", permit.data))
             continue
         database.delete_rel_tag_tag(superior_tag_name, inferior_tag_name)
         logger.info(f"Unassigned inferior tag '{inferior_tag_name}' from superior tag '{superior_tag_name}'")
@@ -138,7 +138,7 @@ def query_LIST_TAGS_FOR_FILE(file_name : str) -> set[str]:
     output = database.get_tags_for_file(file_system, inode)
     return output
 
-def query_LIST_FILES(query : str) -> set[str]:
+def query_LIST_FILES(query : str, long_format = False) -> set[str]:
     database = db.Database(settings.database_path)
     validator = v.Validator(database)
 
@@ -148,7 +148,10 @@ def query_LIST_FILES(query : str) -> set[str]:
 
     logger.info(f"List files operation with empty query. Outputting all files.")
     raw_output = database.get_files_with_paths()
-    user_output = { verified_path(file_system, inode, unconfirmed_path) for (file_system, inode, unconfirmed_path) in raw_output }
+    if long_format:
+        user_output = { (file_system, inode, verified_path(file_system, inode, unconfirmed_path)) for (file_system, inode, unconfirmed_path) in raw_output }
+    else:
+        user_output = { verified_path(file_system, inode, unconfirmed_path) for (file_system, inode, unconfirmed_path) in raw_output }
     return user_output
 
 def process_query_instruction(level_data):
@@ -180,11 +183,11 @@ def verified_path(file_system, inode, unconfirmed_path):
     try:
         file_system_check, inode_check = os_calls.retrieve_inode_from_path(unconfirmed_path)
         if file_system_check != file_system or inode_check != inode:
-            raise errors.NecessaryUpstreamInterrupt(f"File no longer available at {unconfirmed_path}.")
+            return f"File formerly at {unconfirmed_path}."
         return unconfirmed_path
     except Exception as e:
         logger.info(f"Failed to verify path for file ({file_system}, {inode}). Error: {type(e).__name__} - {str(e)}. Returning unconfirmed path '{unconfirmed_path}'")
-        raise errors.NecessaryUpstreamInterrupt(f"File no longer available at {unconfirmed_path}.")
+        return f"File formerly at {unconfirmed_path}."
 
 def query_LIST_FILES_FOR_TAG(tag_name : str) -> set:
     database = db.Database(settings.database_path)

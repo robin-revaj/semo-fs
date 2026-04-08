@@ -1,9 +1,7 @@
 import unittest
 import os
-
 from semo import backend
 from semo import database as db
-
 
 class TestCommandBackend(unittest.TestCase):
     def setUp(self):

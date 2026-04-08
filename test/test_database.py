@@ -25,6 +25,7 @@ class TestDatabaseCommands(unittest.TestCase):
 
         correct_db = db.Database("test/data/correctDB.db")
         self.assertTrue(correct_db.verify_db())
+        os.remove("test/data/correctDB.db")
 
     def test_verify_incorrect_db(self):
         con = db.sql.connect("test/data/incorrectDB.db")

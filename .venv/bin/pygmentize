@@ -1,0 +1,8 @@
+#!/bin/sh
+'''exec' "/home/mercury/Documents/Motherboard/University/Year 3/BC_THESIS/semo_root/.venv/bin/python3" "$0" "$@"
+' '''
+import sys
+from pygments.cmdline import main
+if __name__ == '__main__':
+    sys.argv[0] = sys.argv[0].removesuffix('.exe')
+    sys.exit(main())

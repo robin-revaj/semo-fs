@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!.venv/bin/python3
 
 from . import database, settings
 import pyparsing
@@ -113,6 +113,7 @@ class Validator:
             permit.approved = False
             permit.data.append(f"{filepath} does not exist in database.")
             return permit
+        self.__refresh_path_from_access(file_system, inode, filepath)
         if not self.__file_indirectly_has_tag(file_system, inode, tag):
             permit.approved = False
             permit.data.append(f"{filepath} is not tagged {tag}")
@@ -132,31 +133,38 @@ class Validator:
         if not self.__file_exists(file_system, inode):
             permit.approved = False
             permit.data.append(f"{filepath} does not exist in database.")
-        elif not self.__file_has_tag(file_system, inode, tag):
+            return permit
+        self.__refresh_path_from_access(file_system, inode, filepath)
+        if not self.__file_has_tag(file_system, inode, tag):
             permit.approved = False
             permit.data.append(f"{filepath} is not tagged {tag}")
+        
         logger.info(f"Approval for direct untag operation for file ({file_system}, {inode}) and tag '{tag}': {permit.approved}")
         return permit
 
     def approved_list_for_tag_operation(self, tag_name) -> Validation:
         permit = Validation(self.__tag_exists(tag_name))
+        
         if not permit.approved:
             permit.data.append(f"Tag '{tag_name}' does not exist.")
-        logger.info(f"Approval for list for tag operation for tag '{tag_name}': {permit.approved}")
+        
         return permit
 
     def approved_list_for_file_operation(self, file_system, inode, filepath) -> Validation:
         permit = Validation(self.__file_exists(file_system, inode))
+        logger.info(f"Approval for list for file operation for file ({file_system}, {inode}): {permit.approved}")
         if not permit.approved:
             permit.data.append(f"'{filepath}' does not exist in database.")
-        logger.info(f"Approval for list for file operation for file ({file_system}, {inode}): {permit.approved}")
+            return permit
+        self.__refresh_path_from_access(file_system, inode, filepath)
         return permit
 
     def approved_del_tag_operation(self, tag_name) -> Validation:
         permit = Validation(self.__tag_exists(tag_name))
+        logger.info(f"Approval for delete tag operation for tag '{tag_name}': {permit.approved}")
         if not permit.approved:
             permit.data.append(f"Tag '{tag_name}' does not exist.")
-        logger.info(f"Approval for delete tag operation for tag '{tag_name}': {permit.approved}")
+        
         return permit
 
     def approved_subtag_operation(self, super_tag_name, inf_tag_name) -> Validation:
