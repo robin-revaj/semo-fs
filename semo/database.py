@@ -173,13 +173,13 @@ class Database:
                                     LEFT JOIN tag ON r.tag_id == tag.id", (self.__get_file_id(fsid, inode),))
         return {x[0] for x in res.fetchall()}
 
-    def _direct_files_for_tag(self, tag_name : str) -> set[tuple[int, int, str]]:
-        res = self.__connection().cursor().execute("SELECT file.fsid, file.inode, file.path FROM (\
+    def _direct_files_for_tag(self, tag_name : str) -> set[tuple[int, int, str, int]]:
+        res = self.__connection().cursor().execute("SELECT file.fsid, file.inode, file.path, file.id FROM (\
                                             SELECT rel_file_tag.tag_id, rel_file_tag.file_id \
                                             FROM rel_file_tag LEFT JOIN tag ON rel_file_tag.tag_id == tag.id\
                                             WHERE tag.id == ?) AS r\
                                         LEFT JOIN file ON r.file_id == file.id", (self.__get_tag_id(tag_name),))
-        return {(x[0], x[1], x[2]) for x in res.fetchall()}
+        return {(x[0], x[1], x[2], x[3]) for x in res.fetchall()}
 
     def _direct_inferiors_for_tag(self, tag_name : str) -> set[str]:
         res = self.__connection().cursor().execute("SELECT tag.name FROM (\
@@ -217,7 +217,7 @@ class Database:
             output.update(self.get_superiors_tree(t))
         return output
     
-    def get_files_for_tag(self, tag_name : str) -> set[tuple[int, int, str]]:
+    def get_files_for_tag(self, tag_name : str) -> set[tuple[int, int, str, int]]:
         output = self._direct_files_for_tag(tag_name)
         for rel in self.get_inferiors_tree(tag_name):
             output.update(self._direct_files_for_tag(rel))
@@ -268,3 +268,8 @@ class Database:
         res = self.__connection().cursor().execute("SELECT fsid, inode, path FROM file WHERE path == ?", (path,))
         if res is not None:
             return res.fetchall()
+        
+    def get_file_by_id(self, entry_id : int):
+        res = self.__connection().cursor().execute("SELECT fsid, inode, path, id FROM file WHERE id == ?", (entry_id,))
+        if res is not None:
+            return res.fetchone()

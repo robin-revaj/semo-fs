@@ -75,7 +75,7 @@ def delete_tag(tag_name : str) -> list[str]:
     database.delete_tag(tag_name)
     logger.info(f"Deleted tag '{tag_name}' from database.")
 
-    for (file_system, inode, filename) in affected_files:
+    for (file_system, inode, filename, id) in affected_files:
         if validator.file_is_isolated(file_system, inode):
             logger.info(f"File is now isolated. Deleting file record.")
             database.delete_file(file_system, inode)
@@ -95,7 +95,7 @@ def connect_subtags(superior_tag_name : str, inferior_tags : list[str]) -> list[
         database.new_rel_tag_tag(superior_tag_name, inferior_tag_name)
         logger.info(f"Assigned inferior tag '{inferior_tag_name}' to superior tag '{superior_tag_name}'")
 
-        for (file_system, inode, unconfirmed_path) in database._direct_files_for_tag(inferior_tag_name):
+        for (file_system, inode, unconfirmed_path, id) in database._direct_files_for_tag(inferior_tag_name):
             permit = validator.approved_direct_untag_operation(file_system, inode, superior_tag_name, unconfirmed_path)
             if permit.approved:
                 database.delete_rel_file_tag(file_system, inode, superior_tag_name)
@@ -201,7 +201,7 @@ def get_files_for_tag_DIRECT(tag_name : str, long_format : bool = False) -> set:
     raw_output = database._direct_files_for_tag(tag_name)
     if long_format:
         return raw_output
-    return { unconfirmed_path for (file_system, inode, unconfirmed_path) in raw_output }
+    return { unconfirmed_path for (file_system, inode, unconfirmed_path, id) in raw_output }
 
 def get_files_for_tag(tag_name : str, limit_to_direct : bool = False, long_format : bool = False) -> set:
     database = db.Database(utils.get_working_db())
@@ -216,7 +216,7 @@ def get_files_for_tag(tag_name : str, limit_to_direct : bool = False, long_forma
     raw_output = database.get_files_for_tag(tag_name)
     if long_format:
         return raw_output
-    user_output = { unconfirmed_path for (file_system, inode, unconfirmed_path) in raw_output }
+    user_output = { unconfirmed_path for (file_system, inode, unconfirmed_path, id) in raw_output }
     return user_output
 
 def get_subtags_DIRECT(superior_tag_name : str) -> set[str]:
@@ -250,3 +250,7 @@ def get_subtags(root_tag_name : str) -> dict[str, dict]:
 def get_roots() -> set[str]:
     database = db.Database(utils.get_working_db())
     return database.get_root_tags()
+
+def get_file_by_id(id : int) -> tuple[int, int, str, int] | None:
+    database = db.Database(utils.get_working_db())
+    return database.get_file_by_id(id)
