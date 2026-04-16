@@ -21,3 +21,9 @@ def get_default_db() -> str:
 
 def get_fs_mount_point() -> str:
     return config['DEFAULT']['fs_mount_point']
+
+def get_log_file() -> str:
+    return 'semo.log'
+
+def get_log_format() -> str:
+    return '%(name)s %(levelname)s (%(asctime)s) - %(message)s'

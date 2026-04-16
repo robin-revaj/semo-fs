@@ -12,7 +12,7 @@ file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelnam
 
 logger.addHandler(file_handler)
 
-def command_TAG(file_name : str, tag_name : str) -> list[str]:
+def connect_tag(file_name : str, tag_name : str) -> list[str]:
     try:
         file_system, inode = os_calls.retrieve_inode_from_path(file_name)
     except Exception as e:
@@ -34,11 +34,11 @@ def command_TAG(file_name : str, tag_name : str) -> list[str]:
 
     for original_tag in original_tags:
         if original_tag in known_superiors:
-            command_UNTAG(file_name, original_tag)
+            disconnect_tag(file_name, original_tag)
 
     return []
 
-def command_UNTAG(file_name : str, tag_name : str) -> list[str]:
+def disconnect_tag(file_name : str, tag_name : str) -> list[str]:
     try:
         file_system, inode = os_calls.retrieve_inode_from_path(file_name)
     except Exception as e:
@@ -62,7 +62,7 @@ def command_UNTAG(file_name : str, tag_name : str) -> list[str]:
         database.delete_file(file_system, inode)
     return []
 
-def command_DEL_TAG(tag_name : str) -> list[str]:
+def delete_tag(tag_name : str) -> list[str]:
     database = db.Database(utils.get_working_db())
     validator = v.Validator(database)
 
@@ -81,7 +81,7 @@ def command_DEL_TAG(tag_name : str) -> list[str]:
             database.delete_file(file_system, inode)
     return []
 
-def command_ASSIGN_SUBTAGS(superior_tag_name : str, inferior_tags : list[str]) -> list[str]:
+def connect_subtags(superior_tag_name : str, inferior_tags : list[str]) -> list[str]:
     database = db.Database(utils.get_working_db())
     validator = v.Validator(database)
 
@@ -102,7 +102,7 @@ def command_ASSIGN_SUBTAGS(superior_tag_name : str, inferior_tags : list[str]) -
             logger.info(f"Untagged file ({unconfirmed_path}) from subtag '{superior_tag_name}'")
     return failures
 
-def command_UNASSIGN_SUBTAGS(superior_tag_name : str, inferior_tags : list[str]) -> list[str]:
+def disconnect_subtags(superior_tag_name : str, inferior_tags : list[str]) -> list[str]:
     database = db.Database(utils.get_working_db())
     validator = v.Validator(database)
 
@@ -117,11 +117,11 @@ def command_UNASSIGN_SUBTAGS(superior_tag_name : str, inferior_tags : list[str])
         logger.info(f"Unassigned inferior tag '{inferior_tag_name}' from superior tag '{superior_tag_name}'")
     return failures
 
-def query_LIST_ALL_TAGS() -> set[str]:
+def get_all_tags() -> set[str]:
     database = db.Database(utils.get_working_db())
     return database.get_tags()
 
-def query_LIST_TAGS_FOR_FILE(file_name : str) -> set[str]:
+def get_tags_for_file(file_name : str) -> set[str]:
     database = db.Database(utils.get_working_db())
     try:
         file_system, inode = os_calls.retrieve_inode_from_path(file_name)
@@ -138,7 +138,7 @@ def query_LIST_TAGS_FOR_FILE(file_name : str) -> set[str]:
     output = database.get_tags_for_file(file_system, inode)
     return output
 
-def query_LIST_FILES(query : str, long_format = False) -> set[str]:
+def query_files(query : str, long_format = False) -> set[str]:
     database = db.Database(utils.get_working_db())
     validator = v.Validator(database)
 
@@ -158,7 +158,7 @@ def process_query_instruction(level_data):
     if isinstance(level_data, set):
         return level_data
     if isinstance(level_data, str):
-        return query_LIST_FILES_FOR_TAG(level_data)
+        return get_files_for_tag(level_data)
     
     if len(level_data) == 1:
         return process_query_instruction(level_data[0])
@@ -189,33 +189,48 @@ def verified_path(file_system, inode, unconfirmed_path):
         logger.info(f"Failed to verify path for file ({file_system}, {inode}). Error: {type(e).__name__} - {str(e)}. Returning unconfirmed path '{unconfirmed_path}'")
         return f"File formerly at {unconfirmed_path}."
 
-def query_LIST_FILES_FOR_TAG(tag_name : str, limit_to_direct : bool = False) -> set:
+def get_files_for_tag_DIRECT(tag_name : str, long_format : bool = False) -> set:
     database = db.Database(utils.get_working_db())
     validator = v.Validator(database)
 
     permit = validator.approved_list_for_tag_operation(tag_name)
+    logger.info(f"Approved - List files for tag direct operation ({tag_name}) : {permit.approved}")
+    if not permit.approved:
+        logger.info(permit.data)
+        return set()
+    raw_output = database._direct_files_for_tag(tag_name)
+    if long_format:
+        return raw_output
+    return { unconfirmed_path for (file_system, inode, unconfirmed_path) in raw_output }
+
+def get_files_for_tag(tag_name : str, limit_to_direct : bool = False, long_format : bool = False) -> set:
+    database = db.Database(utils.get_working_db())
+    validator = v.Validator(database)
+
+    permit = validator.approved_list_for_tag_operation(tag_name)
+    logger.info(f"Approved - List files for tag operation ({tag_name}) : {permit.approved}")
     if not permit.approved:
         logger.info(permit.data)
         return set()
     
-    if limit_to_direct:
-        raw_output = database._direct_files_for_tag(tag_name)
-    else:
-        raw_output = database.get_files_for_tag(tag_name)
-    user_output = { verified_path(file_system, inode, unconfirmed_path) for (file_system, inode, unconfirmed_path) in raw_output }
+    raw_output = database.get_files_for_tag(tag_name)
+    if long_format:
+        return raw_output
+    user_output = { unconfirmed_path for (file_system, inode, unconfirmed_path) in raw_output }
     return user_output
 
-def query_LIST_DIRECT_SUBTAGS(superior_tag_name : str) -> set[str]:
+def get_subtags_DIRECT(superior_tag_name : str) -> set[str]:
     database = db.Database(utils.get_working_db())
     validator = v.Validator(database)
 
     permit = validator.approved_list_for_tag_operation(superior_tag_name)
+    logger.info(f"Approved - List direct subtags operation ({superior_tag_name}) : {permit.approved}")
     if not permit.approved:
-        logger.info(f"List direct subtags operation not approved for tag '{superior_tag_name}'")
+        logger.info(permit.data)
         return set()
     return database._direct_inferiors_for_tag(superior_tag_name)
     
-def query_LIST_ALL_SUBTAGS(root_tag_name : str) -> dict[str, dict]:
+def get_subtags(root_tag_name : str) -> dict[str, dict]:
     database = db.Database(utils.get_working_db())
     validator = v.Validator(database)
 
@@ -232,6 +247,6 @@ def query_LIST_ALL_SUBTAGS(root_tag_name : str) -> dict[str, dict]:
     subtag_hierarchy = get_subtag_dict(root_tag_name)
     return subtag_hierarchy
 
-def query_LIST_ROOTS() -> set[str]:
+def get_roots() -> set[str]:
     database = db.Database(utils.get_working_db())
     return database.get_root_tags()

@@ -16,7 +16,7 @@ class Database:
 
     def verify_db(self):
         required_tables = {'tag', 'file', 'rel_file_tag', 'rel_tag_tag'}
-        required_indices = {'idx_tag', 'idx_file', 'idx_rel_ft', 'idx_rel_tt'}
+        required_indices = {'idx_tag', 'idx_file_inode', 'idx_file_path', 'idx_rel_ft', 'idx_rel_tt'}
 
         conn = self.__connection()
         res = conn.cursor().execute("SELECT name FROM sqlite_master WHERE type='table'")
@@ -35,7 +35,7 @@ class Database:
         if set(x[0] for x in tag_columns.fetchall()) != {'id', 'name'}:
             return False
         file_columns = conn.cursor().execute("SELECT name FROM PRAGMA_TABLE_INFO('file')")
-        if set(x[0] for x in file_columns.fetchall()) != {'id', 'file_system', 'inode', 'path'}:
+        if set(x[0] for x in file_columns.fetchall()) != {'id', 'fsid', 'inode', 'path'}:
             return False
         rel_file_tag_columns = conn.cursor().execute("SELECT name FROM PRAGMA_TABLE_INFO('rel_file_tag')")
         if set(x[0] for x in rel_file_tag_columns.fetchall()) != {'id', 'file_id', 'tag_id'}:
@@ -58,12 +58,13 @@ class Database:
 
         conn.cursor().execute("CREATE TABLE IF NOT EXISTS file(\
                               id INTEGER PRIMARY KEY, \
-                              file_system INTEGER NOT NULL, \
+                              fsid INTEGER NOT NULL, \
                               inode INTEGER NOT NULL, \
                               path VARCHAR(255), \
-                              UNIQUE (file_system, inode)\
+                              UNIQUE (fsid, inode)\
                               )")
-        conn.cursor().execute("CREATE INDEX IF NOT EXISTS idx_file ON file (file_system, inode)")
+        conn.cursor().execute("CREATE INDEX IF NOT EXISTS idx_file_inode ON file (inode, fsid)")
+        conn.cursor().execute("CREATE INDEX IF NOT EXISTS idx_file_path ON file (path)")
 
         conn.cursor().execute("CREATE TABLE IF NOT EXISTS rel_file_tag(\
                               id INTEGER PRIMARY KEY, \
@@ -98,8 +99,8 @@ class Database:
     def __get_tag_id(self, tag_name : str) -> int:
         res = self.__connection().cursor().execute("SELECT id FROM tag WHERE name == ?", (tag_name,))
         return res.fetchone()[0]
-    def __get_file_id(self, file_system, inode : int) -> int:
-        res = self.__connection().cursor().execute("SELECT id FROM file WHERE file_system == ? AND inode == ?", (file_system, inode))
+    def __get_file_id(self, fsid, inode : int) -> int:
+        res = self.__connection().cursor().execute("SELECT id FROM file WHERE fsid == ? AND inode == ?", (fsid, inode))
         return res.fetchone()[0]
     def __get_rel_file_tag_id(self, tag_id : int, file_id : int) -> int:
         res = self.__connection().cursor().execute("SELECT id FROM rel_file_tag WHERE tag_id == ? AND file_id == ?", (tag_id, file_id))
@@ -129,26 +130,26 @@ class Database:
         conn.cursor().execute("DELETE FROM rel_tag_tag WHERE superior_id == ? OR inferior_id == ?", (id_to_delete, id_to_delete))
         conn.commit()
 
-    def new_file(self, file_system : int, inode : int, path : str):
+    def new_file(self, fsid : int, inode : int, path : str):
         conn = self.__connection()
-        conn.cursor().execute("INSERT INTO file VALUES (NULL, ?, ?, ?)", (file_system, inode, path))
+        conn.cursor().execute("INSERT INTO file VALUES (NULL, ?, ?, ?)", (fsid, inode, path))
         conn.commit()
-    def delete_file(self, file_system : int, inode : int):
+    def delete_file(self, fsid : int, inode : int):
         conn = self.__connection()
-        id_to_delete = self.__get_file_id(file_system, inode)
-        conn.cursor().execute("DELETE FROM file WHERE file_system == ? AND inode == ?", (file_system, inode))
+        id_to_delete = self.__get_file_id(fsid, inode)
+        conn.cursor().execute("DELETE FROM file WHERE fsid == ? AND inode == ?", (fsid, inode))
         conn.cursor().execute("DELETE FROM rel_file_tag WHERE file_id == ?", (id_to_delete,))
         conn.commit()
     
-    def new_rel_file_tag(self, file_system : int, inode : int, tag_name : str):
+    def new_rel_file_tag(self, fsid : int, inode : int, tag_name : str):
         conn = self.__connection()
-        conn.cursor().execute("INSERT INTO rel_file_tag VALUES(NULL, ?, ?)", (self.__get_file_id(file_system, inode), self.__get_tag_id(tag_name)))
+        conn.cursor().execute("INSERT INTO rel_file_tag VALUES(NULL, ?, ?)", (self.__get_file_id(fsid, inode), self.__get_tag_id(tag_name)))
         conn.commit()
-    def delete_rel_file_tag(self, file_system : int, inode : int, tag_name : str):
+    def delete_rel_file_tag(self, fsid : int, inode : int, tag_name : str):
         conn = self.__connection()
         conn.cursor().execute("DELETE FROM rel_file_tag \
                               WHERE file_id == ? \
-                              AND tag_id == ?", (self.__get_file_id(file_system, inode), self.__get_tag_id(tag_name)))
+                              AND tag_id == ?", (self.__get_file_id(fsid, inode), self.__get_tag_id(tag_name)))
         conn.commit()
 
     def new_rel_tag_tag(self, superior_tag : str, inferior_tag : str):
@@ -164,16 +165,16 @@ class Database:
         
     # direct queries
 
-    def _direct_tags_for_file(self, file_system : int, inode : int) -> set[str]:
+    def _direct_tags_for_file(self, fsid : int, inode : int) -> set[str]:
         res = self.__connection().cursor().execute("SELECT tag.name FROM (\
                                         SELECT rel_file_tag.tag_id, rel_file_tag.file_id \
                                         FROM rel_file_tag LEFT JOIN file ON rel_file_tag.file_id == file.id\
                                         WHERE file.id == ?) AS r\
-                                    LEFT JOIN tag ON r.tag_id == tag.id", (self.__get_file_id(file_system, inode),))
+                                    LEFT JOIN tag ON r.tag_id == tag.id", (self.__get_file_id(fsid, inode),))
         return {x[0] for x in res.fetchall()}
 
     def _direct_files_for_tag(self, tag_name : str) -> set[tuple[int, int, str]]:
-        res = self.__connection().cursor().execute("SELECT file.file_system, file.inode, file.path FROM (\
+        res = self.__connection().cursor().execute("SELECT file.fsid, file.inode, file.path FROM (\
                                             SELECT rel_file_tag.tag_id, rel_file_tag.file_id \
                                             FROM rel_file_tag LEFT JOIN tag ON rel_file_tag.tag_id == tag.id\
                                             WHERE tag.id == ?) AS r\
@@ -202,15 +203,15 @@ class Database:
         res = self.__connection().cursor().execute ("SELECT name FROM tag")
         return set([x[0] for x in res.fetchall()])
     def get_files(self) -> set[tuple[str, int]]:
-        res = self.__connection().cursor().execute ("SELECT file_system, inode, path FROM file")
+        res = self.__connection().cursor().execute ("SELECT fsid, inode, path FROM file")
         return set([(x[0], x[1]) for x in res.fetchall()])
     def get_files_with_paths(self) -> set[tuple[str, int, str]]:
-        res = self.__connection().cursor().execute ("SELECT file_system, inode, path FROM file")
+        res = self.__connection().cursor().execute ("SELECT fsid, inode, path FROM file")
         return set([(x[0], x[1], x[2]) for x in res.fetchall()])
     
-    def get_tags_for_file(self, file_system : int, inode : int) -> set[str]:
+    def get_tags_for_file(self, fsid : int, inode : int) -> set[str]:
         output = set()
-        direct_rels = self._direct_tags_for_file(file_system, inode)
+        direct_rels = self._direct_tags_for_file(fsid, inode)
         output.update(direct_rels)
         for t in direct_rels:
             output.update(self.get_superiors_tree(t))
@@ -251,10 +252,19 @@ class Database:
         return output
     
     # filepaths
-    def get_file_path(self, file_system, inode : int) -> str:
-        res = self.__connection().cursor().execute("SELECT path FROM file WHERE file_system == ? AND inode == ?", (file_system, inode))
+    def get_file_path(self, fsid : int, inode : int) -> str:
+        res = self.__connection().cursor().execute("SELECT path FROM file WHERE fsid == ? AND inode == ?", (fsid, inode))
         return res.fetchone()[0]
-    def set_file_path(self, file_system, inode : int, path : str):
+    def set_file_path(self, fsid : int, inode : int, path : str):
         conn = self.__connection()
-        conn.cursor().execute("UPDATE file SET path = ? WHERE file_system == ? AND inode == ?", (path, file_system, inode))
+        conn.cursor().execute("UPDATE file SET path = ? WHERE fsid == ? AND inode == ?", (path, fsid, inode))
         conn.commit()
+
+    def get_file_entry_from_fsid_inode(self, fsid : int, inode: int):
+        res = self.__connection().cursor().execute("SELECT fsid, inode, path FROM file WHERE fsid == ? AND inode == ?", (fsid, inode))
+        if res is not None:
+            return res.fetchone()[0]
+    def get_file_entry_from_path(self, path: str):
+        res = self.__connection().cursor().execute("SELECT fsid, inode, path FROM file WHERE path == ?", (path,))
+        if res is not None:
+            return res.fetchall()

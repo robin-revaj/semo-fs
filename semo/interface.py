@@ -8,7 +8,7 @@ def interface_translate_TAG(args):
     file_name : str = os.getcwd() + "/" + args.filename
     tag_name : str = args.tagname
 
-    response = backend.command_TAG(file_name, tag_name)
+    response = backend.connect_tag(file_name, tag_name)
     if response == []:
         return
     
@@ -19,7 +19,7 @@ def interface_translate_UNTAG(args):
     file_name : str = os.getcwd() + "/" + args.filename
     tag_name : str = args.tagname
 
-    response = backend.command_UNTAG(file_name, tag_name)
+    response = backend.disconnect_tag(file_name, tag_name)
     if response == []:
         return
     
@@ -29,12 +29,17 @@ def interface_translate_UNTAG(args):
 def interface_translate_LISTTAGS(args):
     if args.filename:
         file_name : str = os.getcwd() + "/" + args.filename
-        output = backend.query_LIST_TAGS_FOR_FILE(file_name) 
+        output = backend.get_tags_for_file(file_name) 
         print("File {0} tagged with: {1}".format(file_name, output))
         return output
-    output1 = backend.query_LIST_ALL_TAGS()
+    output1 = backend.get_all_tags()
     print("All existing tags: {0}".format(output1))
     return output1
+
+def translate_LISTROOTS(args):
+    output = backend.get_roots()
+    print(output)
+    return output
 
 def interface_translate_LISTFILES(args):
     query : str = args.query
@@ -42,7 +47,7 @@ def interface_translate_LISTFILES(args):
         long_format : bool = args.long
     else:
         long_format = False
-    output = backend.query_LIST_FILES(query, long_format)
+    output = backend.query_files(query, long_format)
     if query:
         print("Files corresponding: {0}".format(output))
     else:
@@ -51,7 +56,7 @@ def interface_translate_LISTFILES(args):
 
 def interface_translate_DELTAG(args):
     tag_name : str = args.tagname
-    response = backend.command_DEL_TAG(tag_name)
+    response = backend.delete_tag(tag_name)
     if response == []:
         return
     print("Failed delete tag due to reasons: ", response)
@@ -63,31 +68,35 @@ def interface_translate_SUBTAG(args):
     inferior_tags : list[str] = args.inferior_tag
     if inferior_tags:
         if unassign_flag:
-            response = backend.command_UNASSIGN_SUBTAGS(superior_tag, inferior_tags)
+            response = backend.disconnect_subtags(superior_tag, inferior_tags)
             if response == []:
                 return
             print("Failed unassign subtag due to reasons: ", response)
             return
-        response = backend.command_ASSIGN_SUBTAGS(superior_tag, inferior_tags)
+        response = backend.connect_subtags(superior_tag, inferior_tags)
         if response == []:
             return
         print("Failed assign subtag due to reasons: ", response)
     return
     
 def interface_translate_LISTSUBTAGS(args):
-    root_tag : str = args.root_tag
-    output = backend.query_LIST_ALL_SUBTAGS(root_tag)
-    print("Subtags for root '{0}': {1}".format(root_tag, output))
+    root_tag : str = args.tagname
+    direct : bool = args.direct
+    if direct:
+        output = backend.get_subtags_DIRECT(root_tag)
+    else:
+        output = backend.get_subtags(root_tag)
+    print(output)
     return output
 
-def interface_translate_WATCH(args):
-    path : str = args.path
-    full_path = os.getcwd() + "/" + path
-    response = backend.command_WATCH(path)
-    if response == []:
-        return
-    print("Failed to watch due to reasons: ", response)
-    return
+# def interface_translate_WATCH(args):
+#     path : str = args.path
+#     full_path = os.getcwd() + "/" + path
+#     response = backend.command_WATCH(path)
+#     if response == []:
+#         return
+#     print("Failed to watch due to reasons: ", response)
+#     return
 
 def interface_command_SELECTDB(args):
     database_path : str = args.database_path

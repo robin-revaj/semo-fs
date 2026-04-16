@@ -144,6 +144,7 @@ class Validator:
 
     def approved_list_for_tag_operation(self, tag_name) -> Validation:
         permit = Validation(self.tag_exists(tag_name))
+        logger.info(f"Approval for list for tag operation for tag ({tag_name}): {permit.approved}")
         
         if not permit.approved:
             permit.data.append(f"Tag '{tag_name}' does not exist.")
