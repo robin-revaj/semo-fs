@@ -1,6 +1,6 @@
 #!.venv/bin/python3
 
-from . import utils, database as db
+import utils, database as db
 import logging 
 
 logger = logging.getLogger(__name__)
@@ -44,7 +44,7 @@ def fix_path_from_fsid_inode(fsid : int, inode : int):
     return
     
 def fix_inode_from_fsid_path(fsid : int, path : str):
-    
+    pass
 
 
 
