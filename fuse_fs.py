@@ -77,6 +77,7 @@ class semoFS(fuse.Fuse):
         entries.extend(files)
         for e in entries:
             yield semoDirentry(e, "")
+        return offset
 
     def getattr(self, path):
         st = fuse.Stat()
@@ -110,6 +111,11 @@ class semoFS(fuse.Fuse):
         st.st_mode = stat.S_IFLNK | 0o555
         st.st_nlink = real_st.st_nlink
         st.st_size = real_st.st_size
+        st.st_uid = real_st.st_uid
+        st.st_gid = real_st.st_gid
+        st.st_atime = real_st.st_atime
+        st.st_mtime = real_st.st_mtime
+        st.st_ctime = real_st.st_ctime
 
         return st
 
@@ -122,20 +128,11 @@ class semoFS(fuse.Fuse):
             return ""
         _, _, real_path, _ = entry
         return real_path
-
-        try:
-            return os.path.basename(path.real_path)
-        except Exception as e:
-            return str(e)
-        segmented_path = path.strip("/").split("/")
-        current_item = segmented_path[-1]
-        if len(segmented_path) > 1:
-            parent_tag = segmented_path[-2]
-            for fsid, inode, filepath in backend.get_files_for_tag_DIRECT(parent_tag, long_format=True):
-                filename = os.path.basename(filepath)
-                if current_item == filename:
-                    return filepath
-        return ""
+    
+    def mkdir(self):
+        pass
+    def rmdir(self):
+        pass
                     
 def main():
     fuse.fuse_python_api = (0, 2)

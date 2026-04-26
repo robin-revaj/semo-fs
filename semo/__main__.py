@@ -1,16 +1,17 @@
 #!.venv/bin/python3
 
 import argparse
-from . import interface as cli
+from . import interface as cli, fs_watcher
 
 def main():
     parser = argparse.ArgumentParser()
 
     subparsers = parser.add_subparsers(help="Welcome to the help page")
 
-    tag_parser = subparsers.add_parser("tag", help="assign to tag [tagname file [filename]")
+    tag_parser = subparsers.add_parser("tag", help="assign to tag [tagname] file [filename], optionally with value [value]")
     tag_parser.add_argument("tagname")
     tag_parser.add_argument("filename")
+    tag_parser.add_argument("value", nargs='?', default=None)
     tag_parser.set_defaults(func=cli.interface_translate_TAG)
 
     untag_parser = subparsers.add_parser("untag", help="remove tag [tagname] from file [filename] ")
@@ -51,9 +52,9 @@ def main():
     select_database_parser.add_argument("database_path", nargs='?', default="")
     select_database_parser.set_defaults(func=cli.interface_command_SELECTDB)
 
-    # watcher_parser = subparsers.add_parser("watch", help="Watch a file or directory for changes and update tags accordingly")
-    # watcher_parser.add_argument("path", nargs='?', default="")
-    # watcher_parser.set_defaults(func=cli.interface_translate_WATCH)
+    watcher_parser = subparsers.add_parser("watch", help="Watch a file or directory for changes and update tags accordingly")
+    #watcher_parser.add_argument("path", nargs='?', default="")
+    watcher_parser.set_defaults(func=fs_watcher._main)
 
     args = parser.parse_args()
     if not hasattr(args, "func"):

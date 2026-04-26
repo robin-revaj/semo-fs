@@ -1,6 +1,6 @@
 #!.venv/bin/python3
 
-from . import database as db, os_calls, validator as v, settings, errors, utils
+from semo import database as db, os_calls, validator as v, settings, errors, utils
 import logging 
 
 logger = logging.getLogger(__name__)
@@ -12,7 +12,7 @@ file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelnam
 
 logger.addHandler(file_handler)
 
-def connect_tag(file_name : str, tag_name : str) -> list[str]:
+def connect_tag(file_name : str, tag_name : str, value = None) -> list[str]:
     try:
         file_system, inode = os_calls.retrieve_inode_from_path(file_name)
     except Exception as e:
@@ -20,8 +20,8 @@ def connect_tag(file_name : str, tag_name : str) -> list[str]:
 
     database = db.Database(utils.get_working_db())
     validator = v.Validator(database)
-    
-    permit = validator.approved_tag_operation(file_system, inode, file_name, tag_name)
+        
+    permit = validator.approved_tag_operation(file_system, inode, file_name, tag_name, value)
     if not permit.approved:
         logger.info(f"Tag operation not approved for file ({file_name}) and tag '{tag_name}'")
         return permit.data
@@ -29,7 +29,7 @@ def connect_tag(file_name : str, tag_name : str) -> list[str]:
     original_tags = database._direct_tags_for_file(file_system, inode)
     known_superiors = database.get_superiors_tree(tag_name)
 
-    database.new_rel_file_tag(file_system, inode, tag_name)
+    database.new_rel_file_tag(file_system, inode, tag_name, value)
     logger.info(f"Tagged file ({file_name}) with tag '{tag_name}'")
 
     for original_tag in original_tags:

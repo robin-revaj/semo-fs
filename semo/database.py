@@ -15,8 +15,12 @@ class Database:
         return sql.connect(self.__path)
 
     def verify_db(self):
-        required_tables = {'tag', 'file', 'rel_file_tag', 'rel_tag_tag'}
-        required_indices = {'idx_tag', 'idx_file_inode', 'idx_file_path', 'idx_rel_ft', 'idx_rel_tt'}
+        required_tables = {'tag', 'file', 'rel_file_tag_null', 'rel_file_tag_str', 'rel_file_tag_int', 'rel_tag_tag'}
+        required_indices = {'idx_tag', 'idx_file_inode', 'idx_file_path', 
+                            'idx_rel_ft_f', 'idx_rel_ft_t', 
+                            'idx_rel_ft_str_f', 'idx_rel_ft_str_t', 
+                            'idx_rel_ft_int_f', 'idx_rel_ft_int_t', 
+                            'idx_rel_tt'}
 
         conn = self.__connection()
         res = conn.cursor().execute("SELECT name FROM sqlite_master WHERE type='table'")
@@ -32,14 +36,19 @@ class Database:
             return False
         
         tag_columns = conn.cursor().execute("SELECT name FROM PRAGMA_TABLE_INFO('tag')")
-        if set(x[0] for x in tag_columns.fetchall()) != {'id', 'name'}:
+        if set(x[0] for x in tag_columns.fetchall()) != {'id', 'name', 'type'}:
             return False
         file_columns = conn.cursor().execute("SELECT name FROM PRAGMA_TABLE_INFO('file')")
         if set(x[0] for x in file_columns.fetchall()) != {'id', 'fsid', 'inode', 'path'}:
             return False
-        rel_file_tag_columns = conn.cursor().execute("SELECT name FROM PRAGMA_TABLE_INFO('rel_file_tag')")
-        if set(x[0] for x in rel_file_tag_columns.fetchall()) != {'id', 'file_id', 'tag_id'}:
+        null_rel = conn.cursor().execute("SELECT name FROM PRAGMA_TABLE_INFO('rel_file_tag_null')")
+        if set(x[0] for x in null_rel.fetchall()) != {'id', 'file_id', 'tag_id'}:
             return False
+        val_rels = [conn.cursor().execute("SELECT name FROM PRAGMA_TABLE_INFO('rel_file_tag_str')"),
+                    conn.cursor().execute("SELECT name FROM PRAGMA_TABLE_INFO('rel_file_tag_int')")]
+        for val_rel in val_rels:
+            if set(x[0] for x in val_rel.fetchall()) != {'id', 'file_id', 'tag_id', 'value'}:
+                return False
         rel_tag_tag_columns = conn.cursor().execute("SELECT name FROM PRAGMA_TABLE_INFO('rel_tag_tag')")
         if set(x[0] for x in rel_tag_tag_columns.fetchall()) != {'id', 'superior_id', 'inferior_id'}:
             return False
@@ -52,7 +61,8 @@ class Database:
 
         conn.cursor().execute("CREATE TABLE IF NOT EXISTS tag(\
                               id INTEGER PRIMARY KEY, \
-                              name VARCHAR(50) NOT NULL UNIQUE\
+                              name VARCHAR(50) NOT NULL UNIQUE, \
+                              type VARCHAR(3)\
                               )")
         conn.cursor().execute("CREATE INDEX IF NOT EXISTS idx_tag ON tag (name)")
 
@@ -66,14 +76,34 @@ class Database:
         conn.cursor().execute("CREATE INDEX IF NOT EXISTS idx_file_inode ON file (inode, fsid)")
         conn.cursor().execute("CREATE INDEX IF NOT EXISTS idx_file_path ON file (path)")
 
-        conn.cursor().execute("CREATE TABLE IF NOT EXISTS rel_file_tag(\
+        conn.cursor().execute("CREATE TABLE IF NOT EXISTS rel_file_tag_null(\
                               id INTEGER PRIMARY KEY, \
                               file_id REFERENCES file ON DELETE CASCADE NOT NULL, \
-                              tag_id REFERENCES tag ON DELETE CASCADE NOT NULL,\
+                              tag_id REFERENCES tag ON DELETE CASCADE NOT NULL, \
                               UNIQUE (file_id, tag_id) \
                               )")
-        conn.cursor().execute("CREATE INDEX IF NOT EXISTS idx_rel_ft ON rel_file_tag (file_id)")
-        conn.cursor().execute("CREATE INDEX IF NOT EXISTS idx_rel_ft ON rel_file_tag (tag_id)")
+        conn.cursor().execute("CREATE INDEX IF NOT EXISTS idx_rel_ft_f ON rel_file_tag_null (file_id)")
+        conn.cursor().execute("CREATE INDEX IF NOT EXISTS idx_rel_ft_t ON rel_file_tag_null (tag_id)")
+
+        conn.cursor().execute("CREATE TABLE IF NOT EXISTS rel_file_tag_str(\
+                              id INTEGER PRIMARY KEY, \
+                              file_id REFERENCES file ON DELETE CASCADE NOT NULL, \
+                              tag_id REFERENCES tag ON DELETE CASCADE NOT NULL, \
+                              value STRING, \
+                              UNIQUE (file_id, tag_id) \
+                              )")
+        conn.cursor().execute("CREATE INDEX IF NOT EXISTS idx_rel_ft_str_f ON rel_file_tag_str (file_id)")
+        conn.cursor().execute("CREATE INDEX IF NOT EXISTS idx_rel_ft_str_t ON rel_file_tag_str (tag_id)")
+
+        conn.cursor().execute("CREATE TABLE IF NOT EXISTS rel_file_tag_int(\
+                              id INTEGER PRIMARY KEY, \
+                              file_id REFERENCES file ON DELETE CASCADE NOT NULL, \
+                              tag_id REFERENCES tag ON DELETE CASCADE NOT NULL, \
+                              value INTEGER, \
+                              UNIQUE (file_id, tag_id) \
+                              )")
+        conn.cursor().execute("CREATE INDEX IF NOT EXISTS idx_rel_ft_int_f ON rel_file_tag_int (file_id)")
+        conn.cursor().execute("CREATE INDEX IF NOT EXISTS idx_rel_ft_int_t ON rel_file_tag_int (tag_id)")
 
         conn.cursor().execute("CREATE TABLE IF NOT EXISTS rel_tag_tag(\
                               id INTEGER PRIMARY KEY, \
@@ -91,68 +121,153 @@ class Database:
         conn = self.__connection()
         conn.cursor().execute("DELETE FROM file")
         conn.cursor().execute("DELETE FROM tag")
-        conn.cursor().execute("DELETE FROM rel_file_tag")
+        conn.cursor().execute("DELETE FROM rel_file_tag_null")
+        conn.cursor().execute("DELETE FROM rel_file_tag_str")
+        conn.cursor().execute("DELETE FROM rel_file_tag_int")
         conn.cursor().execute("DELETE FROM rel_tag_tag")
         conn.commit()
         conn.close()
 
-    def __get_tag_id(self, tag_name : str) -> int:
+    def __get_tag_id(self, tag_name : str) -> int | None:
         res = self.__connection().cursor().execute("SELECT id FROM tag WHERE name == ?", (tag_name,))
-        return res.fetchone()[0]
-    def __get_file_id(self, fsid, inode : int) -> int:
+        try:
+            return res.fetchone()[0]
+        except TypeError:
+            return None
+    def __get_file_id(self, fsid, inode : int) -> int | None:
         res = self.__connection().cursor().execute("SELECT id FROM file WHERE fsid == ? AND inode == ?", (fsid, inode))
-        return res.fetchone()[0]
-    def __get_rel_file_tag_id(self, tag_id : int, file_id : int) -> int:
-        res = self.__connection().cursor().execute("SELECT id FROM rel_file_tag WHERE tag_id == ? AND file_id == ?", (tag_id, file_id))
+        try:
+            return res.fetchone()[0]
+        except TypeError:
+            return None
+    def __get_rel_file_tag_null_id(self, tag_id : int, file_id : int) -> int:
+        res = self.__connection().cursor().execute("SELECT id FROM rel_file_tag_null WHERE tag_id == ? AND file_id == ?", (tag_id, file_id))
+        return res.fetchone()
+    def __get_rel_file_tag_str_id(self, tag_id : int, file_id : int) -> int:
+        res = self.__connection().cursor().execute("SELECT id FROM rel_file_tag_str WHERE tag_id == ? AND file_id == ?", (tag_id, file_id))
+        return res.fetchone()
+    def __get_rel_file_tag_int_id(self, tag_id : int, file_id : int) -> int:
+        res = self.__connection().cursor().execute("SELECT id FROM rel_file_tag_int WHERE tag_id == ? AND file_id == ?", (tag_id, file_id))
         return res.fetchone()
     def __get_rel_tag_tag_id(self, sup_id : int, inf_id : int) -> int:
         res = self.__connection().cursor().execute("SELECT id FROM rel_tag_tag WHERE superior_id == ? AND inferior_id == ?", (sup_id, inf_id))
         return res.fetchone()
-    
+
     def dump_tables(self):
         conn = self.__connection()
         res = {}
         res["tag"] = conn.cursor().execute("SELECT * FROM tag").fetchall()
         res["file"] = conn.cursor().execute("SELECT * FROM file").fetchall()
-        res["rel_file_tag"] = conn.cursor().execute("SELECT * FROM rel_file_tag").fetchall()
+        res["rel_file_tag_null"] = conn.cursor().execute("SELECT * FROM rel_file_tag_null").fetchall()
+        res["rel_file_tag_str"] = conn.cursor().execute("SELECT * FROM rel_file_tag_str").fetchall()
+        res["rel_file_tag_int"] = conn.cursor().execute("SELECT * FROM rel_file_tag_int").fetchall()
         res["rel_tag_tag"] = conn.cursor().execute("SELECT * FROM rel_tag_tag").fetchall()
         return res
     
-    def new_tag(self, tag_name : str):
+    def new_tag(self, tag_name : str, tag_type = None):
+        if self.__get_tag_id(tag_name): raise Exception("tag already in database")
         conn = self.__connection()
-        conn.cursor().execute("INSERT INTO tag VALUES (NULL, ?)", (tag_name,))
+        conn.cursor().execute("INSERT INTO tag VALUES (NULL, ?, ?)", (tag_name, tag_type))
         conn.commit()
     def delete_tag(self, tag_name : str):
         conn = self.__connection()
         id_to_delete = self.__get_tag_id(tag_name)
+        if not id_to_delete:
+            raise Exception("tag not in database")
+        tag_type = self.get_tag_type(tag_name)
         conn.cursor().execute("DELETE FROM tag WHERE name == ?", (tag_name,))
-        conn.cursor().execute("DELETE FROM rel_file_tag WHERE tag_id == ?", (id_to_delete,))
         conn.cursor().execute("DELETE FROM rel_tag_tag WHERE superior_id == ? OR inferior_id == ?", (id_to_delete, id_to_delete))
+        match (tag_type):
+            case "str":
+                conn.cursor().execute("DELETE FROM rel_file_tag_str WHERE tag_id == ?", (id_to_delete,))
+            case "int":
+                conn.cursor().execute("DELETE FROM rel_file_tag_int WHERE tag_id == ?", (id_to_delete,))
+            case _:
+                conn.cursor().execute("DELETE FROM rel_file_tag_null WHERE tag_id == ?", (id_to_delete,))
         conn.commit()
 
     def new_file(self, fsid : int, inode : int, path : str):
+        if self.__get_file_id(fsid, inode): raise Exception("file already in database")
         conn = self.__connection()
         conn.cursor().execute("INSERT INTO file VALUES (NULL, ?, ?, ?)", (fsid, inode, path))
         conn.commit()
     def delete_file(self, fsid : int, inode : int):
         conn = self.__connection()
         id_to_delete = self.__get_file_id(fsid, inode)
+        if not id_to_delete:
+            raise Exception("file not in database")
         conn.cursor().execute("DELETE FROM file WHERE fsid == ? AND inode == ?", (fsid, inode))
-        conn.cursor().execute("DELETE FROM rel_file_tag WHERE file_id == ?", (id_to_delete,))
+        conn.cursor().execute("DELETE FROM rel_file_tag_str WHERE file_id == ?", (id_to_delete,))
+        conn.cursor().execute("DELETE FROM rel_file_tag_int WHERE file_id == ?", (id_to_delete,))
+        conn.cursor().execute("DELETE FROM rel_file_tag_null WHERE file_id == ?", (id_to_delete,))
         conn.commit()
     
-    def new_rel_file_tag(self, fsid : int, inode : int, tag_name : str):
+    def new_rel_file_tag_null(self, fsid : int, inode : int, tag_name : str):
+        file_id, tag_id = self.__get_file_id(fsid, inode), self.__get_tag_id(tag_name)
+        if not file_id or not tag_id: raise Exception("file or tag not in database")
+        if self.__get_rel_file_tag_null_id(tag_id, file_id): raise Exception("relationship already in database")
         conn = self.__connection()
-        conn.cursor().execute("INSERT INTO rel_file_tag VALUES(NULL, ?, ?)", (self.__get_file_id(fsid, inode), self.__get_tag_id(tag_name)))
+        conn.cursor().execute("INSERT INTO rel_file_tag_null VALUES(NULL, ?, ?)", (file_id, tag_id))
         conn.commit()
-    def delete_rel_file_tag(self, fsid : int, inode : int, tag_name : str):
+    def delete_rel_file_tag_null(self, fsid : int, inode : int, tag_name : str):
         conn = self.__connection()
-        conn.cursor().execute("DELETE FROM rel_file_tag \
+        conn.cursor().execute("DELETE FROM rel_file_tag_null \
                               WHERE file_id == ? \
                               AND tag_id == ?", (self.__get_file_id(fsid, inode), self.__get_tag_id(tag_name)))
         conn.commit()
 
+    def new_rel_file_tag_str(self, fsid : int, inode : int, tag_name : str, value : str):
+        file_id, tag_id = self.__get_file_id(fsid, inode), self.__get_tag_id(tag_name)
+        if not file_id or not tag_id: raise Exception("file or tag not in database")
+        if self.__get_rel_file_tag_str_id(tag_id, file_id): raise Exception("relationship already in database")
+        conn = self.__connection()
+        conn.cursor().execute("INSERT INTO rel_file_tag_str VALUES(NULL, ?, ?, ?)", (file_id, tag_id, value))
+        conn.commit()
+    def delete_rel_file_tag_str(self, fsid : int, inode : int, tag_name : str):
+        conn = self.__connection()
+        conn.cursor().execute("DELETE FROM rel_file_tag_str \
+                              WHERE file_id == ? \
+                              AND tag_id == ?", (self.__get_file_id(fsid, inode), self.__get_tag_id(tag_name)))
+        conn.commit()
+
+    def new_rel_file_tag_int(self, fsid : int, inode : int, tag_name : str, value : int):
+        file_id, tag_id = self.__get_file_id(fsid, inode), self.__get_tag_id(tag_name)
+        if not file_id or not tag_id: raise Exception("file or tag not in database")
+        if self.__get_rel_file_tag_int_id(tag_id, file_id): raise Exception("relationship already in database")
+        conn = self.__connection()
+        conn.cursor().execute("INSERT INTO rel_file_tag_int VALUES(NULL, ?, ?, ?)", (file_id, tag_id, value))
+        conn.commit()
+    def delete_rel_file_tag_int(self, fsid : int, inode : int, tag_name : str):
+        conn = self.__connection()
+        conn.cursor().execute("DELETE FROM rel_file_tag_int \
+                              WHERE file_id == ? \
+                              AND tag_id == ?", (self.__get_file_id(fsid, inode), self.__get_tag_id(tag_name)))
+        conn.commit()
+
+    def new_rel_file_tag(self, fsid : int, inode : int, tag_name : str, value = None):
+        match self.get_tag_type(tag_name):
+            case "str":
+                if not isinstance(value, str): raise Exception("wrong value type")
+                self.new_rel_file_tag_str(fsid, inode, tag_name, value)
+            case "int":
+                if not isinstance(value, int): raise Exception("wrong value type")
+                self.new_rel_file_tag_int(fsid, inode, tag_name, value)
+            case _:
+                if value is not None: raise Exception("wrong value type")
+                self.new_rel_file_tag_null(fsid, inode, tag_name)
+    def delete_rel_file_tag(self, fsid : int, inode : int, tag_name : str):
+        match self.get_tag_type(tag_name):
+            case "str":
+                self.delete_rel_file_tag_str(fsid, inode, tag_name)
+            case "int":
+                self.delete_rel_file_tag_int(fsid, inode, tag_name)
+            case _:
+                self.delete_rel_file_tag_null(fsid, inode, tag_name)
+
     def new_rel_tag_tag(self, superior_tag : str, inferior_tag : str):
+        sup_id, inf_id = self.__get_tag_id(superior_tag), self.__get_tag_id(inferior_tag)
+        if not sup_id or not inf_id: raise Exception("superior or inferior tag not in database")
+        if self.__get_rel_tag_tag_id(sup_id, inf_id): raise Exception("relationship aready in database")
         conn = self.__connection()
         conn.cursor().execute("INSERT INTO rel_tag_tag VALUES(NULL, ?, ?)", (self.__get_tag_id(superior_tag), self.__get_tag_id(inferior_tag)))
         conn.commit()
@@ -163,24 +278,127 @@ class Database:
                               AND inferior_id == ?", (self.__get_tag_id(superior_tag), self.__get_tag_id(inferior_tag)))
         conn.commit()
         
+
+
+
+
+
+
+
+
     # direct queries
 
-    def _direct_tags_for_file(self, fsid : int, inode : int) -> set[str]:
+    def __direct_null_rels_for_file(self, fsid : int, inode : int) -> set[str]:
         res = self.__connection().cursor().execute("SELECT tag.name FROM (\
-                                        SELECT rel_file_tag.tag_id, rel_file_tag.file_id \
-                                        FROM rel_file_tag LEFT JOIN file ON rel_file_tag.file_id == file.id\
+                                        SELECT rel_file_tag_null.tag_id, rel_file_tag_null.file_id \
+                                        FROM rel_file_tag_null LEFT JOIN file ON rel_file_tag_null.file_id == file.id\
                                         WHERE file.id == ?) AS r\
                                     LEFT JOIN tag ON r.tag_id == tag.id", (self.__get_file_id(fsid, inode),))
         return {x[0] for x in res.fetchall()}
+    
+    def __direct_str_rels_for_file(self, fsid : int, inode : int) -> dict[str, str]: 
+        res = self.__connection().cursor().execute("SELECT tag.name, r.value FROM (\
+                                        SELECT rel_file_tag_str.tag_id, rel_file_tag_str.file_id, rel_file_tag_str.value \
+                                        FROM rel_file_tag_str LEFT JOIN file ON rel_file_tag_str.file_id == file.id\
+                                        WHERE file.id == ?) AS r\
+                                    LEFT JOIN tag ON r.tag_id == tag.id", (self.__get_file_id(fsid, inode),))
+        return {x[0]:x[1] for x in res.fetchall()}
+    
+    def __direct_int_rels_for_file(self, fsid : int, inode : int) -> dict[str, int]: 
+        res = self.__connection().cursor().execute("SELECT tag.name, r.value FROM (\
+                                        SELECT rel_file_tag_int.tag_id, rel_file_tag_int.file_id, rel_file_tag_int.value \
+                                        FROM rel_file_tag_int LEFT JOIN file ON rel_file_tag_int.file_id == file.id\
+                                        WHERE file.id == ?) AS r\
+                                    LEFT JOIN tag ON r.tag_id == tag.id", (self.__get_file_id(fsid, inode),))
+        return {x[0]:x[1] for x in res.fetchall()}
+    
+    def _direct_rels_for_file(self, fsid : int, inode : int) -> dict:
+        null_rels = {rel : None for rel in self.__direct_null_rels_for_file(fsid, inode)}
+        str_rels = self.__direct_str_rels_for_file(fsid, inode)
+        int_rels = self.__direct_int_rels_for_file(fsid, inode)
+        combined = {}
+        combined.update(null_rels)
+        combined.update(str_rels)
+        combined.update(int_rels)
+        return combined
+    
+    def _direct_tags_for_file(self, fsid : int, inode : int) -> set[str]:
+        return set(self._direct_rels_for_file(fsid, inode).keys())
 
-    def _direct_files_for_tag(self, tag_name : str) -> set[tuple[int, int, str, int]]:
+    def _direct_null_rels_for_tag(self, tag_name : str) -> set[tuple]:
         res = self.__connection().cursor().execute("SELECT file.fsid, file.inode, file.path, file.id FROM (\
-                                            SELECT rel_file_tag.tag_id, rel_file_tag.file_id \
-                                            FROM rel_file_tag LEFT JOIN tag ON rel_file_tag.tag_id == tag.id\
+                                            SELECT rel_file_tag_null.tag_id, rel_file_tag_null.file_id \
+                                            FROM rel_file_tag_null LEFT JOIN tag ON rel_file_tag_null.tag_id == tag.id\
                                             WHERE tag.id == ?) AS r\
                                         LEFT JOIN file ON r.file_id == file.id", (self.__get_tag_id(tag_name),))
-        return {(x[0], x[1], x[2], x[3]) for x in res.fetchall()}
+        return {(x[0], x[1], x[2], x[3], None) for x in res.fetchall()}
+    
+    def _direct_str_rels_for_tag(self, tag_name : str) -> set[tuple]:
+        res = self.__connection().cursor().execute("SELECT file.fsid, file.inode, file.path, file.id, r.value FROM (\
+                                            SELECT rel_file_tag_str.tag_id, rel_file_tag_str.file_id, rel_file_tag_str.value \
+                                            FROM rel_file_tag_str LEFT JOIN tag ON rel_file_tag_str.tag_id == tag.id\
+                                            WHERE tag.id == ?) AS r\
+                                        LEFT JOIN file ON r.file_id == file.id", (self.__get_tag_id(tag_name),))
+        return {(x[0], x[1], x[2], x[3], x[4]) for x in res.fetchall()}
+    
+    def _str_rels_for_tag_equals_condition(self, tag_name : str, condition : str) -> set[tuple]:
+        res = self.__connection().cursor().execute("SELECT file.fsid, file.inode, file.path, file.id, r.value FROM (\
+                                            SELECT rel_file_tag_str.tag_id, rel_file_tag_str.file_id, rel_file_tag_str.value \
+                                            FROM rel_file_tag_str LEFT JOIN tag ON rel_file_tag_str.tag_id == tag.id\
+                                            WHERE tag.id == ?) AS r\
+                                            LEFT JOIN file ON r.file_id == file.id \
+                                            WHERE r.value == ?", (self.__get_tag_id(tag_name), condition))
+        return {(x[0], x[1], x[2], x[3], x[4]) for x in res.fetchall()}
+    
+    def _direct_int_rels_for_tag(self, tag_name : str) -> set[tuple]:
+        res = self.__connection().cursor().execute("SELECT file.fsid, file.inode, file.path, file.id, r.value FROM (\
+                                            SELECT rel_file_tag_int.tag_id, rel_file_tag_int.file_id, rel_file_tag_int.value \
+                                            FROM rel_file_tag_int LEFT JOIN tag ON rel_file_tag_int.tag_id == tag.id\
+                                            WHERE tag.id == ?) AS r\
+                                            LEFT JOIN file ON r.file_id == file.id", (self.__get_tag_id(tag_name),))
+        return {(x[0], x[1], x[2], x[3], x[4]) for x in res.fetchall()}
+    
+    def _int_rels_for_tag_range_condition(self, tag_name : str, start : int | None, end : int | None) -> set[tuple]:
+        res = self.__connection().cursor().execute("SELECT file.fsid, file.inode, file.path, file.id, r.value FROM (\
+                                            SELECT rel_file_tag_int.tag_id, rel_file_tag_int.file_id, rel_file_tag_int.value \
+                                            FROM rel_file_tag_int LEFT JOIN tag ON rel_file_tag_int.tag_id == tag.id\
+                                            WHERE tag.id == ?) AS r\
+                                            LEFT JOIN file ON r.file_id == file.id", (self.__get_tag_id(tag_name), ))
+        if start is not None and end is not None:
+            return {(x[0], x[1], x[2], x[3], x[4]) for x in res.fetchall() if x[4] >= start and x[4] <= end}
+        if start is not None:
+            return {(x[0], x[1], x[2], x[3], x[4]) for x in res.fetchall() if x[4] >= start}
+        if end is not None:
+            return {(x[0], x[1], x[2], x[3], x[4]) for x in res.fetchall() if x[4] <= end}
+        raise Exception("no condition for conditioned query")
+    
+    def _int_rels_for_tag_equals_condition(self, tag_name : str, condition : int) -> set[tuple]:
+        res = self.__connection().cursor().execute("SELECT file.fsid, file.inode, file.path, file.id, r.value FROM (\
+                                            SELECT rel_file_tag_int.tag_id, rel_file_tag_int.file_id, rel_file_tag_int.value \
+                                            FROM rel_file_tag_int LEFT JOIN tag ON rel_file_tag_int.tag_id == tag.id\
+                                            WHERE tag.id == ?) AS r\
+                                            LEFT JOIN file ON r.file_id == file.id\
+                                            WHERE r.value == ?", (self.__get_tag_id(tag_name), condition))
+        return {(x[0], x[1], x[2], x[3], x[4]) for x in res.fetchall()}
+    
+    def _direct_rels_for_tag(self, tag_name : str) -> set[tuple]:
+        tag_type = self.get_tag_type(tag_name)
+        match tag_type:
+            case "str":
+                return self._direct_str_rels_for_tag(tag_name)
+            case "int":
+                return self._direct_int_rels_for_tag(tag_name)
+        return self._direct_null_rels_for_tag(tag_name)
 
+    def _direct_files_for_tag(self, tag_name : str) -> set[tuple[int, int, str, int]]:
+        return {x[0:4] for x in self._direct_rels_for_tag(tag_name)}
+        # res = self.__connection().cursor().execute("SELECT file.fsid, file.inode, file.path, file.id FROM (\
+        #                                     SELECT rel_file_tag_null.tag_id, rel_file_tag_null.file_id \
+        #                                     FROM rel_file_tag_null LEFT JOIN tag ON rel_file_tag_null.tag_id == tag.id\
+        #                                     WHERE tag.id == ?) AS r\
+        #                                 LEFT JOIN file ON r.file_id == file.id", (self.__get_tag_id(tag_name),))
+        # return {(x[0], x[1], x[2], x[3]) for x in res.fetchall()}
+    
     def _direct_inferiors_for_tag(self, tag_name : str) -> set[str]:
         res = self.__connection().cursor().execute("SELECT tag.name FROM (\
                                         SELECT rel_tag_tag.superior_id, rel_tag_tag.inferior_id \
@@ -211,16 +429,36 @@ class Database:
     
     def get_tags_for_file(self, fsid : int, inode : int) -> set[str]:
         output = set()
-        direct_rels = self._direct_tags_for_file(fsid, inode)
-        output.update(direct_rels)
-        for t in direct_rels:
-            output.update(self.get_superiors_tree(t))
+        direct_tags = self._direct_tags_for_file(fsid, inode)
+        output.update(direct_tags)
+        for tag_name in direct_tags:
+            output.update(self.get_superiors_tree(tag_name))
         return output
     
-    def get_files_for_tag(self, tag_name : str) -> set[tuple[int, int, str, int]]:
+    def get_rels_for_file(self, fsid : int, inode : int) -> dict[str, str | int | None]:
+        output = {}
+        direct_rels = self._direct_rels_for_file(fsid, inode)
+        output.update(direct_rels)
+        for tag_name in direct_rels.keys():
+            output.update({superior : None for superior in self.get_superiors_tree(tag_name)})
+        return output
+    
+    def get_tag_type(self, tag_name : str) -> str:
+        res = self.__connection().cursor().execute("SELECT type FROM tag WHERE name == ?", (tag_name,))
+        return res.fetchone()[0]
+    
+    def get_files_for_tag(self, tag_name : str) -> set[tuple]:
         output = self._direct_files_for_tag(tag_name)
         for rel in self.get_inferiors_tree(tag_name):
             output.update(self._direct_files_for_tag(rel))
+        return output
+    
+    def get_rels_for_tag(self, tag_name : str) -> set:
+        output = set()
+        direct_rels = self._direct_rels_for_tag(tag_name)
+        output.update(direct_rels)
+        for rel in self.get_inferiors_tree(tag_name):
+            output.update(self._direct_rels_for_tag(rel))
         return output
     
     def get_root_tags(self) -> set[str]:

@@ -7,8 +7,8 @@ from . import backend, errors as e, settings
 def interface_translate_TAG(args):
     file_name : str = os.getcwd() + "/" + args.filename
     tag_name : str = args.tagname
-
-    response = backend.connect_tag(file_name, tag_name)
+    value : str | int | None = args.value
+    response = backend.connect_tag(file_name, tag_name, value)
     if response == []:
         return
     

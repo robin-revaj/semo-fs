@@ -1,6 +1,6 @@
 #!.venv/bin/python3
 
-from . import database, settings
+from semo import database, settings
 import pyparsing
 import logging 
 
@@ -27,6 +27,14 @@ class Validator:
         output = tag_name in self.database.get_tags()
         logger.info(f"Tag Exists '{tag_name}': {output}")
         return output
+    
+    def corresponding_tag_type(self, tag_name : str, value : str | int | None) -> bool:
+        tag_type = self.database.get_tag_type(tag_name)
+        if tag_type == "int":
+            return (isinstance(value, int)) or (isinstance(value, str) and value.isnumeric())
+        if tag_type == "str":
+            return (isinstance(value, str))
+        return value is None
 
     def file_exists(self, file_system : int, inode : int) -> bool:
         output = (file_system, inode) in self.database.get_files()
@@ -89,21 +97,32 @@ class Validator:
     #     logger.info(f"Tag '{tag_name}' has no attached files: {no_attached_files} and no_superiors: {no_superiors} and no_inferiors: {no_inferiors}")
     #     return no_attached_files and no_superiors and no_inferiors
 
-    def approved_tag_operation(self, file_system, inode, filepath, tag) -> Validation:
+    def approved_tag_operation(self, file_system, inode, filepath, tag, value) -> Validation:
         permit = Validation()
-        if not self.tag_exists(tag):
-            logger.info(f"Tag '{tag}' does not exist. Creating tag record.")
-            self.database.new_tag(tag)
-
         if not self.file_exists(file_system, inode):
             logger.info(f"File ({file_system}, {inode}) not in database. Creating file record.")
             self.database.new_file(file_system, inode, filepath)
         else:
             self.__refresh_path_from_access(file_system, inode, filepath)
 
-        permit.approved = not self.file_indirectly_has_tag(file_system, inode, tag)
-        if not permit.approved:
-            permit.data.append(f"{filepath} already tagged {tag}")
+        if not self.tag_exists(tag):
+            logger.info(f"Tag '{tag}' does not exist. Creating tag record.")
+            if value is None:
+                self.database.new_tag(tag)
+            elif isinstance(value, str):
+                self.database.new_tag(tag, "str")
+            elif isinstance(value, int):
+                self.database.new_tag(tag, "int")
+            else:
+                permit.approved = False
+                permit.data.append(f"unsupported data type")
+        else:
+            if not self.corresponding_tag_type(tag, value):
+                permit.approved = False
+                permit.data.append(f"incorrect data type for tag {tag}")
+            if self.file_indirectly_has_tag(file_system, inode, tag):
+                permit.approved = False
+                permit.data.append(f"{filepath} already tagged {tag}")
         logger.info(f"Approval for tag operation for file ({file_system}, {inode}) and tag '{tag}': {permit.approved}")
         return permit
 
