@@ -468,152 +468,164 @@ class TestCommandBackend(unittest.TestCase):
         backend.connect_subtags(superior_tag, [inferior_tag])
         self.assertSetEqual({superior_tag, inferior_tag}, backend.get_tags_for_file(self.files[1]))
 
-    # def test_list_files_no_query(self):
-    #     tag1 = "test_list_files_no_query1"
-    #     tag2 = "test_list_files_no_query2"
-    #     backend.connect_tag(self.files[0], tag1)
-    #     backend.connect_tag(self.files[1], tag2)
-    #     self.assertSetEqual({self.files[0], self.files[1]}, backend.query_files(""))
+    def test_list_files_no_query(self):
+        tag1 = "test_list_files_no_query1"
+        tag2 = "test_list_files_no_query2"
+        backend.connect_tag(self.files[0], tag1)
+        backend.connect_tag(self.files[1], tag2)
+        self.assertSetEqual({self.files[0], self.files[1]}, backend.query_files(""))
 
-    # def test_list_files_query_singular(self):
-    #     tag1 = "test_list_files_query_singular1"
-    #     tag2 = "test_list_files_query_singular2"
-    #     backend.connect_tag(self.files[0], tag1)
-    #     backend.connect_tag(self.files[1], tag2)
-    #     self.assertSetEqual({self.files[0]}, backend.query_files(tag1))
-    #     self.assertSetEqual({self.files[1]}, backend.query_files(tag2))
+    def test_list_files_query_singular(self):
+        tag1 = "test_list_files_query_singular1"
+        tag2 = "test_list_files_query_singular2"
+        backend.connect_tag(self.files[0], tag1)
+        backend.connect_tag(self.files[1], tag2)
+        self.assertSetEqual({self.files[0]}, backend.query_files(tag1))
+        self.assertSetEqual({self.files[1]}, backend.query_files(tag2))
 
-    # def test_list_files_query_singular_nonexistent(self):
-    #     self.assertSetEqual(set(), backend.query_files("test_list_files_query_singular_nonexistent"))
+    def test_list_files_query_singular_nonexistent(self):
+        self.assertSetEqual(set(), backend.query_files("test_list_files_query_singular_nonexistent"))
 
-    # def test_list_files_query_AND(self):
-    #     tag1 = "test_list_files_query_AND1"
-    #     tag2 = "test_list_files_query_AND2"
-    #     backend.connect_tag(self.files[0], tag1)
-    #     backend.connect_tag(self.files[0], tag2)
-    #     backend.connect_tag(self.files[1], tag1)
-    #     self.assertSetEqual({self.files[0]}, backend.query_files(f"{tag1} & {tag2}"))
+    def test_list_files_query_AND(self):
+        tag1 = "test_list_files_query_AND1"
+        tag2 = "test_list_files_query_AND2"
+        backend.connect_tag(self.files[0], tag1)
+        backend.connect_tag(self.files[0], tag2)
+        backend.connect_tag(self.files[1], tag1)
+        self.assertSetEqual({self.files[0]}, backend.query_files(f"{tag1} & {tag2}"))
 
-    # def test_list_files_query_AND_parentheses(self):
-    #     tag1 = "test_list_files_query_AND_parentheses1"
-    #     tag2 = "test_list_files_query_AND_parentheses2"
-    #     backend.connect_tag(self.files[0], tag1)
-    #     backend.connect_tag(self.files[0], tag2)
-    #     backend.connect_tag(self.files[1], tag1)
-    #     self.assertSetEqual({self.files[0]}, backend.query_files(f"({tag1} & {tag2})"))
+    def test_list_files_query_AND_parentheses(self):
+        tag1 = "test_list_files_query_AND_parentheses1"
+        tag2 = "test_list_files_query_AND_parentheses2"
+        backend.connect_tag(self.files[0], tag1)
+        backend.connect_tag(self.files[0], tag2)
+        backend.connect_tag(self.files[1], tag1)
+        self.assertSetEqual({self.files[0]}, backend.query_files(f"({tag1} & {tag2})"))
 
-    # def test_list_files_query_AND_nonexistent(self):
-    #     self.assertSetEqual(set(), backend.query_files(f"test_list_files_query_AND_nonexistent1 & test_list_files_query_AND_nonexistent2"))
-    #     backend.connect_tag(self.files[0], "test_list_files_query_AND_nonexistent1")
-    #     self.assertSetEqual(set(), backend.query_files(f"test_list_files_query_AND_nonexistent1 & test_list_files_query_AND_nonexistent2"))
-    #     backend.delete_tag("test_list_files_query_AND_nonexistent1")
-    #     backend.connect_tag(self.files[0], "test_list_files_query_AND_nonexistent2")
-    #     self.assertSetEqual(set(), backend.query_files(f"test_list_files_query_AND_nonexistent1 & test_list_files_query_AND_nonexistent2"))
+    def test_list_files_query_AND_nonexistent(self):
+        self.assertSetEqual(set(), backend.query_files(f"test_list_files_query_AND_nonexistent1 & test_list_files_query_AND_nonexistent2"))
+        backend.connect_tag(self.files[0], "test_list_files_query_AND_nonexistent1")
+        self.assertSetEqual(set(), backend.query_files(f"test_list_files_query_AND_nonexistent1 & test_list_files_query_AND_nonexistent2"))
+        backend.delete_tag("test_list_files_query_AND_nonexistent1")
+        backend.connect_tag(self.files[0], "test_list_files_query_AND_nonexistent2")
+        self.assertSetEqual(set(), backend.query_files(f"test_list_files_query_AND_nonexistent1 & test_list_files_query_AND_nonexistent2"))
 
-    # def test_list_files_query_OR(self):
-    #     tag1 = "test_list_files_query_OR1"
-    #     tag2 = "test_list_files_query_OR2"
-    #     backend.connect_tag(self.files[0], tag1)
-    #     backend.connect_tag(self.files[1], tag2)
-    #     self.assertSetEqual({self.files[0], self.files[1]}, backend.query_files(f"{tag1} | {tag2}"))
+    def test_list_files_query_OR(self):
+        tag1 = "test_list_files_query_OR1"
+        tag2 = "test_list_files_query_OR2"
+        backend.connect_tag(self.files[0], tag1)
+        backend.connect_tag(self.files[1], tag2)
+        self.assertSetEqual({self.files[0], self.files[1]}, backend.query_files(f"{tag1} | {tag2}"))
 
-    # def test_list_files_query_OR_parentheses(self):
-    #     tag1 = "test_list_files_query_OR_parentheses1"
-    #     tag2 = "test_list_files_query_OR_parentheses2"
-    #     backend.connect_tag(self.files[0], tag1)
-    #     backend.connect_tag(self.files[1], tag2)
-    #     self.assertSetEqual({self.files[0], self.files[1]}, backend.query_files(f"({tag1} | {tag2})"))
+    def test_list_files_query_OR_parentheses(self):
+        tag1 = "test_list_files_query_OR_parentheses1"
+        tag2 = "test_list_files_query_OR_parentheses2"
+        backend.connect_tag(self.files[0], tag1)
+        backend.connect_tag(self.files[1], tag2)
+        self.assertSetEqual({self.files[0], self.files[1]}, backend.query_files(f"({tag1} | {tag2})"))
 
-    # def test_list_files_query_OR_nonexistent(self):
-    #     self.assertSetEqual(set(), backend.query_files(f"test_list_files_query_OR_nonexistent1 | test_list_files_query_OR_nonexistent2"))
-    #     backend.connect_tag(self.files[0], "test_list_files_query_OR_nonexistent1")
-    #     self.assertSetEqual({self.files[0]}, backend.query_files(f"test_list_files_query_OR_nonexistent1 | test_list_files_query_OR_nonexistent2"))
-    #     backend.delete_tag("test_list_files_query_OR_nonexistent1")
-    #     backend.connect_tag(self.files[0], "test_list_files_query_OR_nonexistent2")
-    #     self.assertSetEqual({self.files[0]}, backend.query_files(f"test_list_files_query_OR_nonexistent1 | test_list_files_query_OR_nonexistent2"))
+    def test_list_files_query_OR_nonexistent(self):
+        self.assertSetEqual(set(), backend.query_files(f"test_list_files_query_OR_nonexistent1 | test_list_files_query_OR_nonexistent2"))
+        backend.connect_tag(self.files[0], "test_list_files_query_OR_nonexistent1")
+        self.assertSetEqual({self.files[0]}, backend.query_files(f"test_list_files_query_OR_nonexistent1 | test_list_files_query_OR_nonexistent2"))
+        backend.delete_tag("test_list_files_query_OR_nonexistent1")
+        backend.connect_tag(self.files[0], "test_list_files_query_OR_nonexistent2")
+        self.assertSetEqual({self.files[0]}, backend.query_files(f"test_list_files_query_OR_nonexistent1 | test_list_files_query_OR_nonexistent2"))
 
-    # def test_list_files_query_NOT(self):
-    #     tag1 = "test_list_files_query_NOT1"
-    #     tag2 = "test_list_files_query_NOT2"
-    #     backend.connect_tag(self.files[0], tag1)
-    #     backend.connect_tag(self.files[0], tag2)
-    #     backend.connect_tag(self.files[1], tag1)
-    #     self.assertSetEqual({self.files[1]}, backend.query_files(f"{tag1} / {tag2}"))
-    #     self.assertSetEqual(set(), backend.query_files(f"{tag2} / {tag1}"))
+    def test_list_files_query_NOT(self):
+        tag1 = "test_list_files_query_NOT1"
+        tag2 = "test_list_files_query_NOT2"
+        backend.connect_tag(self.files[0], tag1)
+        backend.connect_tag(self.files[0], tag2)
+        backend.connect_tag(self.files[1], tag1)
+        self.assertSetEqual({self.files[1]}, backend.query_files(f"{tag1} / {tag2}"))
+        self.assertSetEqual(set(), backend.query_files(f"{tag2} / {tag1}"))
 
-    # def test_list_files_query_NOT_parentheses(self):
-    #     tag1 = "test_list_files_query_NOT_parentheses1"
-    #     tag2 = "test_list_files_query_NOT_parentheses2"
-    #     backend.connect_tag(self.files[0], tag1)
-    #     backend.connect_tag(self.files[0], tag2)
-    #     backend.connect_tag(self.files[1], tag1)
-    #     self.assertSetEqual({self.files[1]}, backend.query_files(f"({tag1} / {tag2})"))
-    #     self.assertSetEqual(set(), backend.query_files(f"({tag2} / {tag1})"))
+    def test_list_files_query_NOT_parentheses(self):
+        tag1 = "test_list_files_query_NOT_parentheses1"
+        tag2 = "test_list_files_query_NOT_parentheses2"
+        backend.connect_tag(self.files[0], tag1)
+        backend.connect_tag(self.files[0], tag2)
+        backend.connect_tag(self.files[1], tag1)
+        self.assertSetEqual({self.files[1]}, backend.query_files(f"({tag1} / {tag2})"))
+        self.assertSetEqual(set(), backend.query_files(f"({tag2} / {tag1})"))
     
-    # def test_list_files_query_NOT_nonexistent(self):
-    #     self.assertSetEqual(set(), backend.query_files(f"test_list_files_query_NOT_nonexistent1 / test_list_files_query_NOT_nonexistent2"))
-    #     backend.connect_tag(self.files[0], "test_list_files_query_NOT_nonexistent1")
-    #     self.assertSetEqual({self.files[0]}, backend.query_files(f"test_list_files_query_NOT_nonexistent1 / test_list_files_query_NOT_nonexistent2"))
-    #     backend.delete_tag("test_list_files_query_NOT_nonexistent1")
-    #     backend.connect_tag(self.files[0], "test_list_files_query_NOT_nonexistent2")
-    #     self.assertSetEqual(set(), backend.query_files(f"test_list_files_query_NOT_nonexistent1 / test_list_files_query_NOT_nonexistent2"))
+    def test_list_files_query_NOT_nonexistent(self):
+        self.assertSetEqual(set(), backend.query_files(f"test_list_files_query_NOT_nonexistent1 / test_list_files_query_NOT_nonexistent2"))
+        backend.connect_tag(self.files[0], "test_list_files_query_NOT_nonexistent1")
+        self.assertSetEqual({self.files[0]}, backend.query_files(f"test_list_files_query_NOT_nonexistent1 / test_list_files_query_NOT_nonexistent2"))
+        backend.delete_tag("test_list_files_query_NOT_nonexistent1")
+        backend.connect_tag(self.files[0], "test_list_files_query_NOT_nonexistent2")
+        self.assertSetEqual(set(), backend.query_files(f"test_list_files_query_NOT_nonexistent1 / test_list_files_query_NOT_nonexistent2"))
 
-    # def test_list_files_query_combined(self):
-    #     tag1 = "test_list_files_query_combined1"
-    #     tag2 = "test_list_files_query_combined2"
-    #     tag3 = "test_list_files_query_combined3"
-    #     backend.connect_tag(self.files[0], tag1)
-    #     backend.connect_tag(self.files[0], tag2)
-    #     backend.connect_tag(self.files[1], tag3)
-    #     backend.connect_tag(self.files[1], tag1)
-    #     backend.connect_tag(self.files[1], tag2)
-    #     self.assertSetEqual({self.files[1]}, backend.query_files(f"({tag1} & {tag2}) & {tag3}"))
-    #     self.assertSetEqual({self.files[0], self.files[1]}, backend.query_files(f"{tag1} & {tag2}"))
-    #     self.assertSetEqual({self.files[0]}, backend.query_files(f"{tag1} & ({tag2} / {tag3})"))
-    #     self.assertSetEqual({self.files[1]}, backend.query_files(f"({tag1} | {tag2}) & ({tag1} & {tag3})"))
+    def test_list_files_query_combined_parenthesized(self):
+        tag1 = "test_list_files_query_combined1"
+        tag2 = "test_list_files_query_combined2"
+        tag3 = "test_list_files_query_combined3"
+        backend.connect_tag(self.files[0], tag1)
+        backend.connect_tag(self.files[0], tag2)
+        backend.connect_tag(self.files[1], tag3)
+        backend.connect_tag(self.files[1], tag1)
+        backend.connect_tag(self.files[1], tag2)
+        self.assertSetEqual({self.files[1]}, backend.query_files(f"({tag1} & {tag2}) & {tag3}"))
+        self.assertSetEqual({self.files[0], self.files[1]}, backend.query_files(f"{tag1} & {tag2}"))
+        self.assertSetEqual({self.files[0]}, backend.query_files(f"{tag1} & ({tag2} / {tag3})"))
+        self.assertSetEqual({self.files[1]}, backend.query_files(f"({tag1}  | {tag2}) & ({tag1} & {tag3})"))
 
-    # def test_list_files_query_wrong(self):
-    #     tag1 = "test_list_files_query_wrong1"
-    #     tag2 = "test_list_files_query_wrong2"
-    #     backend.connect_tag(self.files[0], tag1)
-    #     backend.connect_tag(self.files[1], tag2)
-    #     with self.assertRaises(Exception):
-    #         self.assertSetEqual(set(), backend.query_files(f"{tag1} {tag2}"))
-    #     with self.assertRaises(Exception):
-    #         backend.query_files(f"{tag1} / {tag2} / {tag1}")
-    #     with self.assertRaises(Exception):
-    #         backend.query_files(f"{tag1} / {tag2} * {tag1}")
-    #     with self.assertRaises(Exception):
-    #         backend.query_files(f"{tag1} &")
-    #     with self.assertRaises(Exception):
-    #         backend.query_files(f"& {tag1}")
-    #     with self.assertRaises(Exception):
-    #         backend.query_files(f"({tag1} |")
+    def test_list_files_query_combined(self):
+        tag1 = "test_list_files_query_combined1"
+        tag2 = "test_list_files_query_combined2"
+        tag3 = "test_list_files_query_combined3"
+        backend.connect_tag(self.files[0], tag1)
+        backend.connect_tag(self.files[0], tag2)
+        backend.connect_tag(self.files[1], tag3)
+        backend.connect_tag(self.files[1], tag1)
+        backend.connect_tag(self.files[1], tag2)
+        self.assertSetEqual({self.files[1]}, backend.query_files(f"{tag1} & {tag2} & {tag3}"))
+        self.assertSetEqual({self.files[0]}, backend.query_files(f"{tag1} & {tag2} / {tag3}"))
+        self.assertSetEqual({self.files[1]}, backend.query_files(f"({tag1}  | {tag2}) & {tag1} & {tag3}"))
+        self.assertSetEqual({self.files[0]}, backend.query_files(f"({tag1}  | {tag2}) & {tag1} / {tag3}"))
 
-    # def test_list_subtags_direct_ok(self):
-    #     superior_tag = "test_list_subtags_ok_superior"
-    #     inferior_tag1 = "test_list_subtags_ok_inferior1"
-    #     inferior_tag2 = "test_list_subtags_ok_inferior2"
-    #     backend.connect_tag(self.files[0], superior_tag)
-    #     backend.connect_tag(self.files[1], inferior_tag1)
-    #     backend.connect_tag(self.files[2], inferior_tag2)
-    #     backend.connect_subtags(superior_tag, [inferior_tag1, inferior_tag2])
-    #     self.assertSetEqual({inferior_tag1, inferior_tag2}, backend.get_subtags_DIRECT(superior_tag))
+    def test_list_files_query_wrong(self):
+        tag1 = "test_list_files_query_wrong1"
+        tag2 = "test_list_files_query_wrong2"
+        backend.connect_tag(self.files[0], tag1)
+        backend.connect_tag(self.files[1], tag2)
+        with self.assertRaises(Exception):
+            self.assertSetEqual(set(), backend.query_files(f"{tag1} {tag2}"))
+        with self.assertRaises(Exception):
+            backend.query_files(f"{tag1} / {tag2} l {tag1}")
+        with self.assertRaises(Exception):
+            backend.query_files(f"{tag1} &")
+        with self.assertRaises(Exception):
+            backend.query_files(f"& {tag1}")
+        with self.assertRaises(Exception):
+            backend.query_files(f"({tag1} |")
 
-    # def test_list_subtags_direct_nonexistent_superior(self):
-    #     self.assertSetEqual(set(), backend.get_subtags_DIRECT("test_list_subtags_direct_nonexistent_superior"))
+    def test_list_subtags_direct_ok(self):
+        superior_tag = "test_list_subtags_ok_superior"
+        inferior_tag1 = "test_list_subtags_ok_inferior1"
+        inferior_tag2 = "test_list_subtags_ok_inferior2"
+        backend.connect_tag(self.files[0], superior_tag)
+        backend.connect_tag(self.files[1], inferior_tag1)
+        backend.connect_tag(self.files[2], inferior_tag2)
+        backend.connect_subtags(superior_tag, [inferior_tag1, inferior_tag2])
+        self.assertSetEqual({inferior_tag1, inferior_tag2}, backend.get_subtags_DIRECT(superior_tag))
 
-    # def test_list_subtags_indirect_ok(self):
-    #     superior_tag = "test_list_subtags_indirect_ok_superior"
-    #     inferior_tag1 = "test_list_subtags_indirect_ok_inferior1"
-    #     inferior_tag2 = "test_list_subtags_indirect_ok_inferior2"
-    #     backend.connect_tag(self.files[0], superior_tag)
-    #     backend.connect_tag(self.files[1], inferior_tag1)
-    #     backend.connect_tag(self.files[2], inferior_tag2)
-    #     backend.connect_subtags(superior_tag, [inferior_tag1])
-    #     backend.connect_subtags(inferior_tag1, [inferior_tag2])
-    #     self.assertSetEqual({inferior_tag1}, backend.get_subtags_DIRECT(superior_tag))
-    #     self.assertDictEqual({inferior_tag1: {inferior_tag2: {}}}, backend.get_subtags(superior_tag))
+    def test_list_subtags_direct_nonexistent_superior(self):
+        self.assertSetEqual(set(), backend.get_subtags_DIRECT("test_list_subtags_direct_nonexistent_superior"))
+
+    def test_list_subtags_indirect_ok(self):
+        superior_tag = "test_list_subtags_indirect_ok_superior"
+        inferior_tag1 = "test_list_subtags_indirect_ok_inferior1"
+        inferior_tag2 = "test_list_subtags_indirect_ok_inferior2"
+        backend.connect_tag(self.files[0], superior_tag)
+        backend.connect_tag(self.files[1], inferior_tag1)
+        backend.connect_tag(self.files[2], inferior_tag2)
+        backend.connect_subtags(superior_tag, [inferior_tag1])
+        backend.connect_subtags(inferior_tag1, [inferior_tag2])
+        self.assertSetEqual({inferior_tag1}, backend.get_subtags_DIRECT(superior_tag))
+        self.assertDictEqual({inferior_tag1: {inferior_tag2: {}}}, backend.get_subtags(superior_tag))
 
     
     

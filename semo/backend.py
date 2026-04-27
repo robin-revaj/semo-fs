@@ -1,7 +1,7 @@
 #!.venv/bin/python3
 
 from semo import database as db, os_calls, validator as v, settings, errors, utils
-import logging 
+import logging, pyparsing 
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -11,6 +11,8 @@ file_handler.setLevel(logging.DEBUG)
 file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
 
 logger.addHandler(file_handler)
+
+# INPUT
 
 def connect_tag(file_name : str, tag_name : str, value = None) -> list[str]:
     try:
@@ -117,6 +119,8 @@ def disconnect_subtags(superior_tag_name : str, inferior_tags : list[str]) -> li
         logger.info(f"Unassigned inferior tag '{inferior_tag_name}' from superior tag '{superior_tag_name}'")
     return failures
 
+# OUTPUT
+
 def get_all_tags() -> set[str]:
     database = db.Database(utils.get_working_db())
     return database.get_tags()
@@ -137,87 +141,6 @@ def get_tags_for_file(file_name : str) -> set[str]:
     
     output = database.get_tags_for_file(file_system, inode)
     return output
-
-def query_files(query : str, long_format = False) -> set[str]:
-    database = db.Database(utils.get_working_db())
-    validator = v.Validator(database)
-
-    if query:
-        instruction_list = validator.parse_query(query)
-        return process_query_instruction(instruction_list)
-
-    logger.info(f"List files operation with empty query. Outputting all files.")
-    raw_output = database.get_files_with_paths()
-    if long_format:
-        user_output = { (file_system, inode, verified_path(file_system, inode, unconfirmed_path)) for (file_system, inode, unconfirmed_path) in raw_output }
-    else:
-        user_output = { verified_path(file_system, inode, unconfirmed_path) for (file_system, inode, unconfirmed_path) in raw_output }
-    return user_output
-
-def process_query_instruction(level_data):
-    if isinstance(level_data, set):
-        return level_data
-    if isinstance(level_data, str):
-        return get_files_for_tag(level_data)
-    
-    if len(level_data) == 1:
-        return process_query_instruction(level_data[0])
-    if len(level_data) != 3:
-        raise errors.NecessaryUpstreamInterrupt("Incorrect instruction level: " + str(level_data))
-    
-    operator = level_data[1]
-    operand1 = process_query_instruction(level_data[0])
-    operand2 = process_query_instruction(level_data[2])
-
-    match(operator):
-        case "&":
-            return operand1.intersection(operand2)
-        case "|" | "+":
-            return operand1.union(operand2)
-        case "/" | "-":
-            return operand1.difference(operand2)
-        case _:
-            raise errors.NecessaryUpstreamInterrupt("Incorrect operator: " + operator + ", in expression: " + " ".join(level_data))
-        
-def verified_path(file_system, inode, unconfirmed_path):
-    try:
-        file_system_check, inode_check = os_calls.retrieve_inode_from_path(unconfirmed_path)
-        if file_system_check != file_system or inode_check != inode:
-            return f"File formerly at {unconfirmed_path}."
-        return unconfirmed_path
-    except Exception as e:
-        logger.info(f"Failed to verify path for file ({file_system}, {inode}). Error: {type(e).__name__} - {str(e)}. Returning unconfirmed path '{unconfirmed_path}'")
-        return f"File formerly at {unconfirmed_path}."
-
-def get_files_for_tag_DIRECT(tag_name : str, long_format : bool = False) -> set:
-    database = db.Database(utils.get_working_db())
-    validator = v.Validator(database)
-
-    permit = validator.approved_list_for_tag_operation(tag_name)
-    logger.info(f"Approved - List files for tag direct operation ({tag_name}) : {permit.approved}")
-    if not permit.approved:
-        logger.info(permit.data)
-        return set()
-    raw_output = database._direct_files_for_tag(tag_name)
-    if long_format:
-        return raw_output
-    return { unconfirmed_path for (file_system, inode, unconfirmed_path, id) in raw_output }
-
-def get_files_for_tag(tag_name : str, limit_to_direct : bool = False, long_format : bool = False) -> set:
-    database = db.Database(utils.get_working_db())
-    validator = v.Validator(database)
-
-    permit = validator.approved_list_for_tag_operation(tag_name)
-    logger.info(f"Approved - List files for tag operation ({tag_name}) : {permit.approved}")
-    if not permit.approved:
-        logger.info(permit.data)
-        return set()
-    
-    raw_output = database.get_files_for_tag(tag_name)
-    if long_format:
-        return raw_output
-    user_output = { unconfirmed_path for (file_system, inode, unconfirmed_path, id) in raw_output }
-    return user_output
 
 def get_subtags_DIRECT(superior_tag_name : str) -> set[str]:
     database = db.Database(utils.get_working_db())
@@ -254,3 +177,153 @@ def get_roots() -> set[str]:
 def get_file_by_id(id : int) -> tuple[int, int, str, int] | None:
     database = db.Database(utils.get_working_db())
     return database.get_file_by_id(id)
+
+def query_files(query : str, long_format = False) -> set[str] | set[tuple]:
+    database = db.Database(utils.get_working_db())
+    validator = v.Validator(database)
+
+    if query:
+        instruction_list = _query_parse_instruction_set(query)
+        raw_output = _query_read_level(instruction_list)
+    else:
+        logger.info(f"List files operation with empty query. Outputting all files.")
+        raw_output = database.get_files_with_paths()
+    
+    if long_format:
+        return raw_output
+    return {path for (_, _, path, _) in raw_output}
+
+def _query_parse_instruction_set(query : str) -> list:
+    variable = pyparsing.Word(pyparsing.alphanums + "_-")
+    constant = pyparsing.Word(pyparsing.alphanums + "_-")
+    set_operator = pyparsing.one_of("& | + /")
+    cond_operator = pyparsing.one_of("== > < >= <=")
+    conditioned_variable = pyparsing.Group( variable + cond_operator + constant )
+    operand = variable | conditioned_variable
+    expression = pyparsing.infix_notation(operand, [(set_operator, 2, pyparsing.opAssoc.LEFT)])
+    output = expression.parse_string(query, parse_all=True).as_list()
+    if len(output) == 1 and isinstance(output[0], list):
+        output = output[0]
+    return output
+
+def _query_read_level(level_data : list) -> set:
+    if len(level_data) == 1:
+        return _query_resolve_operand(level_data[0])
+    if len(level_data) < 3:
+        raise Exception("wrong query read: ", level_data)
+    op1 = level_data.pop(0)
+
+    while level_data:
+        operator, op2 = level_data.pop(0), level_data.pop(0)
+        if pyparsing.one_of("& | + /").parse_string(operator):
+            if isinstance(op1, list):
+                set1 = _query_read_level(op1)
+            else: set1 = _query_resolve_operand(op1)
+            if isinstance(op2, list):
+                set2 = _query_read_level(op2)
+            else: set2 = _query_resolve_operand(op2)
+            op1 = _query_single_set_operation( set1, operator, set2 )
+        else:
+            var : str = str(op1)
+            condition : str | int = op2
+            op1 = _query_resolve_condition( var, operator, condition )
+        
+    return op1
+
+def _query_single_set_operation(operand1 : set, operator : str, operand2 : set) -> set:
+    match (operator):
+        case "&":
+            return operand1.intersection(operand2)
+        case "|" | "+":
+            return operand1.union(operand2)
+        case "/" :
+            return operand1.difference(operand2)
+        case _:
+            raise Exception("Incorrect operator: " + operator)
+
+def _query_resolve_operand(operand : str | set) -> set:
+    if isinstance(operand, set): return operand
+    if isinstance(operand, str): return get_files_for_tag(operand, long_format=True)
+    raise Exception("wrong operand type: ", operand)
+
+def _query_resolve_condition(tag_name : str, operation : str, value : int | str):
+    database = db.Database(utils.get_working_db())
+    validator = v.Validator(database)
+
+    permit = validator.approved_conditional_list_for_tag_operation(tag_name, value)
+    if not permit.approved:
+        raise Exception(f"tag {tag_name} type incompatible with '{value}'")
+    match database.get_tag_type(tag_name):
+        case "int":
+            value = int(value)
+            return database._int_rels_for_tag_condition(tag_name, operation, value)
+        case "str":
+            value = str(value)
+            return database._str_rels_for_tag_condition(tag_name, value)
+    raise Exception(f"type '{value}' not comparable")    
+        
+def process_query_instruction(level_data):
+    if isinstance(level_data, set):
+        return level_data
+    if isinstance(level_data, str):
+        return get_files_for_tag(level_data)
+    
+    if len(level_data) == 1:
+        return process_query_instruction(level_data[0])
+    if len(level_data) != 3:
+        raise errors.NecessaryUpstreamInterrupt("Incorrect instruction level: " + str(level_data))
+    
+    operator = level_data[1]
+    operand1 = process_query_instruction(level_data[0])
+    operand2 = process_query_instruction(level_data[2])
+
+    match(operator):
+        case "&":
+            return operand1.intersection(operand2)
+        case "|" | "+":
+            return operand1.union(operand2)
+        case "/" :
+            return operand1.difference(operand2)
+        case _:
+            raise errors.NecessaryUpstreamInterrupt("Incorrect operator: " + operator + ", in expression: " + " ".join(level_data))
+        
+# def verified_path(file_system, inode, unconfirmed_path):
+#     try:
+#         file_system_check, inode_check = os_calls.retrieve_inode_from_path(unconfirmed_path)
+#         if file_system_check != file_system or inode_check != inode:
+#             return f"File formerly at {unconfirmed_path}."
+#         return unconfirmed_path
+#     except Exception as e:
+#         logger.info(f"Failed to verify path for file ({file_system}, {inode}). Error: {type(e).__name__} - {str(e)}. Returning unconfirmed path '{unconfirmed_path}'")
+#         return f"File formerly at {unconfirmed_path}."
+
+def get_files_for_tag_DIRECT(tag_name : str, long_format : bool = False) -> set:
+    database = db.Database(utils.get_working_db())
+    validator = v.Validator(database)
+
+    permit = validator.approved_list_for_tag_operation(tag_name)
+    logger.info(f"Approved - List files for tag direct operation ({tag_name}) : {permit.approved}")
+    if not permit.approved:
+        logger.info(permit.data)
+        return set()
+    raw_output = database._direct_files_for_tag(tag_name)
+    if long_format:
+        return raw_output
+    return { unconfirmed_path for (file_system, inode, unconfirmed_path, id) in raw_output }
+
+def get_files_for_tag(tag_name : str, limit_to_direct : bool = False, long_format : bool = False) -> set:
+    database = db.Database(utils.get_working_db())
+    validator = v.Validator(database)
+
+    permit = validator.approved_list_for_tag_operation(tag_name)
+    logger.info(f"Approved - List files for tag operation ({tag_name}) : {permit.approved}")
+    if not permit.approved:
+        logger.info(permit.data)
+        return set()
+    
+    raw_output = database.get_files_for_tag(tag_name)
+    if long_format:
+        return raw_output
+    user_output = { unconfirmed_path for (file_system, inode, unconfirmed_path, id) in raw_output }
+    return user_output
+

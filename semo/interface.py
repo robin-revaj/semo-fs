@@ -42,7 +42,11 @@ def translate_LISTROOTS(args):
     return output
 
 def interface_translate_LISTFILES(args):
-    query : str = args.query
+    try:
+        query : str = args.query
+    except Exception as e:
+        query : str = args.query.join(" ")
+        
     if hasattr(args, "long"):
         long_format : bool = args.long
     else:

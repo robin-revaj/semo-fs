@@ -278,14 +278,6 @@ class Database:
                               AND inferior_id == ?", (self.__get_tag_id(superior_tag), self.__get_tag_id(inferior_tag)))
         conn.commit()
         
-
-
-
-
-
-
-
-
     # direct queries
 
     def __direct_null_rels_for_file(self, fsid : int, inode : int) -> set[str]:
@@ -341,7 +333,7 @@ class Database:
                                         LEFT JOIN file ON r.file_id == file.id", (self.__get_tag_id(tag_name),))
         return {(x[0], x[1], x[2], x[3], x[4]) for x in res.fetchall()}
     
-    def _str_rels_for_tag_equals_condition(self, tag_name : str, condition : str) -> set[tuple]:
+    def _str_rels_for_tag_condition(self, tag_name : str, condition : str) -> set[tuple]:
         res = self.__connection().cursor().execute("SELECT file.fsid, file.inode, file.path, file.id, r.value FROM (\
                                             SELECT rel_file_tag_str.tag_id, rel_file_tag_str.file_id, rel_file_tag_str.value \
                                             FROM rel_file_tag_str LEFT JOIN tag ON rel_file_tag_str.tag_id == tag.id\
@@ -358,27 +350,15 @@ class Database:
                                             LEFT JOIN file ON r.file_id == file.id", (self.__get_tag_id(tag_name),))
         return {(x[0], x[1], x[2], x[3], x[4]) for x in res.fetchall()}
     
-    def _int_rels_for_tag_range_condition(self, tag_name : str, start : int | None, end : int | None) -> set[tuple]:
-        res = self.__connection().cursor().execute("SELECT file.fsid, file.inode, file.path, file.id, r.value FROM (\
+    def _int_rels_for_tag_condition(self, tag_name : str, operator : str, condition : int) -> set[tuple]:
+        if operator not in ["==", ">", "<", ">=", "<="]:
+            raise Exception("invalid condition operator")
+        res = self.__connection().cursor().execute(f"SELECT file.fsid, file.inode, file.path, file.id, r.value FROM (\
                                             SELECT rel_file_tag_int.tag_id, rel_file_tag_int.file_id, rel_file_tag_int.value \
                                             FROM rel_file_tag_int LEFT JOIN tag ON rel_file_tag_int.tag_id == tag.id\
                                             WHERE tag.id == ?) AS r\
-                                            LEFT JOIN file ON r.file_id == file.id", (self.__get_tag_id(tag_name), ))
-        if start is not None and end is not None:
-            return {(x[0], x[1], x[2], x[3], x[4]) for x in res.fetchall() if x[4] >= start and x[4] <= end}
-        if start is not None:
-            return {(x[0], x[1], x[2], x[3], x[4]) for x in res.fetchall() if x[4] >= start}
-        if end is not None:
-            return {(x[0], x[1], x[2], x[3], x[4]) for x in res.fetchall() if x[4] <= end}
-        raise Exception("no condition for conditioned query")
-    
-    def _int_rels_for_tag_equals_condition(self, tag_name : str, condition : int) -> set[tuple]:
-        res = self.__connection().cursor().execute("SELECT file.fsid, file.inode, file.path, file.id, r.value FROM (\
-                                            SELECT rel_file_tag_int.tag_id, rel_file_tag_int.file_id, rel_file_tag_int.value \
-                                            FROM rel_file_tag_int LEFT JOIN tag ON rel_file_tag_int.tag_id == tag.id\
-                                            WHERE tag.id == ?) AS r\
-                                            LEFT JOIN file ON r.file_id == file.id\
-                                            WHERE r.value == ?", (self.__get_tag_id(tag_name), condition))
+                                            LEFT JOIN file ON r.file_id == file.id \
+                                            WHERE r.value {operator} ?", (self.__get_tag_id(tag_name), condition))
         return {(x[0], x[1], x[2], x[3], x[4]) for x in res.fetchall()}
     
     def _direct_rels_for_tag(self, tag_name : str) -> set[tuple]:
@@ -420,12 +400,12 @@ class Database:
     def get_tags(self) -> set[str]:
         res = self.__connection().cursor().execute ("SELECT name FROM tag")
         return set([x[0] for x in res.fetchall()])
-    def get_files(self) -> set[tuple[str, int]]:
+    def get_files(self) -> set[tuple[int, int]]:
         res = self.__connection().cursor().execute ("SELECT fsid, inode, path FROM file")
         return set([(x[0], x[1]) for x in res.fetchall()])
-    def get_files_with_paths(self) -> set[tuple[str, int, str]]:
-        res = self.__connection().cursor().execute ("SELECT fsid, inode, path FROM file")
-        return set([(x[0], x[1], x[2]) for x in res.fetchall()])
+    def get_files_with_paths(self) -> set[tuple[int, int, str, int]]:
+        res = self.__connection().cursor().execute ("SELECT fsid, inode, path, id FROM file")
+        return set([(x[0], x[1], x[2], x[3]) for x in res.fetchall()])
     
     def get_tags_for_file(self, fsid : int, inode : int) -> set[str]:
         output = set()
@@ -447,7 +427,7 @@ class Database:
         res = self.__connection().cursor().execute("SELECT type FROM tag WHERE name == ?", (tag_name,))
         return res.fetchone()[0]
     
-    def get_files_for_tag(self, tag_name : str) -> set[tuple]:
+    def get_files_for_tag(self, tag_name : str) -> set[tuple[int, int, str, int]]:
         output = self._direct_files_for_tag(tag_name)
         for rel in self.get_inferiors_tree(tag_name):
             output.update(self._direct_files_for_tag(rel))

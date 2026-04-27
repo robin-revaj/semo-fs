@@ -1,8 +1,7 @@
 #!.venv/bin/python3
 
 from semo import database, settings
-import pyparsing
-import logging 
+import logging, pyparsing 
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -169,6 +168,13 @@ class Validator:
             permit.data.append(f"Tag '{tag_name}' does not exist.")
         
         return permit
+    
+    def approved_conditional_list_for_tag_operation(self, tag_name, condition) -> Validation:
+        permit = self.approved_list_for_tag_operation(tag_name)
+        if not permit.approved or not self.corresponding_tag_type(tag_name, condition):
+            permit.approved = False
+            permit.data.append(f"Tag '{tag_name}' not type corresponding to '{condition}'")
+        return permit
 
     def approved_list_for_file_operation(self, file_system, inode, filepath) -> Validation:
         permit = Validation(self.file_exists(file_system, inode))
@@ -227,34 +233,6 @@ class Validator:
         logger.info(f"Approval for unsubtag operation for superior tag '{super_tag_name}' and inferior tag '{inf_tag_name}': {permit.approved}")
         return permit
     
-    def parse_query(self, query : str) -> list[str] | str:
-        # config
-
-        word = pyparsing.Word(pyparsing.alphanums + "_")
-        operator = pyparsing.one_of("& | + / -")
-        expression = pyparsing.Forward()
-        atom = word | pyparsing.Group(pyparsing.Literal("(").suppress() + expression + pyparsing.Literal(")").suppress())
-        expression <<= atom + pyparsing.Optional(operator + atom)
-
-        wrapped_entity = pyparsing.Suppress("(") + expression + pyparsing.Suppress(")")
-        # parsers
-
-        unsplitable_particle = pyparsing.Or(( word, operator ))
-
-        # output = expression.parse_string(query, parse_all=True).as_list()
-        # if len(output) == 1:
-        #     return output[0]
-        # return output
-    
-        parser = pyparsing.Or((
-                atom,
-                wrapped_entity,
-                atom + operator + atom,
-                atom + operator + wrapped_entity,
-                wrapped_entity + operator + atom,
-                wrapped_entity + operator + wrapped_entity ))
-        
-        return expression.parse_string(query, parse_all=True).as_list()
             
 
         

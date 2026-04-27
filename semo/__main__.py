@@ -34,7 +34,8 @@ def main():
     list_subtags_parser.set_defaults(func=cli.interface_translate_LISTSUBTAGS)
 
     list_files_parser = subparsers.add_parser("ls_files", help="list all files or list files for given tags")
-    list_files_parser.add_argument("-q", "--query", nargs='?', default="")
+    list_files_parser.add_argument("query", nargs='*', default="")
+    #list_files_parser.add_argument("-q", "--query", nargs='?', default="")
     list_files_parser.add_argument("-l", "--long", action="store_true", help="display long format")
     list_files_parser.set_defaults(func=cli.interface_translate_LISTFILES)
 
