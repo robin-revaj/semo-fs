@@ -2,24 +2,32 @@ import unittest
 import os
 from semo import backend
 from semo import database as db, utils
+from semo.utils import SemoException
 
 class TestCommandBackend(unittest.TestCase):
-    def setUp(self):
-        self.path = utils.get_test_db()
-        utils.set_working_db(self.path)
-        self.DB = db.Database(self.path)
-        self.DB.init_create_script()
-        self.loc = "test/data/"
-        files = [open(self.loc + "file1.txt", "x"), open(self.loc + "file2.txt", "x"), open(self.loc + "file3.txt", "x")]
-        self.files = []
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.path = utils.get_test_db()
+        utils.set_working_db(cls.path)
+        cls.DB = db.Database(cls.path)
+        cls.DB.init_create_script()
+        cls.loc = "tests/data/"
+        files = [open(cls.loc + "file1.txt", "x"), open(cls.loc + "file2.txt", "x"), open(cls.loc + "file3.txt", "x")]
+        cls.files = []
         for f in files:
-            self.files.append(f.name)
+            cls.files.append(f.name)
             f.close()
-    def tearDown(self):
-        os.remove(self.path)
+        return super().setUpClass()
+    @classmethod
+    def tearDownClass(cls) -> None:
         utils.set_working_db(utils.get_default_db())
-        for f in self.files:
+        os.remove(cls.path)
+        for f in cls.files:
             os.remove(f)
+        return super().tearDownClass()
+    
+    def tearDown(self):
+        self.DB.clear_contents()
 
     def test_tag_ok(self):
         filepath = self.files[0]
@@ -591,16 +599,86 @@ class TestCommandBackend(unittest.TestCase):
         tag2 = "test_list_files_query_wrong2"
         backend.connect_tag(self.files[0], tag1)
         backend.connect_tag(self.files[1], tag2)
-        with self.assertRaises(Exception):
+        with self.assertRaises(SemoException):
             self.assertSetEqual(set(), backend.query_files(f"{tag1} {tag2}"))
-        with self.assertRaises(Exception):
+        with self.assertRaises(SemoException):
             backend.query_files(f"{tag1} / {tag2} l {tag1}")
-        with self.assertRaises(Exception):
+        with self.assertRaises(SemoException):
             backend.query_files(f"{tag1} &")
-        with self.assertRaises(Exception):
+        with self.assertRaises(SemoException):
             backend.query_files(f"& {tag1}")
-        with self.assertRaises(Exception):
+        with self.assertRaises(SemoException):
             backend.query_files(f"({tag1} |")
+
+    def test_query_with_str_condition(self):
+        t1 = "test_query_with_str_condition"
+        backend.connect_tag(self.files[0], t1, "a")
+        backend.connect_tag(self.files[1], t1, "abc")
+        backend.connect_tag(self.files[2], t1, "abc")
+        self.assertSetEqual({self.files[0],}, backend.query_files(f"{t1} == a"))
+        self.assertSetEqual({self.files[1], self.files[2]}, backend.query_files(f"{t1} == abc"))
+        self.assertEqual(0, len(backend.query_files(f"{t1} == b")))
+
+    def test_query_with_str_condition_wrong(self):
+        t1 = "test_query_with_str_condition"
+        backend.connect_tag(self.files[0], t1, "a")
+        backend.connect_tag(self.files[1], t1, "abc")
+        backend.connect_tag(self.files[2], t1, "abc")
+        with self.assertRaises(SemoException):
+            self.assertSetEqual({self.files[0],}, backend.query_files(f"{t1} = a"))
+        with self.assertRaises(SemoException):
+            self.assertSetEqual({self.files[1], self.files[2]}, backend.query_files(f"{t1} === abc"))
+        with self.assertRaises(SemoException):
+            self.assertEqual(0, len(backend.query_files(f"{t1} < b")))
+
+    def test_query_with_int_condition_eq(self):
+        t1 = "test_query_with_int_condition"
+        backend.connect_tag(self.files[0], t1, 5)
+        backend.connect_tag(self.files[1], t1, 10)
+        backend.connect_tag(self.files[2], t1, 10)
+        self.assertSetEqual({self.files[0],}, backend.query_files(f"{t1} == 5"))
+        self.assertSetEqual({self.files[1], self.files[2]}, backend.query_files(f"{t1} == 10"))
+        self.assertEqual(0, len(backend.query_files(f"{t1} == 3")))
+
+    def test_query_with_int_condition_gt(self):
+        t1 = "test_query_with_int_condition"
+        backend.connect_tag(self.files[0], t1, 5)
+        backend.connect_tag(self.files[1], t1, 10)
+        backend.connect_tag(self.files[2], t1, 20)
+        self.assertSetEqual({self.files[2],}, backend.query_files(f"{t1} > 10"))
+        self.assertSetEqual({self.files[1], self.files[2]}, backend.query_files(f"{t1} >= 10"))
+        self.assertSetEqual({self.files[0], self.files[1], self.files[2]}, backend.query_files(f"{t1} >= -2"))
+        self.assertEqual(0, len(backend.query_files(f"{t1} > 20")))
+
+    def test_query_with_int_condition_lt(self):
+        t1 = "test_query_with_int_condition"
+        backend.connect_tag(self.files[0], t1, 5)
+        backend.connect_tag(self.files[1], t1, 10)
+        backend.connect_tag(self.files[2], t1, 20)
+        self.assertSetEqual({self.files[0],}, backend.query_files(f"{t1} < 7"))
+        self.assertSetEqual({self.files[0],}, backend.query_files(f"{t1} <= 5"))
+        self.assertSetEqual({self.files[0], self.files[1]}, backend.query_files(f"{t1} < 20"))
+        self.assertEqual(0, len(backend.query_files(f"{t1} <= 3")))
+
+    def test_query_with_int_condition_wrong(self):
+        t1 = "test_query_with_int_condition"
+        backend.connect_tag(self.files[0], t1, 5)
+        backend.connect_tag(self.files[1], t1, 20)
+        backend.connect_tag(self.files[2], t1, 38)
+        with self.assertRaises(SemoException):
+            self.assertSetEqual({self.files[0],}, backend.query_files(f"{t1} == a"))
+        with self.assertRaises(SemoException):
+            self.assertSetEqual({self.files[0],}, backend.query_files(f"{t1} > a"))
+        with self.assertRaises(SemoException):
+            self.assertSetEqual({self.files[0],}, backend.query_files(f"{t1} <= a"))
+        with self.assertRaises(SemoException):
+            self.assertSetEqual({self.files[0],}, backend.query_files(f"{t1} = 5"))
+        with self.assertRaises(SemoException):
+            self.assertSetEqual({self.files[1], self.files[2]}, backend.query_files(f"{t1} === 20"))
+        with self.assertRaises(SemoException):
+            self.assertSetEqual({self.files[1], self.files[2]}, backend.query_files(f"{t1} <== 20"))
+        with self.assertRaises(SemoException):
+            self.assertEqual(0, len(backend.query_files(f"{t1} <> 5")))
 
     def test_list_subtags_direct_ok(self):
         superior_tag = "test_list_subtags_ok_superior"

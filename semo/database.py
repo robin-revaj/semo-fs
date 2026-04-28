@@ -1,6 +1,7 @@
 #!.venv/bin/python3
 
 import sqlite3 as sql
+from semo.utils import SemoException
 
 class Database:
     def __init__(self, path : str):
@@ -9,7 +10,8 @@ class Database:
         conn.close()
         # self.__connection : sql.Connection = sql.connect(path)
         # conn.cursor() : sql.Cursor = self.__connection.cursor()
-        self.verify_db()
+        if not self.verify_db():
+            raise SemoException("Provided database has incompatible content")
 
     def __connection(self) -> sql.Connection:
         return sql.connect(self.__path)
@@ -21,38 +23,39 @@ class Database:
                             'idx_rel_ft_str_f', 'idx_rel_ft_str_t', 
                             'idx_rel_ft_int_f', 'idx_rel_ft_int_t', 
                             'idx_rel_tt'}
-
-        conn = self.__connection()
-        res = conn.cursor().execute("SELECT name FROM sqlite_master WHERE type='table'")
-        tables = set(x[0] for x in res.fetchall())
-        if len(tables) == 0:
-            self.init_create_script()
-            return True
-        if tables != required_tables:
-            return False
-        res = conn.cursor().execute("SELECT name FROM sqlite_master WHERE type='index'")
-        indices = set(x[0] for x in res.fetchall())
-        if not required_indices <= indices:
-            return False
-        
-        tag_columns = conn.cursor().execute("SELECT name FROM PRAGMA_TABLE_INFO('tag')")
-        if set(x[0] for x in tag_columns.fetchall()) != {'id', 'name', 'type'}:
-            return False
-        file_columns = conn.cursor().execute("SELECT name FROM PRAGMA_TABLE_INFO('file')")
-        if set(x[0] for x in file_columns.fetchall()) != {'id', 'fsid', 'inode', 'path'}:
-            return False
-        null_rel = conn.cursor().execute("SELECT name FROM PRAGMA_TABLE_INFO('rel_file_tag_null')")
-        if set(x[0] for x in null_rel.fetchall()) != {'id', 'file_id', 'tag_id'}:
-            return False
-        val_rels = [conn.cursor().execute("SELECT name FROM PRAGMA_TABLE_INFO('rel_file_tag_str')"),
-                    conn.cursor().execute("SELECT name FROM PRAGMA_TABLE_INFO('rel_file_tag_int')")]
-        for val_rel in val_rels:
-            if set(x[0] for x in val_rel.fetchall()) != {'id', 'file_id', 'tag_id', 'value'}:
+        try:
+            conn = self.__connection()
+            res = conn.cursor().execute("SELECT name FROM sqlite_master WHERE type='table'")
+            tables = set(x[0] for x in res.fetchall())
+            if len(tables) == 0:
+                self.init_create_script()
+                return True
+            if tables != required_tables:
                 return False
-        rel_tag_tag_columns = conn.cursor().execute("SELECT name FROM PRAGMA_TABLE_INFO('rel_tag_tag')")
-        if set(x[0] for x in rel_tag_tag_columns.fetchall()) != {'id', 'superior_id', 'inferior_id'}:
+            res = conn.cursor().execute("SELECT name FROM sqlite_master WHERE type='index'")
+            indices = set(x[0] for x in res.fetchall())
+            if not required_indices <= indices:
+                return False
+            
+            tag_columns = conn.cursor().execute("SELECT name FROM PRAGMA_TABLE_INFO('tag')")
+            if set(x[0] for x in tag_columns.fetchall()) != {'id', 'name', 'type'}:
+                return False
+            file_columns = conn.cursor().execute("SELECT name FROM PRAGMA_TABLE_INFO('file')")
+            if set(x[0] for x in file_columns.fetchall()) != {'id', 'fsid', 'inode', 'path'}:
+                return False
+            null_rel = conn.cursor().execute("SELECT name FROM PRAGMA_TABLE_INFO('rel_file_tag_null')")
+            if set(x[0] for x in null_rel.fetchall()) != {'id', 'file_id', 'tag_id'}:
+                return False
+            val_rels = [conn.cursor().execute("SELECT name FROM PRAGMA_TABLE_INFO('rel_file_tag_str')"),
+                        conn.cursor().execute("SELECT name FROM PRAGMA_TABLE_INFO('rel_file_tag_int')")]
+            for val_rel in val_rels:
+                if set(x[0] for x in val_rel.fetchall()) != {'id', 'file_id', 'tag_id', 'value'}:
+                    return False
+            rel_tag_tag_columns = conn.cursor().execute("SELECT name FROM PRAGMA_TABLE_INFO('rel_tag_tag')")
+            if set(x[0] for x in rel_tag_tag_columns.fetchall()) != {'id', 'superior_id', 'inferior_id'}:
+                return False
+        except:
             return False
-        
         return True
         
     def init_create_script(self):
@@ -134,7 +137,7 @@ class Database:
             return res.fetchone()[0]
         except TypeError:
             return None
-    def __get_file_id(self, fsid, inode : int) -> int | None:
+    def __get_file_id(self, fsid : int, inode : int) -> int | None:
         res = self.__connection().cursor().execute("SELECT id FROM file WHERE fsid == ? AND inode == ?", (fsid, inode))
         try:
             return res.fetchone()[0]
@@ -165,7 +168,7 @@ class Database:
         return res
     
     def new_tag(self, tag_name : str, tag_type = None):
-        if self.__get_tag_id(tag_name): raise Exception("tag already in database")
+        if self.__get_tag_id(tag_name): raise SemoException("tag already in database")
         conn = self.__connection()
         conn.cursor().execute("INSERT INTO tag VALUES (NULL, ?, ?)", (tag_name, tag_type))
         conn.commit()
@@ -173,7 +176,7 @@ class Database:
         conn = self.__connection()
         id_to_delete = self.__get_tag_id(tag_name)
         if not id_to_delete:
-            raise Exception("tag not in database")
+            raise SemoException("tag not in database")
         tag_type = self.get_tag_type(tag_name)
         conn.cursor().execute("DELETE FROM tag WHERE name == ?", (tag_name,))
         conn.cursor().execute("DELETE FROM rel_tag_tag WHERE superior_id == ? OR inferior_id == ?", (id_to_delete, id_to_delete))
@@ -187,7 +190,7 @@ class Database:
         conn.commit()
 
     def new_file(self, fsid : int, inode : int, path : str):
-        if self.__get_file_id(fsid, inode): raise Exception("file already in database")
+        if self.__get_file_id(fsid, inode): raise SemoException("file already in database")
         conn = self.__connection()
         conn.cursor().execute("INSERT INTO file VALUES (NULL, ?, ?, ?)", (fsid, inode, path))
         conn.commit()
@@ -195,79 +198,79 @@ class Database:
         conn = self.__connection()
         id_to_delete = self.__get_file_id(fsid, inode)
         if not id_to_delete:
-            raise Exception("file not in database")
+            raise SemoException("file not in database")
         conn.cursor().execute("DELETE FROM file WHERE fsid == ? AND inode == ?", (fsid, inode))
         conn.cursor().execute("DELETE FROM rel_file_tag_str WHERE file_id == ?", (id_to_delete,))
         conn.cursor().execute("DELETE FROM rel_file_tag_int WHERE file_id == ?", (id_to_delete,))
         conn.cursor().execute("DELETE FROM rel_file_tag_null WHERE file_id == ?", (id_to_delete,))
         conn.commit()
     
-    def new_rel_file_tag_null(self, fsid : int, inode : int, tag_name : str):
-        file_id, tag_id = self.__get_file_id(fsid, inode), self.__get_tag_id(tag_name)
-        if not file_id or not tag_id: raise Exception("file or tag not in database")
-        if self.__get_rel_file_tag_null_id(tag_id, file_id): raise Exception("relationship already in database")
+    def __new_rel_file_tag_null(self, file_id : int, tag_id : int):
         conn = self.__connection()
         conn.cursor().execute("INSERT INTO rel_file_tag_null VALUES(NULL, ?, ?)", (file_id, tag_id))
         conn.commit()
-    def delete_rel_file_tag_null(self, fsid : int, inode : int, tag_name : str):
+    def __delete_rel_file_tag_null(self, file_id : int, tag_id : int):
         conn = self.__connection()
         conn.cursor().execute("DELETE FROM rel_file_tag_null \
                               WHERE file_id == ? \
-                              AND tag_id == ?", (self.__get_file_id(fsid, inode), self.__get_tag_id(tag_name)))
+                              AND tag_id == ?", (file_id, tag_id))
         conn.commit()
 
-    def new_rel_file_tag_str(self, fsid : int, inode : int, tag_name : str, value : str):
-        file_id, tag_id = self.__get_file_id(fsid, inode), self.__get_tag_id(tag_name)
-        if not file_id or not tag_id: raise Exception("file or tag not in database")
-        if self.__get_rel_file_tag_str_id(tag_id, file_id): raise Exception("relationship already in database")
+    def __new_rel_file_tag_str(self, file_id : int, tag_id : int, value : str):
         conn = self.__connection()
         conn.cursor().execute("INSERT INTO rel_file_tag_str VALUES(NULL, ?, ?, ?)", (file_id, tag_id, value))
         conn.commit()
-    def delete_rel_file_tag_str(self, fsid : int, inode : int, tag_name : str):
+    def __delete_rel_file_tag_str(self, file_id : int, tag_id : int):
         conn = self.__connection()
         conn.cursor().execute("DELETE FROM rel_file_tag_str \
                               WHERE file_id == ? \
-                              AND tag_id == ?", (self.__get_file_id(fsid, inode), self.__get_tag_id(tag_name)))
+                              AND tag_id == ?", (file_id, tag_id))
         conn.commit()
 
-    def new_rel_file_tag_int(self, fsid : int, inode : int, tag_name : str, value : int):
-        file_id, tag_id = self.__get_file_id(fsid, inode), self.__get_tag_id(tag_name)
-        if not file_id or not tag_id: raise Exception("file or tag not in database")
-        if self.__get_rel_file_tag_int_id(tag_id, file_id): raise Exception("relationship already in database")
+    def __new_rel_file_tag_int(self, file_id : int, tag_id : int, value : int):
         conn = self.__connection()
         conn.cursor().execute("INSERT INTO rel_file_tag_int VALUES(NULL, ?, ?, ?)", (file_id, tag_id, value))
         conn.commit()
-    def delete_rel_file_tag_int(self, fsid : int, inode : int, tag_name : str):
+    def __delete_rel_file_tag_int(self, file_id : int, tag_id : int):
         conn = self.__connection()
         conn.cursor().execute("DELETE FROM rel_file_tag_int \
                               WHERE file_id == ? \
-                              AND tag_id == ?", (self.__get_file_id(fsid, inode), self.__get_tag_id(tag_name)))
+                              AND tag_id == ?", (file_id, tag_id))
         conn.commit()
 
     def new_rel_file_tag(self, fsid : int, inode : int, tag_name : str, value = None):
+        file_id, tag_id = self.__get_file_id(fsid, inode), self.__get_tag_id(tag_name)
+        if not file_id or not tag_id: raise SemoException("file or tag not in database")
+        
         match self.get_tag_type(tag_name):
             case "str":
-                if not isinstance(value, str): raise Exception("wrong value type")
-                self.new_rel_file_tag_str(fsid, inode, tag_name, value)
+                if self.__get_rel_file_tag_str_id(tag_id, file_id): raise SemoException("relationship already in database")
+                if not isinstance(value, str): raise SemoException("wrong value type")
+                self.__new_rel_file_tag_str(file_id, tag_id, value)
             case "int":
-                if not isinstance(value, int): raise Exception("wrong value type")
-                self.new_rel_file_tag_int(fsid, inode, tag_name, value)
+                if self.__get_rel_file_tag_int_id(tag_id, file_id): raise SemoException("relationship already in database")
+                if not isinstance(value, int): raise SemoException("wrong value type")
+                self.__new_rel_file_tag_int(file_id, tag_id, value)
             case _:
-                if value is not None: raise Exception("wrong value type")
-                self.new_rel_file_tag_null(fsid, inode, tag_name)
+                if self.__get_rel_file_tag_null_id(tag_id, file_id): raise SemoException("relationship already in database")
+                if value is not None: raise SemoException("wrong value type")
+                self.__new_rel_file_tag_null(file_id, tag_id)
+
     def delete_rel_file_tag(self, fsid : int, inode : int, tag_name : str):
+        file_id, tag_id = self.__get_file_id(fsid, inode), self.__get_tag_id(tag_name)
+        if not file_id or not tag_id: raise SemoException("file or tag not in database")
         match self.get_tag_type(tag_name):
             case "str":
-                self.delete_rel_file_tag_str(fsid, inode, tag_name)
+                self.__delete_rel_file_tag_str(file_id, tag_id)
             case "int":
-                self.delete_rel_file_tag_int(fsid, inode, tag_name)
+                self.__delete_rel_file_tag_int(file_id, tag_id)
             case _:
-                self.delete_rel_file_tag_null(fsid, inode, tag_name)
+                self.__delete_rel_file_tag_null(file_id, tag_id)
 
     def new_rel_tag_tag(self, superior_tag : str, inferior_tag : str):
         sup_id, inf_id = self.__get_tag_id(superior_tag), self.__get_tag_id(inferior_tag)
-        if not sup_id or not inf_id: raise Exception("superior or inferior tag not in database")
-        if self.__get_rel_tag_tag_id(sup_id, inf_id): raise Exception("relationship aready in database")
+        if not sup_id or not inf_id: raise SemoException("superior or inferior tag not in database")
+        if self.__get_rel_tag_tag_id(sup_id, inf_id): raise SemoException("relationship aready in database")
         conn = self.__connection()
         conn.cursor().execute("INSERT INTO rel_tag_tag VALUES(NULL, ?, ?)", (self.__get_tag_id(superior_tag), self.__get_tag_id(inferior_tag)))
         conn.commit()
@@ -352,7 +355,7 @@ class Database:
     
     def _int_rels_for_tag_condition(self, tag_name : str, operator : str, condition : int) -> set[tuple]:
         if operator not in ["==", ">", "<", ">=", "<="]:
-            raise Exception("invalid condition operator")
+            raise SemoException("invalid condition operator")
         res = self.__connection().cursor().execute(f"SELECT file.fsid, file.inode, file.path, file.id, r.value FROM (\
                                             SELECT rel_file_tag_int.tag_id, rel_file_tag_int.file_id, rel_file_tag_int.value \
                                             FROM rel_file_tag_int LEFT JOIN tag ON rel_file_tag_int.tag_id == tag.id\

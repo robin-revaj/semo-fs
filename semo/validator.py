@@ -30,10 +30,17 @@ class Validator:
     def corresponding_tag_type(self, tag_name : str, value : str | int | None) -> bool:
         tag_type = self.database.get_tag_type(tag_name)
         if tag_type == "int":
-            return (isinstance(value, int)) or (isinstance(value, str) and value.isnumeric())
+            return (isinstance(value, int)) or (self.is_integer_string(value))
         if tag_type == "str":
             return (isinstance(value, str))
         return value is None
+
+    def is_integer_string(self, string):
+        try:
+            _ = int(string)
+            return True
+        except ValueError:
+            return False
 
     def file_exists(self, file_system : int, inode : int) -> bool:
         output = (file_system, inode) in self.database.get_files()

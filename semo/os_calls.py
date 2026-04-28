@@ -2,6 +2,7 @@ import os
 import logging
 
 from . import settings 
+from semo.utils import SemoException
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -15,8 +16,8 @@ logger.addHandler(file_handler)
 def retrieve_inode_from_path(filename : str):
     try:
         return (os.statvfs(filename).f_fsid, os.stat(filename).st_ino)
-    except Exception as e:
+    except FileNotFoundError:
         logger.exception(f"Error retrieving fsid, inode for file '{filename}'")
-        raise e
+        raise SemoException(f"File not found {filename}")
 
     

@@ -27,3 +27,6 @@ def get_log_file() -> str:
 
 def get_log_format() -> str:
     return '%(name)s %(levelname)s (%(asctime)s) - %(message)s'
+
+class SemoException(Exception):
+    pass

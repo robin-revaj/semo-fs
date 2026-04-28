@@ -1,35 +1,42 @@
 import unittest
 import os
 from semo import database as db, utils
+from semo.utils import SemoException
 
 class TestDatabaseCommands(unittest.TestCase):
-    def setUp(self):
-        self.path = utils.get_test_db()
-        utils.set_working_db(self.path)
-        self.testDB = db.Database(self.path)
-        self.file_system = 0
-    def tearDown(self):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.path = utils.get_test_db()
+        utils.set_working_db(cls.path)
+        cls.testDB = db.Database(cls.path)
+        cls.file_system = 0
+        return super().setUpClass()
+    @classmethod
+    def tearDownClass(cls) -> None:
         utils.set_working_db(utils.get_default_db())
-        os.remove(self.path)
+        os.remove(cls.path)
+        return super().tearDownClass()
+    def tearDown(self):
+        self.testDB.clear_contents()
         
     def test_verify_empty_db(self):
-        con = db.sql.connect("test/data/emptyDB.db")
+        con = db.sql.connect("tests/data/emptyDB.db")
         cur = con.cursor()
-        empty_db = db.Database("test/data/emptyDB.db")
+        empty_db = db.Database("tests/data/emptyDB.db")
         self.assertTrue(empty_db.verify_db())
-        os.remove("test/data/emptyDB.db")
+        os.remove("tests/data/emptyDB.db")
 
     def test_verify_correct_db(self):
-        con = db.sql.connect("test/data/correctDB.db")
-        db_init = db.Database("test/data/correctDB.db")
+        con = db.sql.connect("tests/data/correctDB.db")
+        db_init = db.Database("tests/data/correctDB.db")
         db_init.init_create_script()
 
-        correct_db = db.Database("test/data/correctDB.db")
+        correct_db = db.Database("tests/data/correctDB.db")
         self.assertTrue(correct_db.verify_db())
-        os.remove("test/data/correctDB.db")
+        os.remove("tests/data/correctDB.db")
 
     def test_verify_incorrect_db(self):
-        con = db.sql.connect("test/data/incorrectDB.db")
+        con = db.sql.connect("tests/data/incorrectDB.db")
         cur = con.cursor()
         cur.execute("PRAGMA foreign_keys = ON")
         cur.execute("CREATE TABLE IF NOT EXISTS tag(\
@@ -37,9 +44,9 @@ class TestDatabaseCommands(unittest.TestCase):
                               name VARCHAR(50) NOT NULL UNIQUE\
                               )")
         con.commit()
-        incorrect_db = db.Database("test/data/incorrectDB.db")
-        self.assertFalse(incorrect_db.verify_db())
-        os.remove("test/data/incorrectDB.db")
+        with self.assertRaises(SemoException):
+            incorrect_db = db.Database("tests/data/incorrectDB.db")
+        os.remove("tests/data/incorrectDB.db")
 
     def test_dump_tables(self):
         pattern = {'tag' : [], 'file' : [], 'rel_file_tag_null' : [], 'rel_file_tag_str' : [], 'rel_file_tag_int' : [], 'rel_tag_tag' : []}
@@ -62,13 +69,13 @@ class TestDatabaseCommands(unittest.TestCase):
     def test_new_tag_duplicate(self):
         tag_name = 'test_new_tag_duplicate'
         self.testDB.new_tag(tag_name)
-        with self.assertRaises(Exception):
+        with self.assertRaises(SemoException):
             self.testDB.new_tag(tag_name)
         self.testDB.delete_tag(tag_name)
 
     def test_delete_nonexistent_tag(self):
         tag_name = 'test_delete_nonexistent_tag'
-        with self.assertRaises(Exception):
+        with self.assertRaises(SemoException):
             self.testDB.delete_tag(tag_name)
 
     def test_new_file(self):
@@ -83,14 +90,14 @@ class TestDatabaseCommands(unittest.TestCase):
         inode = 1
         filename = 'test_new_file_duplicate'
         self.testDB.new_file(self.file_system, inode, filename)
-        with self.assertRaises(Exception):
+        with self.assertRaises(SemoException):
             self.testDB.new_file(self.file_system, inode, filename)
         self.testDB.delete_file(self.file_system, inode)
 
     def test_delete_nonexistent_file(self):
         inode = 1
         filename = 'test_delete_nonexistent_file'
-        with self.assertRaises(Exception):
+        with self.assertRaises(SemoException):
             self.testDB.delete_file(self.file_system, inode)
 
     def test_new_null_rel_file_tag(self):
@@ -106,9 +113,9 @@ class TestDatabaseCommands(unittest.TestCase):
         tables = self.testDB.dump_tables()
         self.assertTrue((1, self.file_system, inode, filename) in tables['file'])
 
-        self.testDB.new_rel_file_tag_null(self.file_system, inode, tag_name)
+        self.testDB.new_rel_file_tag(self.file_system, inode, tag_name)
         self.assertTrue((1, 1, 1) in self.testDB.dump_tables()['rel_file_tag_null'])
-        self.testDB.delete_rel_file_tag_null(self.file_system, inode, tag_name)
+        self.testDB.delete_rel_file_tag(self.file_system, inode, tag_name)
         self.assertFalse((1, 1, 1) in self.testDB.dump_tables()['rel_file_tag_null'])
 
         self.testDB.delete_tag(tag_name)
@@ -127,9 +134,9 @@ class TestDatabaseCommands(unittest.TestCase):
         tables = self.testDB.dump_tables()
         self.assertTrue((1, self.file_system, inode, filename) in tables['file'])
 
-        self.testDB.new_rel_file_tag_str(self.file_system, inode, tag_name, "stringvalue")
+        self.testDB.new_rel_file_tag(self.file_system, inode, tag_name, "stringvalue")
         self.assertTrue((1, 1, 1, "stringvalue") in self.testDB.dump_tables()['rel_file_tag_str'])
-        self.testDB.delete_rel_file_tag_str(self.file_system, inode, tag_name)
+        self.testDB.delete_rel_file_tag(self.file_system, inode, tag_name)
         self.assertFalse((1, 1, 1, "stringvalue") in self.testDB.dump_tables()['rel_file_tag_str'])
 
         self.testDB.delete_tag(tag_name)
@@ -148,9 +155,9 @@ class TestDatabaseCommands(unittest.TestCase):
         tables = self.testDB.dump_tables()
         self.assertTrue((1, self.file_system, inode, filename) in tables['file'])
 
-        self.testDB.new_rel_file_tag_int(self.file_system, inode, tag_name, 2)
+        self.testDB.new_rel_file_tag(self.file_system, inode, tag_name, 2)
         self.assertTrue((1, 1, 1, 2) in self.testDB.dump_tables()['rel_file_tag_int'])
-        self.testDB.delete_rel_file_tag_int(self.file_system, inode, tag_name)
+        self.testDB.delete_rel_file_tag(self.file_system, inode, tag_name)
         self.assertFalse((1, 1, 1, 2) in self.testDB.dump_tables()['rel_file_tag_int'])
 
         self.testDB.delete_tag(tag_name)
@@ -202,17 +209,17 @@ class TestDatabaseCommands(unittest.TestCase):
 
         self.testDB.new_file(self.file_system, inode, filename)
 
-        with self.assertRaises(Exception):
+        with self.assertRaises(SemoException):
             self.testDB.new_rel_file_tag(self.file_system, inode, nulltag, "string")
-        with self.assertRaises(Exception):
+        with self.assertRaises(SemoException):
             self.testDB.new_rel_file_tag(self.file_system, inode, nulltag, 42)
-        with self.assertRaises(Exception):
+        with self.assertRaises(SemoException):
             self.testDB.new_rel_file_tag(self.file_system, inode, strtag)
-        with self.assertRaises(Exception):
+        with self.assertRaises(SemoException):
             self.testDB.new_rel_file_tag(self.file_system, inode, strtag, 42)
-        with self.assertRaises(Exception):
+        with self.assertRaises(SemoException):
             self.testDB.new_rel_file_tag(self.file_system, inode, inttag)
-        with self.assertRaises(Exception):
+        with self.assertRaises(SemoException):
             self.testDB.new_rel_file_tag(self.file_system, inode, inttag, "string")
         tables = self.testDB.dump_tables()
         self.assertTrue(tables['rel_file_tag_null'] == [])
@@ -229,7 +236,7 @@ class TestDatabaseCommands(unittest.TestCase):
         self.testDB.new_file(self.file_system, inode, filename)
         self.testDB.new_rel_file_tag(self.file_system, inode, tag_name)
 
-        with self.assertRaises(Exception):
+        with self.assertRaises(SemoException):
             self.testDB.new_rel_file_tag(self.file_system, inode, tag_name)
 
         self.testDB.delete_rel_file_tag(self.file_system, inode, tag_name)
@@ -245,7 +252,7 @@ class TestDatabaseCommands(unittest.TestCase):
         self.testDB.new_file(self.file_system, inode, filename)
         self.testDB.new_rel_file_tag(self.file_system, inode, tag_name)
 
-        with self.assertRaises(Exception):
+        with self.assertRaises(SemoException):
             self.testDB.new_rel_file_tag(self.file_system, inode, tag_name)
 
         self.testDB.delete_rel_file_tag(self.file_system, inode, tag_name)
@@ -261,7 +268,7 @@ class TestDatabaseCommands(unittest.TestCase):
         self.testDB.new_file(self.file_system, inode, filename)
         self.testDB.new_rel_file_tag(self.file_system, inode, tag_name)
 
-        with self.assertRaises(Exception):
+        with self.assertRaises(SemoException):
             self.testDB.new_rel_file_tag(self.file_system, inode, tag_name)
 
         self.testDB.delete_rel_file_tag(self.file_system, inode, tag_name)
@@ -273,11 +280,11 @@ class TestDatabaseCommands(unittest.TestCase):
         tag_name = 'test_new_rel_file_tag_nonexistent'
         filename = 'test_new_rel_file_tag_nonexistent_f'
 
-        with self.assertRaises(Exception):
+        with self.assertRaises(SemoException):
             self.testDB.new_rel_file_tag(self.file_system, inode, tag_name)
 
         self.testDB.new_tag(tag_name)
-        with self.assertRaises(Exception):
+        with self.assertRaises(SemoException):
             self.testDB.new_rel_file_tag(self.file_system, inode, tag_name)
 
         self.testDB.new_file(self.file_system, inode, filename)
@@ -312,7 +319,7 @@ class TestDatabaseCommands(unittest.TestCase):
         self.testDB.new_tag(tag2_name)
 
         self.testDB.new_rel_tag_tag(tag1_name, tag2_name)
-        with self.assertRaises(Exception):
+        with self.assertRaises(SemoException):
             self.testDB.new_rel_tag_tag(tag1_name, tag2_name)
 
         self.testDB.delete_rel_tag_tag(tag1_name, tag2_name)
@@ -323,11 +330,11 @@ class TestDatabaseCommands(unittest.TestCase):
         tag1_name = 'test_new_rel_tag_tag_nonexistent1'
         tag2_name = 'test_new_rel_tag_tag_nonexistent2'
 
-        with self.assertRaises(Exception):
+        with self.assertRaises(SemoException):
             self.testDB.new_rel_tag_tag(tag1_name, tag2_name)
 
         self.testDB.new_tag(tag1_name)
-        with self.assertRaises(Exception):
+        with self.assertRaises(SemoException):
             self.testDB.new_rel_tag_tag(tag1_name, tag2_name)
 
         self.testDB.new_tag(tag2_name)

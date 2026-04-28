@@ -2,7 +2,7 @@
 
 import os
 
-from . import backend, errors as e, settings
+from . import backend, settings
 
 def interface_translate_TAG(args):
     file_name : str = os.getcwd() + "/" + args.filename
