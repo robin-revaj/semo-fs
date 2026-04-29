@@ -1,8 +1,8 @@
 #!.venv/bin/python3
 
-from semo import database as db, os_calls, validator as v, settings, utils
+from semo import database as db, validator as v, settings, utils
 from semo.utils import SemoException
-import logging, pyparsing 
+import logging, pyparsing, os 
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -13,11 +13,18 @@ file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelnam
 
 logger.addHandler(file_handler)
 
+def get_fsid_and_inode(filename : str):
+    try:
+        return (os.statvfs(filename).f_fsid, os.stat(filename).st_ino)
+    except FileNotFoundError:
+        logger.exception(f"Error retrieving fsid, inode for file '{filename}'")
+        raise SemoException(f"File not found {filename}")
+
 # INPUT
 
 def connect_tag(file_name : str, tag_name : str, value = None) -> list[str]:
     try:
-        file_system, inode = os_calls.retrieve_inode_from_path(file_name)
+        file_system, inode = get_fsid_and_inode(file_name)
     except SemoException as e:
         return [type(e).__name__ + ": " + str(e)]
 
@@ -43,7 +50,7 @@ def connect_tag(file_name : str, tag_name : str, value = None) -> list[str]:
 
 def disconnect_tag(file_name : str, tag_name : str) -> list[str]:
     try:
-        file_system, inode = os_calls.retrieve_inode_from_path(file_name)
+        file_system, inode = get_fsid_and_inode(file_name)
     except SemoException as e:
         return [type(e).__name__ + ": " + str(e)]
     
@@ -108,7 +115,6 @@ def connect_subtags(superior_tag_name : str, inferior_tags : list[str]) -> list[
 def disconnect_subtags(superior_tag_name : str, inferior_tags : list[str]) -> list[str]:
     database = db.Database(utils.get_working_db())
     validator = v.Validator(database)
-
     failures = []
     for inferior_tag_name in inferior_tags:
         permit = validator.approved_unsubtag_operation(superior_tag_name, inferior_tag_name)
@@ -130,7 +136,7 @@ def get_tags_for_file(file_name : str) -> set[str]:
     database = db.Database(utils.get_working_db())
     validator = v.Validator(database)
     try:
-        file_system, inode = os_calls.retrieve_inode_from_path(file_name)
+        file_system, inode = get_fsid_and_inode(file_name)
     except SemoException as e:
         return {type(e).__name__ + ": " + str(e)}
     
@@ -178,26 +184,26 @@ def get_file_by_id(id : int) -> tuple[int, int, str, int] | None:
     database = db.Database(utils.get_working_db())
     return database.get_file_by_id(id)
 
-def query_files(query : str, long_format = False) -> set[str] | set[tuple]:
+def query_files(query : str, path_only_output = True) -> set[str] | set[tuple]:
     database = db.Database(utils.get_working_db())
     validator = v.Validator(database)
 
     if query:
         instruction_list = _query_parse_instruction_set(query)
         raw_output = _query_read_level(instruction_list)
-        if not long_format:
+        if path_only_output:
             return {path for (_, _, path, _, _) in raw_output}
     else:
         logger.info(f"List files operation with empty query. Outputting all files.")
         raw_output = database.get_files_with_paths()
-        if not long_format:
+        if path_only_output:
             return {path for (_, _, path, _) in raw_output}
     return raw_output
     
 def _query_parse_instruction_set(query : str) -> list:
     operand = pyparsing.Word(pyparsing.alphanums + "_-")
-    set_operator = pyparsing.oneOf("& | + /")
-    cond_operator = pyparsing.oneOf("== >= <= > <")
+    set_operator = pyparsing.one_of("& | + /")
+    cond_operator = pyparsing.one_of("== >= <= > <")
     expression = pyparsing.infix_notation(operand, [(cond_operator, 2, pyparsing.opAssoc.LEFT), (set_operator, 2, pyparsing.opAssoc.LEFT)])
     try:
         output = expression.parse_string(query, parse_all=True).as_list()
@@ -244,7 +250,7 @@ def _query_resolve_set_operation(operand1 : set, operator : str, operand2 : set)
 
 def _query_resolve_operand(operand : str | set) -> set:
     if isinstance(operand, set): return operand
-    if isinstance(operand, str): return get_files_for_tag(operand, long_format=True)
+    if isinstance(operand, str): return get_files_for_tag(operand, path_only_output=False)
     raise SemoException("wrong operand type: ", operand)
 
 def _query_resolve_condition(tag_name : str, operation : str, value : int | str):
@@ -264,43 +270,8 @@ def _query_resolve_condition(tag_name : str, operation : str, value : int | str)
             value = str(value)
             return database._str_rels_for_tag_condition(tag_name, value)
     raise SemoException(f"type '{value}' not comparable")    
-        
-# def process_query_instruction(level_data):
-#     if isinstance(level_data, set):
-#         return level_data
-#     if isinstance(level_data, str):
-#         return get_files_for_tag(level_data)
-    
-#     if len(level_data) == 1:
-#         return process_query_instruction(level_data[0])
-#     if len(level_data) != 3:
-#         raise errors.NecessaryUpstreamInterrupt("Incorrect instruction level: " + str(level_data))
-    
-#     operator = level_data[1]
-#     operand1 = process_query_instruction(level_data[0])
-#     operand2 = process_query_instruction(level_data[2])
 
-#     match(operator):
-#         case "&":
-#             return operand1.intersection(operand2)
-#         case "|" | "+":
-#             return operand1.union(operand2)
-#         case "/" :
-#             return operand1.difference(operand2)
-#         case _:
-#             raise errors.NecessaryUpstreamInterrupt("Incorrect operator: " + operator + ", in expression: " + " ".join(level_data))
-        
-# def verified_path(file_system, inode, unconfirmed_path):
-#     try:
-#         file_system_check, inode_check = os_calls.retrieve_inode_from_path(unconfirmed_path)
-#         if file_system_check != file_system or inode_check != inode:
-#             return f"File formerly at {unconfirmed_path}."
-#         return unconfirmed_path
-#     except Exception as e:
-#         logger.info(f"Failed to verify path for file ({file_system}, {inode}). Error: {type(e).__name__} - {str(e)}. Returning unconfirmed path '{unconfirmed_path}'")
-#         return f"File formerly at {unconfirmed_path}."
-
-def get_files_for_tag_DIRECT(tag_name : str, long_format : bool = False) -> set:
+def get_files_for_tag_DIRECT(tag_name : str, path_only_output = True) -> set:
     database = db.Database(utils.get_working_db())
     validator = v.Validator(database)
 
@@ -310,11 +281,11 @@ def get_files_for_tag_DIRECT(tag_name : str, long_format : bool = False) -> set:
         logger.info(permit.data)
         return set()
     raw_output = database._direct_files_for_tag(tag_name)
-    if long_format:
+    if not path_only_output:
         return raw_output
     return { unconfirmed_path for (file_system, inode, unconfirmed_path, id) in raw_output }
 
-def get_files_for_tag(tag_name : str, limit_to_direct : bool = False, long_format : bool = False) -> set:
+def get_files_for_tag(tag_name : str, limit_to_direct : bool = False, path_only_output : bool = True) -> set:
     database = db.Database(utils.get_working_db())
     validator = v.Validator(database)
 
@@ -325,8 +296,15 @@ def get_files_for_tag(tag_name : str, limit_to_direct : bool = False, long_forma
         return set()
     
     raw_output = database.get_rels_for_tag(tag_name)
-    if long_format:
+    if not path_only_output:
         return raw_output
     user_output = { path for (fsid, inode, path, data, id) in raw_output }
     return user_output
 
+def watch_directory(path : str):
+    if os.path.isdir(path) and path not in utils.get_watches():
+        utils.set_watch(path)
+        fsid, inode = get_fsid_and_inode(path)
+        database = db.Database(utils.get_working_db())
+        if database.is_sleeping_fs(fsid):
+            pass

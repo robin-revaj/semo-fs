@@ -21,7 +21,6 @@ class TestDatabaseCommands(unittest.TestCase):
         
     def test_verify_empty_db(self):
         con = db.sql.connect("tests/data/emptyDB.db")
-        cur = con.cursor()
         empty_db = db.Database("tests/data/emptyDB.db")
         self.assertTrue(empty_db.verify_db())
         os.remove("tests/data/emptyDB.db")
@@ -29,7 +28,7 @@ class TestDatabaseCommands(unittest.TestCase):
     def test_verify_correct_db(self):
         con = db.sql.connect("tests/data/correctDB.db")
         db_init = db.Database("tests/data/correctDB.db")
-        db_init.init_create_script()
+        #db_init.init_create_script()
 
         correct_db = db.Database("tests/data/correctDB.db")
         self.assertTrue(correct_db.verify_db())

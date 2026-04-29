@@ -33,7 +33,7 @@ class Validator:
             return (isinstance(value, int)) or (self.is_integer_string(value))
         if tag_type == "str":
             return (isinstance(value, str))
-        return value is None
+        return True
 
     def is_integer_string(self, string):
         try:
@@ -112,6 +112,11 @@ class Validator:
             self.__refresh_path_from_access(file_system, inode, filepath)
 
         if not self.tag_exists(tag):
+            if not self.__approve_string(tag):
+                permit.approved = False
+                permit.data.append(f"Tag name '{tag}' contains invalid characters.")
+                logger.info(f"Approval for tag operation for file ({file_system}, {inode}) and tag '{tag}': {permit.approved}")
+                return permit
             logger.info(f"Tag '{tag}' does not exist. Creating tag record.")
             if value is None:
                 self.database.new_tag(tag)

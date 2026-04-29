@@ -1,7 +1,7 @@
 #!.venv/bin/python3
 
 import argparse
-from . import interface as cli, fs_watcher
+from . import interface as cli, semo_watcher
 
 def main():
     parser = argparse.ArgumentParser()
@@ -55,7 +55,7 @@ def main():
 
     watcher_parser = subparsers.add_parser("watch", help="Watch a file or directory for changes and update tags accordingly")
     #watcher_parser.add_argument("path", nargs='?', default="")
-    watcher_parser.set_defaults(func=fs_watcher._main)
+    watcher_parser.set_defaults(func=semo_watcher._main)
 
     args = parser.parse_args()
     if not hasattr(args, "func"):

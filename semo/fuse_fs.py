@@ -9,15 +9,14 @@ class semoStat(fuse.Stat):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # HELP
         self.st_mode = 0
         self.st_nlink = 0
+        self.st_size = 0
+        self.st_uid = 0
+        self.st_gid = 0
         self.st_atime = 0.0
         self.st_mtime = 0.0 
         self.st_ctime = 0.0 
-
-        self.tags : list[str] = []
-
 class semoDirentry(fuse.Direntry):
     def __init__(self, name, real_path, **kw):
         fuse.Direntry.__init__(self, name, **kw)
@@ -80,7 +79,7 @@ class semoFS(fuse.Fuse):
         return offset
 
     def getattr(self, path):
-        st = fuse.Stat()
+        st = semoStat()
 
         if path == "/":
             st.st_mode = stat.S_IFDIR | 0o555
