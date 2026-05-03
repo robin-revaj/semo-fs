@@ -3,7 +3,7 @@
 import errno
 
 import fuse, os, stat
-from semo import backend, utils, validator
+import backend, utils
 
 class semoStat(fuse.Stat):
     def __init__(self, *args, **kwargs):
@@ -26,8 +26,8 @@ import time, sys, signal
 class semoFS(fuse.Fuse):
     def __init__(self, *args, **kwargs):
         fuse.Fuse.__init__(self, *args, **kwargs)
-        self.database = backend.db.Database(utils.get_working_db())
-        self.validator = backend.v.Validator(self.database)
+        #self.database = backend.db.Database(utils.get_working_db())
+        #self.validator = backend.v.Validator(self.database)
     
     def disassemble_local_name(self, local_name) -> tuple[str, int]:
         try:
@@ -49,25 +49,11 @@ class semoFS(fuse.Fuse):
             current_item = segmented_path[-1]
             tags.extend(backend.get_subtags_DIRECT(current_item))
             try:
-                filedata = backend.get_files_for_tag_DIRECT(tag_name=current_item, long_format=True)
+                filedata = backend.get_files_for_tag_DIRECT(tag_name=current_item, path_only_output=False)
                 filenames = []
                 for _, _, filepath, database_id in filedata:
                     local_name = os.path.basename(filepath) + "(" + str(database_id) + ")"
                     filenames.append(local_name)
-                # filepaths = [f[2] for f in filedata]
-                # prefix = os.path.commonpath(filepaths)
-                # filenames = [f[len(prefix):].replace("/", ">") for f in filepaths]
-                # filenames = [os.path.basename(f) for f in filepaths]
-                # filenames = []
-                # for fsid, inode, filepath in filedata:
-                #     filenames.append( os.path.basename(filepath) + f"({inode})" )
-                # for fsid, inode, filepath in filedata:
-
-                # filenames = [f[2].replace("/", "\\") for f in filedata]
-                # if len(set(filenames)) < len(filenames):
-                #     for i in range(len(filenames)):
-                #         filenames[i] = f"({filepaths[i][1]})" + filenames[i]
-                
                 files.extend(filenames)
             except Exception as e:
                 files.extend((str(e),))

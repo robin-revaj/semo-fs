@@ -1,12 +1,12 @@
 #!.venv/bin/python3
 
-from semo import database, settings
+import database, utils
 import logging, pyparsing 
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-file_handler = logging.FileHandler(settings.log_file)
+file_handler = logging.FileHandler(utils.get_log_file())
 file_handler.setLevel(logging.DEBUG)
 file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
 
@@ -30,17 +30,10 @@ class Validator:
     def corresponding_tag_type(self, tag_name : str, value : str | int | None) -> bool:
         tag_type = self.database.get_tag_type(tag_name)
         if tag_type == "int":
-            return (isinstance(value, int)) or (self.is_integer_string(value))
+            return (isinstance(value, int)) or (utils.is_integer_string(value))
         if tag_type == "str":
             return (isinstance(value, str))
         return True
-
-    def is_integer_string(self, string):
-        try:
-            _ = int(string)
-            return True
-        except ValueError:
-            return False
 
     def file_exists(self, file_system : int, inode : int) -> bool:
         output = (file_system, inode) in self.database.get_files()
@@ -55,6 +48,10 @@ class Validator:
         output = tag_name in self.database.get_tags_for_file(file_system, inode)
         logger.info(f"File ({file_system}, {inode}) has tag '{tag_name}': {output}")
         return output
+    
+    def entry_consistent(self, entry_fsid : int, entry_inode : int, entry_path : str) -> bool:
+        fsid, inode = utils.get_fsid_and_inode(entry_path)
+        return fsid == entry_fsid and inode == entry_inode
 
     def tag_has_direct_superiority(self, super_tag_name : str, inf_tag_name : str) -> bool:
         output = inf_tag_name in self.database._direct_inferiors_for_tag(super_tag_name)
@@ -114,16 +111,17 @@ class Validator:
         if not self.tag_exists(tag):
             if not self.__approve_string(tag):
                 permit.approved = False
-                permit.data.append(f"Tag name '{tag}' contains invalid characters.")
+                permit.data.append(f"Tag name '{tag}' contains invalid characters. Must be composed of alphanums and _-")
                 logger.info(f"Approval for tag operation for file ({file_system}, {inode}) and tag '{tag}': {permit.approved}")
                 return permit
             logger.info(f"Tag '{tag}' does not exist. Creating tag record.")
             if value is None:
                 self.database.new_tag(tag)
+            elif isinstance(value, int) or utils.is_integer_string(value):
+                self.database.new_tag(tag, "int")
             elif isinstance(value, str):
                 self.database.new_tag(tag, "str")
-            elif isinstance(value, int):
-                self.database.new_tag(tag, "int")
+            
             else:
                 permit.approved = False
                 permit.data.append(f"unsupported data type")

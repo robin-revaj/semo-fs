@@ -1,8 +1,7 @@
 import unittest
 import os
-from semo import backend
-from semo import database as db, utils
-from semo.utils import SemoException
+import backend, database as db, utils
+from utils import SemoException
 
 class TestCommandBackend(unittest.TestCase):
     @classmethod
@@ -463,7 +462,7 @@ class TestCommandBackend(unittest.TestCase):
         backend.connect_tag(self.files[0], tag1)
         backend.connect_tag(self.files[0], tag2, "tag2")
         backend.connect_tag(self.files[0], tag3, 3)
-        self.assertSetEqual({tag1, tag2, tag3}, backend.get_tags_for_file(self.files[0]))
+        self.assertDictEqual({tag1:None, tag2:"tag2", tag3:3}, backend.get_tags_for_file(self.files[0]))
 
     def test_list_tags_for_file_nonexistent(self):
         self.assertEqual(1, len(backend.get_tags_for_file(self.loc + "nonexistent_file.txt")))
@@ -474,7 +473,7 @@ class TestCommandBackend(unittest.TestCase):
         backend.connect_tag(self.files[0], superior_tag)
         backend.connect_tag(self.files[1], inferior_tag)
         backend.connect_subtags(superior_tag, [inferior_tag])
-        self.assertSetEqual({superior_tag, inferior_tag}, backend.get_tags_for_file(self.files[1]))
+        self.assertDictEqual({superior_tag:None, inferior_tag:None}, backend.get_tags_for_file(self.files[1]))
 
     def test_list_files_no_query(self):
         tag1 = "test_list_files_no_query1"

@@ -1,7 +1,7 @@
 #!.venv/bin/python3
 
 import sqlite3 as sql
-from semo.utils import SemoException
+from utils import SemoException
 
 class Database:
     def __init__(self, path : str):
@@ -14,10 +14,10 @@ class Database:
         if not self.verify_db():
             raise SemoException("Failed database initalization")
 
-    def __connection(self) -> sql.Connection:
-        return sql.connect(self.__path)
+    def connect(self):
+        self.__conn = sql.connect(self.__path)
     
-    def disable(self):
+    def disconnect(self):
         self.__conn.close()
 
     def verify_db(self):
@@ -214,9 +214,12 @@ class Database:
         c.execute("INSERT INTO file VALUES (NULL, ?, ?, ?)", (fsid, inode, path))
         c.execute("INSERT OR IGNORE INTO filesystem VALUES (NULL, ?, ?)", (fsid, True))
         self.__conn.commit()
-    def delete_file(self, fsid : int, inode : int):
+    def delete_file(self, fsid : int, inode : int, id=None):
         #conn = self.__connection()
-        id_to_delete = self.__get_file_id(fsid, inode)
+        if id is None:
+            id_to_delete = self.__get_file_id(fsid, inode)
+        else:
+            id_to_delete = id
         if not id_to_delete:
             raise SemoException("file not in database")
         c = self.__conn.cursor()
@@ -347,7 +350,7 @@ class Database:
                                             FROM rel_file_tag_null LEFT JOIN tag ON rel_file_tag_null.tag_id == tag.id\
                                             WHERE tag.id == ?) AS r\
                                         LEFT JOIN file ON r.file_id == file.id", (self.__get_tag_id(tag_name),))
-        return {(x[0], x[1], x[2], x[3], None) for x in res.fetchall()}
+        return {(x[0], x[1], x[2], x[3], tag_name) for x in res.fetchall()}
     
     def _direct_str_rels_for_tag(self, tag_name : str) -> set[tuple]:
         res = self.__conn.cursor().execute("SELECT file.fsid, file.inode, file.path, file.id, r.value FROM (\
@@ -355,8 +358,9 @@ class Database:
                                             FROM rel_file_tag_str LEFT JOIN tag ON rel_file_tag_str.tag_id == tag.id\
                                             WHERE tag.id == ?) AS r\
                                         LEFT JOIN file ON r.file_id == file.id", (self.__get_tag_id(tag_name),))
-        return {(x[0], x[1], x[2], x[3], x[4]) for x in res.fetchall()}
-    
+        return {(x[0], x[1], x[2], x[3], ":".join([tag_name, x[4]])) for x in res.fetchall()}
+
+
     def _str_rels_for_tag_condition(self, tag_name : str, condition : str) -> set[tuple]:
         res = self.__conn.cursor().execute("SELECT file.fsid, file.inode, file.path, file.id, r.value FROM (\
                                             SELECT rel_file_tag_str.tag_id, rel_file_tag_str.file_id, rel_file_tag_str.value \
@@ -364,7 +368,7 @@ class Database:
                                             WHERE tag.id == ?) AS r\
                                             LEFT JOIN file ON r.file_id == file.id \
                                             WHERE r.value == ?", (self.__get_tag_id(tag_name), condition))
-        return {(x[0], x[1], x[2], x[3], x[4]) for x in res.fetchall()}
+        return {(x[0], x[1], x[2], x[3], ":".join([tag_name, x[4]])) for x in res.fetchall()}
     
     def _direct_int_rels_for_tag(self, tag_name : str) -> set[tuple]:
         res = self.__conn.cursor().execute("SELECT file.fsid, file.inode, file.path, file.id, r.value FROM (\
@@ -372,7 +376,7 @@ class Database:
                                             FROM rel_file_tag_int LEFT JOIN tag ON rel_file_tag_int.tag_id == tag.id\
                                             WHERE tag.id == ?) AS r\
                                             LEFT JOIN file ON r.file_id == file.id", (self.__get_tag_id(tag_name),))
-        return {(x[0], x[1], x[2], x[3], x[4]) for x in res.fetchall()}
+        return {(x[0], x[1], x[2], x[3], ":".join([tag_name, str(x[4])])) for x in res.fetchall()}
     
     def _int_rels_for_tag_condition(self, tag_name : str, operator : str, condition : int) -> set[tuple]:
         if operator not in ["==", ">", "<", ">=", "<="]:
@@ -383,7 +387,7 @@ class Database:
                                             WHERE tag.id == ?) AS r\
                                             LEFT JOIN file ON r.file_id == file.id \
                                             WHERE r.value {operator} ?", (self.__get_tag_id(tag_name), condition))
-        return {(x[0], x[1], x[2], x[3], x[4]) for x in res.fetchall()}
+        return {(x[0], x[1], x[2], x[3], ":".join([tag_name, str(x[4])])) for x in res.fetchall()}
     
     def _direct_rels_for_tag(self, tag_name : str) -> set[tuple]:
         tag_type = self.get_tag_type(tag_name)
@@ -509,24 +513,32 @@ class Database:
         if res is not None:
             return res.fetchone()[0]
     def get_file_by_path(self, path: str):
-        res = self.__conn.cursor().execute("SELECT fsid, inode, path FROM file WHERE path == ?", (path,))
+        res = self.__conn.cursor().execute("SELECT fsid, inode, path, id FROM file WHERE path == ?", (path,))
+        try:
+            return res.fetchall()[0]
+        except IndexError:
+            return None
+    def get_files_by_path_prefix(self, path_prefix: str) :
+        res = self.__conn.cursor().execute("SELECT fsid, inode, path, id FROM file WHERE path LIKE ?", (path_prefix + '%',))
         if res is not None:
             return res.fetchall()
-    def get_files_by_path_prefix(self, path_prefix: str):
-        res = self.__conn.cursor().execute("SELECT fsid, inode, path FROM file WHERE path LIKE ?", (path_prefix + '%',))
+        return []
+    def get_files_by_path_suffix(self, path_suffix: str) :
+        res = self.__conn.cursor().execute("SELECT fsid, inode, path, id FROM file WHERE path LIKE ?", ('%' + path_suffix,))
         if res is not None:
             return res.fetchall()
-        
+        return []
     def get_file_by_id(self, entry_id : int):
         res = self.__conn.cursor().execute("SELECT fsid, inode, path, id FROM file WHERE id == ?", (entry_id,))
         if res is not None:
             return res.fetchone()
         
-    def is_sleeping_fs(self, fsid : int) -> bool:
+    def is_known_and_is_awake_fs(self, fsid : int) -> bool | None:
         res = self.__conn.cursor().execute("SELECT active FROM filesystem WHERE fsid == ?", (fsid,))
-        if res is not None:
-            return not res.fetchone()[0]
-        return False
+        try:
+            return res.fetchone()[0]
+        except TypeError:
+            return 
     def set_fs_active(self, fsid : int, active : bool = True):
         self.__conn.cursor().execute("INSERT OR IGNORE INTO filesystem VALUES (NULL, ?, ?)", (fsid, active))
         self.__conn.cursor().execute("UPDATE filesystem SET active = ? WHERE fsid == ?", (active, fsid))

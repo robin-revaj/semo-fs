@@ -1,7 +1,7 @@
 import unittest
 import os
-from semo import database as db, utils
-from semo.utils import SemoException
+import database as db, utils
+from utils import SemoException
 
 class TestDatabaseCommands(unittest.TestCase):
     @classmethod

@@ -3,7 +3,7 @@ import random
 import os
 import time
 from argparse import Namespace
-from semo import interface, utils
+import interface, utils
 
 
 class TestStress(unittest.TestCase):

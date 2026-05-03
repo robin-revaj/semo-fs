@@ -1,9 +1,9 @@
 #!.venv/bin/python3
 
-import logging
+#import logging
 import os 
-from . import utils, validator as v, database as db, os_calls, backend
-import inotify.constants
+import utils, validator as v, database as db
+from utils import SemoException
 
 
 
@@ -17,118 +17,119 @@ import inotify.constants
 
 #ic.IN_DELETE_SELF | ic.IN_MOVE_SELF | ic.IN_UNMOUNT | ic.IN_DELETE | ic.IN_MOVED_FROM | ic.IN_MOVED_TO
 
-def semo_concerned(path, filename) -> bool:
-    try:
-        fsid, inode = os_calls.retrieve_inode_from_path(os.path.join(path, filename))
-    except:
-        return False
+def in_umount(event_types, path):
     database = db.Database(utils.get_working_db())
-    validator = v.Validator(database)
-    return validator.file_exists(fsid, inode)
-
-def in_umount(e, path, filename):
-    database = db.Database(utils.get_working_db())
-    entries = database.get_files_by_path_prefix(os.path.join(path, filename))
-    if entries is not None:
+    entries = database.get_files_by_path_prefix(path)
+    if entries is not None and len(entries) > 0:
         fsid = entries[0][0]
         database.set_fs_sleep(fsid)
         
-def in_delete(e, path, filename):
-    former_path = os.path.join(path, filename)
+def in_delete(event_types, path):
     database = db.Database(utils.get_working_db())
-    f_entry = database.get_file_by_path(former_path)
-    if f_entry is not None:
+    f_entry = database.get_file_by_path(path)
+    if f_entry is not None and len(f_entry) > 0:
         database.delete_file(f_entry[0], f_entry[1])
 
-def in_moved_outside_watched_region(e, path, filename):
-    former_path = os.path.join(path, filename)
-    os.system("notify-send 'file moved outside of watched region' '{}'".format(former_path))
-    handle_file_location_loss(former_path)
+def in_moved_outside_watched_region(event_types, path):
+    handle_file_location_loss(path)
 
-def in_moved_within_watched_region(e, path, filename):
-    handle_file_location_change(os.path.join(path, filename))
+def in_moved_within_watched_region(event_types, former_path, new_path):
+    handle_file_location_change(former_path, new_path)
 
-def handle_file_location_change(new_path : str):
+def handle_file_location_change(former_path : str, new_path : str):
     database = db.Database(utils.get_working_db())
     validator = v.Validator(database)
-    fsid, inode = os_calls.retrieve_inode_from_path(new_path)
-    if validator.file_exists(fsid, inode):
-        database.set_file_path(fsid=fsid, inode=inode, path=new_path)
+    fsid, inode = utils.get_fsid_and_inode(new_path)
+    database.set_file_path(fsid, inode, new_path)
+
+    if os.path.isdir(new_path):
+        entries = database.get_files_by_path_prefix(former_path + "/")
+        if len(entries) > 0:
+            for entry_fsid, entry_inode, entry_path, entry_id in entries:
+                new_entry_path = entry_path.replace(former_path, new_path, 1)
+                database.set_file_path(entry_fsid, entry_inode, path=new_entry_path)
+                fsid, inode = utils.get_fsid_and_inode(new_entry_path)
+                database.set_file_fsid_inode(fsid, inode, new_entry_path)
 
 def handle_file_location_loss(former_path : str):
     database = db.Database(utils.get_working_db())
     validator = v.Validator(database)
-    entries = database.get_files_by_path_prefix(former_path)
-    if entries is not None:
+    entry = database.get_file_by_path(former_path)
+    if entry is not None:
+        fsid, inode, _, _ = entry
+        database.delete_file(fsid, inode)
+        #os.system("notify-send 'file moved outside of watched region' '{}'".format(former_path))
+    entries = database.get_files_by_path_prefix(former_path + "/")
+    if len(entries) > 0:
         for fsid, inode, path, entry_id in entries:
             database.delete_file(fsid, inode)
 
-def handle_fsid_and_inode_loss():
+def recover_fsid_inode_from_abspath(path : str = "/"):
     database = db.Database(utils.get_working_db())
-    validator = v.Validator(database)
-    file_records = database.get_files_with_paths()
+    file_records = database.get_files_by_path_prefix(path)
+    if file_records is None or len(file_records) == 0:
+        return
     for form_fsid, form_inode, path, entry_id in file_records:
         try:
-            fsid, inode = os_calls.retrieve_inode_from_path(path)
+            fsid, inode = utils.get_fsid_and_inode(path)
             if fsid != form_fsid or inode != form_inode:
                 database.set_file_fsid_inode(fsid, inode, path)
         except:
             database.delete_file(form_fsid, form_inode)
 
-def export_data_to_xattr(filepath):
+def recover_path_by_inode(path : str):
     database = db.Database(utils.get_working_db())
     validator = v.Validator(database)
-    fsid, inode = os_calls.retrieve_inode_from_path(filepath)
-    if validator.file_exists(fsid, inode):
-        semo_data = database._direct_rels_for_file(fsid, inode)
-        data_string = " ".join(f"{k}:{v}" for k, v in semo_data.items())
-        os.setxattr(filepath, "user.semo", data_string.encode())
-
-def import_data_from_xattr(filepath):
-    data_string = os.getxattr(filepath, "user.semo").decode()
-    semo_data = dict(item.split(":") for item in data_string.split())
-    for k, v in semo_data.items():
-        backend.connect_tag(filepath, k, v)
-
-# def in_follow_move(path, filename) -> bool:
-#     try:
-#         fsid, inode = os_calls.retrieve_inode_from_path(path)
-#     except:
-#         return False
-#     database = db.Database(utils.get_working_db())
-#     validator = v.Validator(database)
-#     return validator.file_exists(fsid, inode)
-
-
-
-
-
-
-# inconsistent path
-# def fix_path_from_path(old_path : str, new_path : str):
-#     database = db.Database(utils.get_working_db())
-#     validator = v.Validator(database)
-
-#     fsid, inode = os_calls.retrieve_inode_from_path(new_path)
-#     if validator.file_exists(fsid, inode):
-#         database.set_file_path(fsid=fsid, inode=inode, path=new_path)
-#     return (old_path, new_path)
-
-# def fix_path_from_fsid_inode(fsid : int, inode : int):
-#     # for item in watched dirs. check
-#     logger.info("have to rescan directory")
-#     return
     
-# def fix_inode_from_fsid_path(fsid : int, path : str):
-#     pass
+    recovered = []
 
+    for contents in os.walk(path):
+        prefix, dirs, files = contents
+        for item in dirs + files:
+            fsid, inode = utils.get_fsid_and_inode(os.path.join(prefix, item))
+            if validator.file_exists(fsid, inode):
+                database.set_file_path(fsid, inode, os.path.join(prefix, item))
+                recovered.append(os.path.join(prefix, item))
+    return recovered
 
+def recover_path_inode_by_mountpath(mountpath : str):
+    database = db.Database(utils.get_working_db())
+    
+    recovered = []
 
+    for contents in os.walk(mountpath):
+        prefix, dirs, files = contents
+        for item in dirs + files:
+            fsid, inode = utils.get_fsid_and_inode(os.path.join(prefix, item))
+            local_path = os.path.join(prefix.replace(mountpath, "", 1), item)
+            entries = database.get_files_by_path_suffix(local_path)
+            if entries is not None and len(entries) > 0:
+                for entry_fsid, entry_inode, entry_path, entry_id in entries:
+                    if entry_fsid == fsid:
+                        database.set_file_path(fsid, entry_inode, os.path.join(prefix, item))
+                        database.set_file_fsid_inode(fsid, inode, os.path.join(prefix, item))
+                        recovered.append(os.path.join(prefix, item))
+                        break
+    return recovered
 
+def partial_recover_path_inode_by_mountpath(mountpath : str):
+    database = db.Database(utils.get_working_db())
+    
+    records = {"recovered": [], "indistinct": []}
 
-def missing_fsid_INODE_path():
-    pass
+    for contents in os.walk(mountpath):
+        prefix, dirs, files = contents
+        for item in dirs + files:
+            fsid, inode = utils.get_fsid_and_inode(os.path.join(prefix, item))
+            local_path = os.path.join(prefix.replace(mountpath, "", 1), item)
+            entries = database.get_files_by_path_suffix(local_path)
+            if entries is not None and len(entries) > 0:
+                if len(entries) == 1:
+                    for entry_fsid, entry_inode, entry_path, entry_id in entries:
+                        database.set_file_path(entry_fsid, entry_inode, os.path.join(prefix, item))
+                        database.set_file_fsid_inode(fsid, inode, os.path.join(prefix, item))
+                        records["recovered"].append(os.path.join(prefix, item))
+                else:
+                    records["indistinct"].append([p for _, _, p, _ in entries])
 
-def missing_FSID_inode_path():
-    pass
-
+    return records

@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+# semo-install
+#   semo
+#   tests
+#   requirements.txt
+#   setup.sh
+#   semo_watcher.service
+
+pip3 install -r requirements.txt
+
+if [ ! -d ~/.semo ]; then
+    mkdir ~/.semo
+fi
+
+semopath=$($HOME/.semo)
+mv ./semo $semopath/semo
+mv ./tests $semopath/tests
+mv ./requirements.txt $semopath/requirements.txt
+mv ./setup.sh $semopath/setup.sh
+mv ./semo_watcher.service $semopath/semo_watcher.service
+
+mkdir $semopath/databases
+
+dbname=$(read -p "Name your database file: " x)
+watchpath=$(read -p "Choose directory to watch changes in: " x)
+
+if [ ! -f ~/.bash_aliases ]; then
+    touch ~/.bash_aliases
+fi
+echo "alias semo='python3 $semopath/semo'" >> ~/.bash_aliases
+
+python3 $semopath/semo/setup.py $semopath $dbname $watchpath
+
+echo "Exec=python3 $semopath/semo/semo_watcher.py" >> $semopath/semo_watcher.service
+echo "" >> $semopath/semo_watcher.service
+echo "[Install]" >> $semopath/semo_watcher.service
+echo "WantedBy=multi-user.target" >> $semopath/semo_watcher.service
+
+cp $semopath/semo_watcher.service /etc/systemd/system/semo_watcher.service
+systemctl enable semo_watcher
+systemctl daemon-reload
+systemctl start semo_watcher
+
+rmdir .
