@@ -680,6 +680,7 @@ def watch_directory(path : str) -> str:
     """
 
     if not os.path.exists(path) or not os.path.isdir(path): return "invalid directory path"
+    if utils.home() in path: return "cannot set watch inside semo home directory"
     if path in utils.get_watches(): return "directory already watched"
 
     utils.set_watch(path)

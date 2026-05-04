@@ -40,7 +40,7 @@ def main():
                                    OR:    [tag1] [| +] [tag2] \n\
                                    AND:   [tag1] [& *] [tag2] \n\
                                    MINUS (ANDNOT):    [tag1] [/ -] [tag2]")
-    list_files_parser.add_argument("-l", "--long", action="store_true", help="display long format")
+    #list_files_parser.add_argument("-l", "--long", action="store_true", help="display long format")
     list_files_parser.set_defaults(func=cli.translate_LISTFILES)
 
     delete_tag_parser = subparsers.add_parser("deltag", help="Deletes tag and all its relationships")
@@ -74,7 +74,12 @@ def main():
 
     mount_parser = subparsers.add_parser("mount", help="Mounts the semo FUSE filesystem at provided mountpoint.")
     mount_parser.add_argument("path", nargs='?', default="", help="Optional absolute or relative path to directory, if not provided the default mountpoint will be used.")
+    mount_parser.add_argument("-d", "--debug", action="store_true", help="Mount in fuse debug mode")
     mount_parser.set_defaults(func=cli.translate_MOUNT)
+
+    umount_parser = subparsers.add_parser("umount", help="Unmounts the semo FUSE filesystem from mountpoint.")
+    umount_parser.add_argument("path", nargs='?', default="", help="Optional absolute or relative path to directory, if not provided the default mountpoint will be used.")
+    umount_parser.set_defaults(func=cli.translate_UMOUNT)
 
     clean_parser = subparsers.add_parser("clean", help="Clears the database of damaged or outdated entries.")
     clean_parser.set_defaults(func=cli.translate_CLEAN)

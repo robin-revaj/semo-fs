@@ -159,7 +159,7 @@ def set_watch(path) -> None:
         Absolute path to directory to add to watchlist
     """
 
-    if not os.path.exists(path) or not os.path.isdir(path): raise SemoException("invalid directory path")
+    if not os.path.exists(path) or not os.path.isdir(path) or home() in path: raise SemoException("invalid directory path")
     data = dataset()
     data['watches'].append(path)
     with open(home() + '/data.json', 'w') as f:

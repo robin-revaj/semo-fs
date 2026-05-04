@@ -377,12 +377,30 @@ def translate_MOUNT(args, suppress=False):
     -----------
     args : argparse.Namespace
         Argument set containing values for parameters
-        args.path : str
+        args.path : str, optional
+            Path to mountpoint. Default is ~/.semo/mnt
+        args.debug : bool, optional
+            If set, run fuse in debug mode. Default is False
     suppress : bool, optional
         If true, responses aren't printed to stdout but returned (default is False)
     """
+    mountpath = args.path
+    if not mountpath:
+        mountpath = utils.get_fs_mount_point()
+    else:
+        mountpath = os.path.realpath(mountpath)
+
+    if not os.path.isdir(mountpath) or os.path.ismount(mountpath):
+        message = "Invalid path or directory already mounted"
+        if not suppress: print(message)
+        return message
     
-    pass
+    debug = args.debug
+    if not debug:
+        os.system("python3 ~/.semo/semo/fuse_fs.py {}".format(mountpath))
+        return "Mounted."
+    os.system("python3 ~/.semo/semo/fuse_fs.py -d {}".format(mountpath))
+
 
 def translate_UMOUNT(args, suppress=False):
     """Reconstructs parameter path from args, calls corresponding backend fuction, returns response.
@@ -395,6 +413,17 @@ def translate_UMOUNT(args, suppress=False):
     suppress : bool, optional
         If true, responses aren't printed to stdout but returned (default is False)
     """
-    pass
+    mountpath = args.path
+    if not mountpath:
+        mountpath = utils.get_fs_mount_point()
+    else:
+        mountpath = os.path.realpath(mountpath)
+
+    if not os.path.isdir(mountpath) or not os.path.ismount(mountpath):
+        message = "Invalid path or directory not mounted"
+        if not suppress: print(message)
+        return message
+    
+    os.system("umount {}".format(mountpath))
 
 
