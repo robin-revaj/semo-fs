@@ -64,20 +64,25 @@ def handle_file_location_loss(former_path : str):
         for fsid, inode, path, entry_id in entries:
             database.delete_file(fsid, inode)
 
-def recover_fsid_inode_from_abspath(path : str = "/"):
+def recover_fsid_inode_from_abspath(path : str, force_delete : bool = True) -> list:
     database = db.Database(utils.get_working_db())
     file_records = database.get_files_by_path_prefix(path)
+
+    recovered = []
+
     if file_records is None or len(file_records) == 0:
-        return
+        return []
     for form_fsid, form_inode, path, entry_id in file_records:
         try:
             fsid, inode = utils.get_fsid_and_inode(path)
             if fsid != form_fsid or inode != form_inode:
                 database.set_file_fsid_inode(fsid, inode, path)
+            recovered.append(path)
         except:
-            database.delete_file(form_fsid, form_inode)
+            if force_delete: database.delete_file(form_fsid, form_inode)
+    return recovered
 
-def recover_path_by_inode(path : str):
+def recover_path_by_inode(path : str, force_delete : bool = True):
     database = db.Database(utils.get_working_db())
     validator = v.Validator(database)
     
@@ -92,7 +97,7 @@ def recover_path_by_inode(path : str):
                 recovered.append(os.path.join(prefix, item))
     return recovered
 
-def recover_path_inode_by_mountpath(mountpath : str):
+def recover_path_inode_by_mountpath(mountpath : str, force_delete : bool = True) -> list:
     database = db.Database(utils.get_working_db())
     
     recovered = []
@@ -109,13 +114,13 @@ def recover_path_inode_by_mountpath(mountpath : str):
                         database.set_file_path(fsid, entry_inode, os.path.join(prefix, item))
                         database.set_file_fsid_inode(fsid, inode, os.path.join(prefix, item))
                         recovered.append(os.path.join(prefix, item))
-                        break
     return recovered
 
-def partial_recover_path_inode_by_mountpath(mountpath : str):
+def partial_recover_path_inode_by_mountpath(mountpath : str, force_delete : bool = True) -> list:
     database = db.Database(utils.get_working_db())
     
-    records = {"recovered": [], "indistinct": []}
+    recovered = []
+    indistinct = []
 
     for contents in os.walk(mountpath):
         prefix, dirs, files = contents
@@ -128,8 +133,13 @@ def partial_recover_path_inode_by_mountpath(mountpath : str):
                     for entry_fsid, entry_inode, entry_path, entry_id in entries:
                         database.set_file_path(entry_fsid, entry_inode, os.path.join(prefix, item))
                         database.set_file_fsid_inode(fsid, inode, os.path.join(prefix, item))
-                        records["recovered"].append(os.path.join(prefix, item))
+                        recovered.append(os.path.join(prefix, item))
                 else:
-                    records["indistinct"].append([p for _, _, p, _ in entries])
+                    if force_delete: 
+                        for entry_fsid, entry_inode, entry_path, entry_id in entries:
+                            database.delete_file(entry_fsid, entry_inode)
+                    else:
+                        indistinct.append((p for _, _, p, _ in entries))
 
-    return records
+    return [recovered, indistinct]
+    

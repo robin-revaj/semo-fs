@@ -22,7 +22,6 @@ class semoDirentry(fuse.Direntry):
         fuse.Direntry.__init__(self, name, **kw)
         self.real_path = real_path
 
-import time, sys, signal
 class semoFS(fuse.Fuse):
     def __init__(self, *args, **kwargs):
         fuse.Fuse.__init__(self, *args, **kwargs)
@@ -71,16 +70,18 @@ class semoFS(fuse.Fuse):
             st.st_mode = stat.S_IFDIR | 0o555
             st.st_nlink = 2
             return st
+        if "." in path:
+            return st
         
         head, tail = os.path.split(path)
-        segmented_path = path.strip("/").split("/")
-        current_item = segmented_path[-1]
+        #segmented_path = path.strip("/").split("/")
+        #current_item = segmented_path[-1]
         for tagname in backend.get_all_tags():
             if tail == tagname:
                 st.st_mode = stat.S_IFDIR | 0o555
                 st.st_nlink = 2
                 return st
-        parent_tag = os.path.split(head)[1]
+        #parent_tag = os.path.split(head)[1]
         
         filename, entry_id = self.disassemble_local_name(tail)
         if not filename or not entry_id:

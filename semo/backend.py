@@ -555,6 +555,22 @@ def _query_resolve_condition(tag_name : str, operation : str, value : int | str)
     raise SemoException(f"type '{value}' not comparable")    
 
 def get_files_for_tag_DIRECT(tag_name : str, path_only_output = True) -> set:
+    """Gets and returns set of files directly connected with given tag
+
+    If permitted by validator, calls database function to list direct file relationships for tag
+
+    Parameters
+    ----------
+    tag_name : str
+        Name of tag
+    path_only_output : bool, optional
+        If True, returns file data in shortened format. Default is True
+    Returns
+    -------
+    set[str] | set[tuple]
+        Set of filepaths or set of file data in tuples
+    """
+
     database = db.Database(utils.get_working_db())
     validator = v.Validator(database)
 
@@ -568,7 +584,23 @@ def get_files_for_tag_DIRECT(tag_name : str, path_only_output = True) -> set:
         return raw_output
     return { unconfirmed_path for (file_system, inode, unconfirmed_path, id) in raw_output }
 
-def get_rels_for_tag(tag_name : str, limit_to_direct : bool = False, path_only_output : bool = True) -> set:
+def get_rels_for_tag(tag_name : str, path_only_output : bool = True) -> set:
+    """Gets and returns set of files connected with given tag (including inherited)
+
+    If permitted by validator, calls database function to list file relationships for tag
+
+    Parameters
+    ----------
+    tag_name : str
+        Name of tag
+    path_only_output : bool, optional
+        If True, returns file data in shortened format. Default is True
+    Returns
+    -------
+    set[str] | set[tuple]
+        Set of filepaths or set of file data in tuples
+    """
+
     database = db.Database(utils.get_working_db())
     validator = v.Validator(database)
 
@@ -584,25 +616,69 @@ def get_rels_for_tag(tag_name : str, limit_to_direct : bool = False, path_only_o
     user_output = { path for (fsid, inode, path, data, id) in raw_output }
     return user_output
 
-def get_files_for_directory(path : str, path_only_output = True):
+def get_files_for_directory(path : str, path_only_output = True) -> list:
+    """Gets and returns list of files in database which are located in given directory
+
+    Calls database function to list file database entries whose paths begin with provided directory prefix
+
+    Parameters
+    ----------
+    path : str
+        Absolute path to directory
+    path_only_output : bool, optional
+        If True, returns file data in shortened format. Default is True
+    Returns
+    -------
+    list[str] | list[tuple]
+        Set of filepaths or set of file data in tuples
+    """
+
     database = db.Database(utils.get_working_db())
-    validator = v.Validator(database)
     
     raw_output = database.get_files_by_path_prefix(path)
     if raw_output is None:
         return []
     if not path_only_output:
         return raw_output
-    user_output = { path for (fsid, inode, path, id) in raw_output }
+    user_output = [ path for (fsid, inode, path, id) in raw_output ]
     return user_output
 
 def daemon_pid():
+    """Calls subprocess to request the process ID of semo's watcher service.
+
+
+    Returns
+    -------
+    int
+        PID
+
+    Raises
+    ------
+    SemoException
+        If the watcher executable isn't running (as daemon or as process)
+    """
+
     try:
         return int(subprocess.check_output(["pgrep", "-f", "semo.semo_watcher"], text=True).strip())
     except Exception:
         raise SemoException("Watch daemon not running.")
 
-def watch_directory(path : str ):
+def watch_directory(path : str) -> str:
+    """Adds given directory tree to watch list and informs the watcher process of the change
+    
+    Also marks the directory's file system status in database.
+
+    Parameters
+    ----------
+    path : str
+        Absolute path to directory
+
+    Returns
+    -------
+    str
+        Response message
+    """
+
     if not os.path.exists(path) or not os.path.isdir(path): return "invalid directory path"
     if path in utils.get_watches(): return "directory already watched"
 
@@ -616,13 +692,26 @@ def watch_directory(path : str ):
         msg = "watch set for new filesystem"
     if fs_awake is False:
         database.set_fs_active(fsid)
-        msg = "watch set for returning filesystem. if contents were modifified or mountpoint changed data may be lost. Run recovery with guaranteed fsid"
+        msg = "watch set for returning filesystem. if contents were modifified or mountpoint changed data may be lost. Run recovery"
     else:
-        msg = "watch set for directory. if contents were modifified data may be lost. Run recovery"
+        msg = "watch set for directory. if contents were modified data may be lost. Run recovery"
     os.kill(daemon_pid(), signal.SIGUSR1)
     return msg
 
 def unwatch_directory(path : str):
+    """Removes given directory tree from watch list and informs the watcher process of the change
+
+    Parameters
+    ----------
+    path : str
+        Absolute path to directory
+
+    Returns
+    -------
+    str
+        Response message
+    """
+
     if path in utils.get_watches():
         utils.sleep_watch(path)
         os.kill(daemon_pid(), signal.SIGUSR1)
@@ -634,11 +723,41 @@ def recover_under_directory(path : str,
                             guarantee_mountpath : bool = False, 
                             guarantee_fsid : bool = False,
                             guarantee_inodes : bool = False,
-                            guarantee_xattr : bool = False):
+                            guarantee_xattr : bool = False) -> list:
+    """Attempts to update inconsistent database data from provided confirmed data
+
+    Option sets [-a], [-x], [-fi], [-mfi], [-mf] guarantee full recovery. For other combinations ([-m]), only partial recovery may be possible.")
+
+    Parameters
+    ----------
+    path : str
+        Absolute path to directory
+    guarantee_abspath : bool, optional
+        If set, indicates that absolute paths of files in directory tree have not changed and can be trusted. Default is False
+    guarantee_mountpath : bool, optional 
+        If set, indicates that provided path is the mountpoint of its filesystem and paths relative to it have not changed and can be trusted. Default is False
+    guarantee_fsid : bool, optional
+        If set, indicates that the filesystem ID of directory tree has not changed (directory hasn't moved between filesystems) and can be trusted. Default is False
+    guarantee_inodes : bool, optional 
+        If set, indicates that the filesystem of directory tree supports persistent inodes and therefore they have not changed and can be trusted. Default is False
+    guarantee_xattr : bool, optional 
+        If set, indicates that semo data for directory was previously exported into the files' extended attributes, the extended attributes can be trusted and imported from. Default is False
+
+    Returns
+    -------
+    list
+        List of filepaths for which semo entries were recovered, and if applicable, list of filepaths that couldn't be recovered
+    
+    Raises
+    ------
+    SemoException
+        If provided path is not a directory
+    """
+
     path = os.path.abspath(path)
     if not os.path.isdir(path):
         raise SemoException(f"Path {path} is not a directory")
-    
+
     if guarantee_xattr:
         return import_data_from_xattr(path)
 
@@ -651,11 +770,14 @@ def recover_under_directory(path : str,
             if guarantee_inodes:
                 return data_repair.recover_path_by_inode(path)
             return data_repair.recover_path_inode_by_mountpath(path)
-        return data_repair.partial_recover_path_inode_by_mountpath(path)
+        else:
+            return data_repair.partial_recover_path_inode_by_mountpath(path)
     
     return []
 
 def clean_records():
+    """Goes through database and verifies each entry is still accurate. Deletes outdated entries."""
+
     database = db.Database(utils.get_working_db())
     validator = v.Validator(database)
     entries = database.get_files_with_paths()
@@ -669,6 +791,16 @@ def clean_records():
             database.delete_file(fsid, inode)
 
 def export_data_to_xattr(dirpath : str, delete_local = False):
+    """Exports semo entries for files in provided directory into the files' extended attributes.
+
+    Parameters
+    ----------
+    dirpath : str
+        Absolute path to directory
+    delete_local : bool, optional
+        If True, after entries are exported they are removed from semo database. Default is False
+    """
+
     database = db.Database(utils.get_working_db())
     validator = v.Validator(database)
     entries = database.get_files_by_path_prefix(dirpath)
@@ -678,17 +810,33 @@ def export_data_to_xattr(dirpath : str, delete_local = False):
         semo_data = database._direct_rels_for_file(fsid, inode)
         data_string = " ".join(f"{k}:{v}" for k, v in semo_data.items())
         os.setxattr(filepath, "user.semo", data_string.encode())
+        if delete_local:
+            database.delete_file(fsid, inode)
 
 def import_data_from_xattr(dirpath : str):
+    """Imports semo entries for files in provided directory from the files' extended attributes.
+
+    Parameters
+    ----------
+    dirpath : str
+        Absolute path to directory
+
+    Returns
+    -------
+    list[str]
+        List of paths for which entries were successfully imported
+    """
+
     imported = []
     for contents in os.walk(dirpath):
         prefix, dirs, files = contents
         for item in dirs + files:
             filepath = os.path.join(prefix, item)
             data_string = os.getxattr(filepath, "user.semo").decode()
-            semo_data = dict(item.split(":") for item in data_string.split())
-            for k, v in semo_data.items():
-                connect_tag(filepath, k, v)
-            imported.append(filepath)
-            os.setxattr(filepath, "user.semo", b"")
+            if data_string:
+                semo_data = dict(item.split(":") for item in data_string.split())
+                for k, v in semo_data.items():
+                    connect_tag(filepath, k, v)
+                imported.append(filepath)
+                os.setxattr(filepath, "user.semo", b"")
     return imported

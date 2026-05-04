@@ -84,7 +84,7 @@ def main():
     export_parser.set_defaults(func=cli.translate_EXPORT)
 
 
-    import_parser = subparsers.add_parser("import", help="Attempts to import tag data in given directory from one of the available option sets: [-a], [-x], [-fi], [-mfi], [-mf], ([-m] - only partial recovery may be possible)")
+    import_parser = subparsers.add_parser("import", help="Attempts to import tag data in given directory from the available options. Option sets [-a], [-x], [-fi], [-mfi], [-mf] guarantee full recovery. For other combinations (eg. [-m]) only partial recovery may be possible.")
     import_parser.add_argument("path", help="Absolute or relative path to file")
     import_parser.add_argument("-a", "--guarantee_abspath", action="store_true", help="The absolute paths of the directory and its contents have not changed while not being watched")
     import_parser.add_argument("-m", "--guarantee_mountpath", action="store_true", help="The given directory is the mountpoint of its filesystem and the paths of its contents have not changed while not being watched")

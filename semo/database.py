@@ -515,9 +515,9 @@ class Database:
     def get_file_by_path(self, path: str):
         res = self.__conn.cursor().execute("SELECT fsid, inode, path, id FROM file WHERE path == ?", (path,))
         try:
-            return res.fetchall()[0]
+            return res.fetchall()
         except IndexError:
-            return None
+            return []
     def get_files_by_path_prefix(self, path_prefix: str) :
         res = self.__conn.cursor().execute("SELECT fsid, inode, path, id FROM file WHERE path LIKE ?", (path_prefix + '%',))
         if res is not None:
