@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 
-"""Module provides backend of user functions, in detail handles interacting with the database and content
+"""Module provides backend of user functions, calling the necessary submodules, in detail handles interacting with the database and content
 
 File should be imported as a module and contains the following functions:
 
@@ -781,7 +781,7 @@ def clean_records():
 
     database = db.Database(utils.get_working_db())
     validator = v.Validator(database)
-    entries = database.get_files_with_paths()
+    entries = database.get_complete_file_entries()
     for fsid, inode, filepath, entry_id in entries:
         try:
             if not validator.entry_consistent(fsid, inode, filepath):

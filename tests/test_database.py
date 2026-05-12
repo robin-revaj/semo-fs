@@ -1,6 +1,7 @@
-import unittest
-import os
-import database as db, utils
+import unittest, os, sys, pwd
+user = pwd.getpwuid(os.getuid()).pw_name
+sys.path.append(f"/home/{user}/.semo/semo")
+from semo import database as db, utils
 from utils import SemoException
 
 class TestDatabaseCommands(unittest.TestCase):

@@ -3,46 +3,29 @@
 """
 Module used to process user input, parsing it to the corresponding function and constructing responses.
 
-Functions
----------
-translate_TAG(args, suppress=False)
-    Handles 'tag' instruction.
-translate_UNTAG(args, suppress=False)
-    Handles 'utag' instruction.
-translate_LISTTAGS(args, suppress=False)
-    Handles 'ls_tags' instruction.
-translate_LISTROOTS(suppress=False)
-    Handles 'ls_roots' instruction.
-translate_LISTFILES(args, suppress=False)
-    Handles 'ls_files' instruction.
-translate_DELTAG(args, suppress=False)
-    Handles 'deltag' instruction.
-translate_SUBTAG(args, suppress=False)
-    Handles 'subtag' instruction.
-translate_UNSUBTAG(args, suppress=False)
-    Handles 'usubtag' instruction.
-translate_LISTSUBTAGS(args, suppress=False)
-    Handles 'ls_subtags' instruction.
-make_tree_string_for_dict(d, indent=4)
-    Returns a string formatted dictionary.
-translate_WATCH(args, suppress=False)
-    Handles 'watch' instruction.
-translate_UNWATCH(args, suppress=False)
-    Handles 'uwatch' instruction.
-translate_LISTWATCHES(suppress=False)
-    Handles 'ls_subtags' instruction.
-translate_SELECTDB(args, suppress=False)
-    Handles 'db' instruction.
-translate_IMPORT(args, suppress=False)
-    Handles 'import' instruction.
-translate_EXPORT(args)
-    Handles 'export' instruction.
-translate_CLEAN(args)
-    Handles 'ls_subtags' instruction.
-translate_MOUNT(args, suppress=False)
-    Handles 'mount' instruction.
-translate_UMOUNT(args, suppress=False)
-    Handles 'umount' instruction.
+File should be imported as a module.
+
+Contains the following functions:
+
+    * translate_TAG(args, suppress=False) - Handles 'tag' instruction.
+    * translate_UNTAG(args, suppress=False) - Handles 'utag' instruction.
+    * translate_LISTTAGS(args, suppress=False) - Handles 'ls_tags' instruction.
+    * translate_LISTROOTS(suppress=False) - Handles 'ls_roots' instruction.
+    * translate_LISTFILES(args, suppress=False) - Handles 'ls_files' instruction.
+    * translate_DELTAG(args, suppress=False) - Handles 'deltag' instruction.
+    * translate_SUBTAG(args, suppress=False) - Handles 'subtag' instruction.
+    * translate_UNSUBTAG(args, suppress=False) - Handles 'usubtag' instruction.
+    * translate_LISTSUBTAGS(args, suppress=False) - Handles 'ls_subtags' instruction.
+    * make_tree_string_for_dict(d, indent=4) - Returns a string formatted dictionary.
+    * translate_WATCH(args, suppress=False) - Handles 'watch' instruction.
+    * translate_UNWATCH(args, suppress=False) - Handles 'uwatch' instruction.
+    * translate_LISTWATCHES(suppress=False) - Handles 'ls_subtags' instruction.
+    * translate_SELECTDB(args, suppress=False) - Handles 'db' instruction.
+    * translate_IMPORT(args, suppress=False) - Handles 'import' instruction.
+    * translate_EXPORT(args) - Handles 'export' instruction.
+    * translate_CLEAN(args) - Handles 'ls_subtags' instruction.
+    * translate_MOUNT(args, suppress=False) - Handles 'mount' instruction.
+    * translate_UMOUNT(args, suppress=False) - Handles 'umount' instruction.
 """
 
 import os

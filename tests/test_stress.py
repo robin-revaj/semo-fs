@@ -1,9 +1,9 @@
-import pytest, unittest
-import random
-import os
-import time
+
+import unittest, os, sys, pwd, random, time
+user = pwd.getpwuid(os.getuid()).pw_name
+sys.path.append(f"/home/{user}/.semo/semo")
 from argparse import Namespace
-import interface, utils
+from semo import interface, utils
 
 
 class TestStress(unittest.TestCase):
@@ -53,13 +53,13 @@ class TestStress(unittest.TestCase):
 
     def test_all_funcs(self):
         functions = [
-            lambda x: interface.interface_translate_TAG(x, True),
-            lambda x: interface.interface_translate_UNTAG(x, True),
-            lambda x: interface.interface_translate_DELTAG(x, True),
-            lambda x: interface.interface_translate_LISTTAGS(x, True),
-            lambda x: interface.interface_translate_LISTFILES(x, True),
-            lambda x: interface.interface_translate_SUBTAG(x, True),
-            lambda x: interface.interface_translate_LISTSUBTAGS(x, True)
+            lambda x: interface.translate_TAG(x, True),
+            lambda x: interface.translate_UNTAG(x, True),
+            lambda x: interface.translate_DELTAG(x, True),
+            lambda x: interface.translate_LISTTAGS(x, True),
+            lambda x: interface.translate_LISTFILES(x, True),
+            lambda x: interface.translate_SUBTAG(x, True),
+            lambda x: interface.translate_LISTSUBTAGS(x, True)
         ]
 
         for i in range(1000):
@@ -101,7 +101,7 @@ class TestStress(unittest.TestCase):
                 args.tagname = self.tags[t][random.randint(0,999)]
                 args.filename = self.paths[0]
                 args.value = self.values[t]()
-                interface.interface_translate_TAG(args, True)
+                interface.translate_TAG(args, True)
             t = time.time() - start
             limit = t > 1
             print(ep, t)

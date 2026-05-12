@@ -50,10 +50,10 @@ class TestChanges(unittest.TestCase):
         os.mkdir("tests/folder")
         p = os.path.abspath("tests/folder")
         cli.translate_WATCH(Namespace(path=p), suppress=True)
-        watches = cli.translate_LISTWATCHES(Namespace(), suppress=True)
+        watches = cli.translate_LISTWATCHES(suppress=True)
         self.assertIn(p, watches)
         cli.translate_UNWATCH(Namespace(path=p), suppress=True)
-        watches = cli.translate_LISTWATCHES(Namespace(), suppress=True)
+        watches = cli.translate_LISTWATCHES(suppress=True)
         self.assertNotIn(p, watches)
         os.rmdir("tests/folder")
 
@@ -147,7 +147,6 @@ class TestChanges(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    #sys.path.append("/home/mercury/Documents/Motherboard/Semester/BC_THESIS/semo_root")
 
     
     unittest.main()
