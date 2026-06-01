@@ -3,7 +3,7 @@
 import errno
 
 import fuse, os, stat
-import backend, utils
+import backend
 
 class semoStat(fuse.Stat):
     def __init__(self, *args, **kwargs):

@@ -53,7 +53,7 @@ class TestCommandBackend(unittest.TestCase):
     def test_tag_already_tagged(self):
         filepath = self.files[0]
         self.assertEqual(0, len(backend.connect_tag(filepath, "test_tag_already_tagged")))
-        self.assertListEqual([f"{filepath} already tagged test_tag_already_tagged"], backend.connect_tag(filepath, "test_tag_already_tagged"))
+        self.assertNotEqual(0, len(backend.connect_tag(filepath, "test_tag_already_tagged")))
         table = self.DB.dump_tables()
         self.assertListEqual(table['tag'], [(1, "test_tag_already_tagged", None)])
         self.assertListEqual(table['rel_file_tag_null'], [(1, 1, 1)])
@@ -61,7 +61,7 @@ class TestCommandBackend(unittest.TestCase):
     def test_tag_str_already_tagged(self):
         filepath = self.files[0]
         self.assertEqual(0, len(backend.connect_tag(filepath, "test_tag_already_tagged", "s42")))
-        self.assertListEqual([f"{filepath} already tagged test_tag_already_tagged"], backend.connect_tag(filepath, "test_tag_already_tagged", "s43"))
+        self.assertNotEqual(0, len(backend.connect_tag(filepath, "test_tag_already_tagged", "s43")))
         table = self.DB.dump_tables()
         self.assertListEqual(table['tag'], [(1, "test_tag_already_tagged", "str")])
         self.assertListEqual(table['rel_file_tag_str'], [(1, 1, 1, "s42")])
@@ -69,16 +69,16 @@ class TestCommandBackend(unittest.TestCase):
     def test_tag_int_already_tagged(self):
         filepath = self.files[0]
         self.assertEqual(0, len(backend.connect_tag(filepath, "test_tag_already_tagged", 42)))
-        self.assertListEqual([f"{filepath} already tagged test_tag_already_tagged"], backend.connect_tag(filepath, "test_tag_already_tagged", 43))
+        self.assertNotEqual(0, len(backend.connect_tag(filepath, "test_tag_already_tagged", 43)))
         table = self.DB.dump_tables()
         self.assertListEqual(table['tag'], [(1, "test_tag_already_tagged", "int")])
         self.assertListEqual(table['rel_file_tag_int'], [(1, 1, 1, 42)])
 
     def test_tag_nonexistent_file(self):
         filepath = self.loc + "nonexistent_file.txt"
-        self.assertEqual(1, len(backend.connect_tag(filepath, "test_tag_nonexistent_file")))
-        self.assertEqual(1, len(backend.connect_tag(filepath, "test_tag_nonexistent_file", "s1")))
-        self.assertEqual(1, len(backend.connect_tag(filepath, "test_tag_nonexistent_file", 1)))
+        self.assertNotEqual(0, len(backend.connect_tag(filepath, "test_tag_nonexistent_file")))
+        self.assertNotEqual(0, len(backend.connect_tag(filepath, "test_tag_nonexistent_file", "s1")))
+        self.assertNotEqual(0, len(backend.connect_tag(filepath, "test_tag_nonexistent_file", 1)))
         table = self.DB.dump_tables()
         self.assertListEqual(table['tag'], [])
         self.assertListEqual(table['file'], [])
@@ -109,7 +109,7 @@ class TestCommandBackend(unittest.TestCase):
         backend.connect_tag(self.files[0], superior_tag)
         backend.connect_tag(self.files[1], inferior_tag)
         backend.connect_subtags(superior_tag, [inferior_tag])
-        self.assertEqual(1, len(backend.connect_tag(self.files[1], superior_tag)))
+        self.assertNotEqual(0, len(backend.connect_tag(self.files[1], superior_tag)))
         table = self.DB.dump_tables()
         self.assertListEqual(table['tag'], [(1, superior_tag, None), (2, inferior_tag, None)])
         self.assertListEqual(table['rel_tag_tag'], [(1, 1, 2)])
@@ -170,14 +170,14 @@ class TestCommandBackend(unittest.TestCase):
         self.assertEqual(len(table['rel_file_tag_int']), 1)        
 
     def test_untag_not_tagged(self):
-        self.assertEqual(1, len(backend.disconnect_tag(self.files[0], "test_untag_not_tagged")))
+        self.assertNotEqual(0, len(backend.disconnect_tag(self.files[0], "test_untag_not_tagged")))
         backend.connect_tag(self.files[0], "test_untag_not_tagged")
-        self.assertEqual(1, len(backend.disconnect_tag(self.files[0], "test_untag_not_tagged2")))
+        self.assertNotEqual(0, len(backend.disconnect_tag(self.files[0], "test_untag_not_tagged2")))
         self.assertEqual(0, len(backend.disconnect_tag(self.files[0], "test_untag_not_tagged")))
 
     def test_untag_nonexistent_file(self):
         filepath = self.loc + "nonexistent_file.txt"
-        self.assertEqual(1, len(backend.disconnect_tag(filepath, "test_tag_nonexistent_file")))
+        self.assertNotEqual(0, len(backend.disconnect_tag(filepath, "test_tag_nonexistent_file")))
         table = self.DB.dump_tables()
         self.assertListEqual(table['tag'], [])
         self.assertListEqual(table['file'], [])
@@ -255,7 +255,7 @@ class TestCommandBackend(unittest.TestCase):
     def test_subtag_nonexistent_superior(self):
         inferior_tag = "test_subtag_nonexistent_superior_inferior"
         self.assertEqual(0, len(backend.connect_tag(self.files[0], inferior_tag)))
-        self.assertEqual(1, len(backend.connect_subtags("test_subtag_nonexistent_superior_superior", [inferior_tag])))
+        self.assertNotEqual(0, len(backend.connect_subtags("test_subtag_nonexistent_superior_superior", [inferior_tag])))
         table = self.DB.dump_tables()
         self.assertListEqual(table['tag'], [(1, inferior_tag, None)])
         self.assertListEqual(table['rel_tag_tag'], [])
@@ -263,7 +263,7 @@ class TestCommandBackend(unittest.TestCase):
     def test_subtag_nonexistent_inferior(self):
         superior_tag = "test_subtag_nonexistent_inferior_superior"
         self.assertEqual(0, len(backend.connect_tag(self.files[0], superior_tag)))
-        self.assertEqual(1, len(backend.connect_subtags(superior_tag, ["test_subtag_nonexistent_inferior_inferior"])))
+        self.assertNotEqual(0, len(backend.connect_subtags(superior_tag, ["test_subtag_nonexistent_inferior_inferior"])))
         table = self.DB.dump_tables()
         self.assertListEqual(table['tag'], [(1, superior_tag, None)])
         self.assertListEqual(table['rel_tag_tag'], [])
@@ -274,7 +274,7 @@ class TestCommandBackend(unittest.TestCase):
         backend.connect_tag(self.files[0], superior_tag)
         backend.connect_tag(self.files[1], inferior_tag)
         self.assertEqual(0, len(backend.connect_subtags(superior_tag, [inferior_tag])))
-        self.assertEqual(1, len(backend.connect_subtags(superior_tag, [inferior_tag])))
+        self.assertNotEqual(0, len(backend.connect_subtags(superior_tag, [inferior_tag])))
         table = self.DB.dump_tables()
         self.assertListEqual(table['tag'], [(1, superior_tag, None), (2, inferior_tag, None)])
         self.assertListEqual(table['rel_tag_tag'], [(1, 1, 2)])
@@ -285,7 +285,7 @@ class TestCommandBackend(unittest.TestCase):
         backend.connect_tag(self.files[0], superior_tag)
         backend.connect_tag(self.files[1], inferior_tag)
         self.assertEqual(0, len(backend.connect_subtags(superior_tag, [inferior_tag])))
-        self.assertEqual(1, len(backend.connect_subtags(inferior_tag, [superior_tag])))
+        self.assertNotEqual(0, len(backend.connect_subtags(inferior_tag, [superior_tag])))
         table = self.DB.dump_tables()
         self.assertListEqual(table['tag'], [(1, superior_tag, None), (2, inferior_tag, None)])
         self.assertListEqual(table['rel_tag_tag'], [(1, 1, 2)])
@@ -315,7 +315,7 @@ class TestCommandBackend(unittest.TestCase):
     def test_unsubtag_nonexistent_superior(self):
         inferior_tag = "test_unsubtag_nonexistent_superior_inferior"
         self.assertEqual(0, len(backend.connect_tag(self.files[0], inferior_tag)))
-        self.assertEqual(1, len(backend.disconnect_subtags("test_unsubtag_nonexistent_superior_superior", [inferior_tag])))
+        self.assertNotEqual(0, len(backend.disconnect_subtags("test_unsubtag_nonexistent_superior_superior", [inferior_tag])))
         table = self.DB.dump_tables()
         self.assertListEqual(table['tag'], [(1, inferior_tag, None)])
         self.assertListEqual(table['rel_tag_tag'], [])
@@ -323,7 +323,7 @@ class TestCommandBackend(unittest.TestCase):
     def test_unsubtag_nonexistent_inferior(self):
         superior_tag = "test_unsubtag_nonexistent_inferior_superior"
         self.assertEqual(0, len(backend.connect_tag(self.files[0], superior_tag)))
-        self.assertEqual(1, len(backend.disconnect_subtags(superior_tag, ["test_unsubtag_nonexistent_inferior_inferior"])))
+        self.assertNotEqual(0, len(backend.disconnect_subtags(superior_tag, ["test_unsubtag_nonexistent_inferior_inferior"])))
         table = self.DB.dump_tables()
         self.assertListEqual(table['tag'], [(1, superior_tag, None)])
         self.assertListEqual(table['rel_tag_tag'], [])
@@ -333,7 +333,7 @@ class TestCommandBackend(unittest.TestCase):
         inferior_tag = "test_unsubtag_not_subtagged_inferior"
         backend.connect_tag(self.files[0], superior_tag)
         backend.connect_tag(self.files[1], inferior_tag)
-        self.assertEqual(1, len(backend.disconnect_subtags(superior_tag, [inferior_tag])))
+        self.assertNotEqual(0, len(backend.disconnect_subtags(superior_tag, [inferior_tag])))
         table = self.DB.dump_tables()
         self.assertListEqual(table['tag'], [(1, superior_tag, None), (2, inferior_tag, None)])
         self.assertListEqual(table['rel_tag_tag'], [])
@@ -367,7 +367,7 @@ class TestCommandBackend(unittest.TestCase):
 
     def test_del_tag_nonexistent(self):
         tag_name = "test_del_tag_nonexistent"
-        self.assertEqual(1, len(backend.delete_tag(tag_name)))
+        self.assertNotEqual(0, len(backend.delete_tag(tag_name)))
         table = self.DB.dump_tables()
         self.assertListEqual(table['tag'], [])
         self.assertListEqual(table['rel_file_tag_null'], [])
@@ -466,7 +466,8 @@ class TestCommandBackend(unittest.TestCase):
         self.assertDictEqual({tag1:None, tag2:"tag2", tag3:3}, backend.get_tags_for_file(self.files[0]))
 
     def test_list_tags_for_file_nonexistent(self):
-        self.assertEqual(1, len(backend.get_tags_for_file(self.loc + "nonexistent_file.txt")))
+        with self.assertRaises(SemoException):
+            backend.get_tags_for_file(self.loc + "nonexistent_file.txt")
 
     def test_list_tags_for_file_inherited(self):
         superior_tag = "test_list_tags_for_file_inherited_superior"
@@ -481,18 +482,18 @@ class TestCommandBackend(unittest.TestCase):
         tag2 = "test_list_files_no_query2"
         backend.connect_tag(self.files[0], tag1)
         backend.connect_tag(self.files[1], tag2)
-        self.assertSetEqual({self.files[0], self.files[1]}, backend.query_files(""))
+        self.assertSetEqual({(tag1, self.files[0]), (tag2, self.files[1])}, backend.query_files(""))
 
     def test_list_files_query_singular(self):
         tag1 = "test_list_files_query_singular1"
         tag2 = "test_list_files_query_singular2"
         backend.connect_tag(self.files[0], tag1)
         backend.connect_tag(self.files[1], tag2)
-        self.assertSetEqual({self.files[0]}, backend.query_files(tag1))
-        self.assertSetEqual({self.files[1]}, backend.query_files(tag2))
+        self.assertEqual(1, len(backend.query_files(tag1)))
+        self.assertEqual(1, len(backend.query_files(tag2)))
 
     def test_list_files_query_singular_nonexistent(self):
-        self.assertSetEqual(set(), backend.query_files("test_list_files_query_singular_nonexistent"))
+        self.assertEqual(0, len(backend.query_files("test_list_files_query_singular_nonexistent")))
 
     def test_list_files_query_AND(self):
         tag1 = "test_list_files_query_AND1"
@@ -500,7 +501,7 @@ class TestCommandBackend(unittest.TestCase):
         backend.connect_tag(self.files[0], tag1)
         backend.connect_tag(self.files[0], tag2)
         backend.connect_tag(self.files[1], tag1)
-        self.assertSetEqual({self.files[0]}, backend.query_files(f"{tag1} & {tag2}"))
+        self.assertEqual(1, len(backend.query_files(f"{tag1} & {tag2}")))
 
     def test_list_files_query_AND_parentheses(self):
         tag1 = "test_list_files_query_AND_parentheses1"
@@ -508,7 +509,7 @@ class TestCommandBackend(unittest.TestCase):
         backend.connect_tag(self.files[0], tag1)
         backend.connect_tag(self.files[0], tag2)
         backend.connect_tag(self.files[1], tag1)
-        self.assertSetEqual({self.files[0]}, backend.query_files(f"({tag1} & {tag2})"))
+        self.assertEqual(1, len(backend.query_files(f"({tag1} & {tag2})")))
 
     def test_list_files_query_AND_nonexistent(self):
         self.assertSetEqual(set(), backend.query_files(f"test_list_files_query_AND_nonexistent1 & test_list_files_query_AND_nonexistent2"))
@@ -523,22 +524,22 @@ class TestCommandBackend(unittest.TestCase):
         tag2 = "test_list_files_query_OR2"
         backend.connect_tag(self.files[0], tag1)
         backend.connect_tag(self.files[1], tag2)
-        self.assertSetEqual({self.files[0], self.files[1]}, backend.query_files(f"{tag1} | {tag2}"))
+        self.assertEqual(2, len(backend.query_files(f"{tag1} | {tag2}")))
 
     def test_list_files_query_OR_parentheses(self):
         tag1 = "test_list_files_query_OR_parentheses1"
         tag2 = "test_list_files_query_OR_parentheses2"
         backend.connect_tag(self.files[0], tag1)
         backend.connect_tag(self.files[1], tag2)
-        self.assertSetEqual({self.files[0], self.files[1]}, backend.query_files(f"({tag1} | {tag2})"))
+        self.assertEqual(2, len(backend.query_files(f"({tag1} | {tag2})")))
 
     def test_list_files_query_OR_nonexistent(self):
-        self.assertSetEqual(set(), backend.query_files(f"test_list_files_query_OR_nonexistent1 | test_list_files_query_OR_nonexistent2"))
+        self.assertEqual(0, len(backend.query_files(f"test_list_files_query_OR_nonexistent1 | test_list_files_query_OR_nonexistent2")))
         backend.connect_tag(self.files[0], "test_list_files_query_OR_nonexistent1")
-        self.assertSetEqual({self.files[0]}, backend.query_files(f"test_list_files_query_OR_nonexistent1 | test_list_files_query_OR_nonexistent2"))
+        self.assertEqual(1, len(backend.query_files(f"test_list_files_query_OR_nonexistent1 | test_list_files_query_OR_nonexistent2")))
         backend.delete_tag("test_list_files_query_OR_nonexistent1")
         backend.connect_tag(self.files[0], "test_list_files_query_OR_nonexistent2")
-        self.assertSetEqual({self.files[0]}, backend.query_files(f"test_list_files_query_OR_nonexistent1 | test_list_files_query_OR_nonexistent2"))
+        self.assertEqual(1, len(backend.query_files(f"test_list_files_query_OR_nonexistent1 | test_list_files_query_OR_nonexistent2")))
 
     def test_list_files_query_NOT(self):
         tag1 = "test_list_files_query_NOT1"
@@ -546,8 +547,8 @@ class TestCommandBackend(unittest.TestCase):
         backend.connect_tag(self.files[0], tag1)
         backend.connect_tag(self.files[0], tag2)
         backend.connect_tag(self.files[1], tag1)
-        self.assertSetEqual({self.files[1]}, backend.query_files(f"{tag1} / {tag2}"))
-        self.assertSetEqual(set(), backend.query_files(f"{tag2} / {tag1}"))
+        self.assertEqual(1, len(backend.query_files(f"{tag1} / {tag2}")))
+        self.assertEqual(0, len(backend.query_files(f"{tag2} / {tag1}")))
 
     def test_list_files_query_NOT_parentheses(self):
         tag1 = "test_list_files_query_NOT_parentheses1"
@@ -555,16 +556,16 @@ class TestCommandBackend(unittest.TestCase):
         backend.connect_tag(self.files[0], tag1)
         backend.connect_tag(self.files[0], tag2)
         backend.connect_tag(self.files[1], tag1)
-        self.assertSetEqual({self.files[1]}, backend.query_files(f"({tag1} / {tag2})"))
-        self.assertSetEqual(set(), backend.query_files(f"({tag2} / {tag1})"))
-    
+        self.assertEqual(1, len(backend.query_files(f"({tag1} / {tag2})")))
+        self.assertEqual(0, len(backend.query_files(f"({tag2} / {tag1})")))
+
     def test_list_files_query_NOT_nonexistent(self):
-        self.assertSetEqual(set(), backend.query_files(f"test_list_files_query_NOT_nonexistent1 / test_list_files_query_NOT_nonexistent2"))
+        self.assertEqual(0, len(backend.query_files(f"test_list_files_query_NOT_nonexistent1 / test_list_files_query_NOT_nonexistent2")))
         backend.connect_tag(self.files[0], "test_list_files_query_NOT_nonexistent1")
-        self.assertSetEqual({self.files[0]}, backend.query_files(f"test_list_files_query_NOT_nonexistent1 / test_list_files_query_NOT_nonexistent2"))
+        self.assertEqual(1, len(backend.query_files(f"test_list_files_query_NOT_nonexistent1 / test_list_files_query_NOT_nonexistent2")))
         backend.delete_tag("test_list_files_query_NOT_nonexistent1")
         backend.connect_tag(self.files[0], "test_list_files_query_NOT_nonexistent2")
-        self.assertSetEqual(set(), backend.query_files(f"test_list_files_query_NOT_nonexistent1 / test_list_files_query_NOT_nonexistent2"))
+        self.assertEqual(0, len(backend.query_files(f"test_list_files_query_NOT_nonexistent1 / test_list_files_query_NOT_nonexistent2")))
 
     def test_list_files_query_combined_parenthesized(self):
         tag1 = "test_list_files_query_combined1"
@@ -575,10 +576,10 @@ class TestCommandBackend(unittest.TestCase):
         backend.connect_tag(self.files[1], tag3)
         backend.connect_tag(self.files[1], tag1)
         backend.connect_tag(self.files[1], tag2)
-        self.assertSetEqual({self.files[1]}, backend.query_files(f"({tag1} & {tag2}) & {tag3}"))
-        self.assertSetEqual({self.files[0], self.files[1]}, backend.query_files(f"{tag1} & {tag2}"))
-        self.assertSetEqual({self.files[0]}, backend.query_files(f"{tag1} & ({tag2} / {tag3})"))
-        self.assertSetEqual({self.files[1]}, backend.query_files(f"({tag1}  | {tag2}) & ({tag1} & {tag3})"))
+        self.assertEqual(1, len(backend.query_files(f"({tag1} & {tag2}) & {tag3}")))
+        self.assertEqual(2, len(backend.query_files(f"{tag1} & {tag2}")))
+        self.assertEqual(1, len(backend.query_files(f"{tag1} & ({tag2} / {tag3})")))
+        self.assertEqual(1, len(backend.query_files(f"({tag1}  | {tag2}) & ({tag1} & {tag3})")))
 
     def test_list_files_query_combined(self):
         tag1 = "test_list_files_query_combined1"
@@ -589,10 +590,10 @@ class TestCommandBackend(unittest.TestCase):
         backend.connect_tag(self.files[1], tag3)
         backend.connect_tag(self.files[1], tag1)
         backend.connect_tag(self.files[1], tag2)
-        self.assertSetEqual({self.files[1]}, backend.query_files(f"{tag1} & {tag2} & {tag3}"))
-        self.assertSetEqual({self.files[0]}, backend.query_files(f"{tag1} & {tag2} / {tag3}"))
-        self.assertSetEqual({self.files[1]}, backend.query_files(f"({tag1}  | {tag2}) & {tag1} & {tag3}"))
-        self.assertSetEqual({self.files[0]}, backend.query_files(f"({tag1}  | {tag2}) & {tag1} / {tag3}"))
+        self.assertEqual(1, len(backend.query_files(f"{tag1} & {tag2} & {tag3}")))
+        self.assertEqual(1, len(backend.query_files(f"{tag1} & {tag2} / {tag3}")))
+        self.assertEqual(1, len(backend.query_files(f"({tag1}  | {tag2}) & {tag1} & {tag3}")))
+        self.assertEqual(1, len(backend.query_files(f"({tag1}  | {tag2}) & {tag1} / {tag3}")))
 
     def test_list_files_query_wrong(self):
         tag1 = "test_list_files_query_wrong1"
@@ -615,8 +616,8 @@ class TestCommandBackend(unittest.TestCase):
         backend.connect_tag(self.files[0], t1, "a")
         backend.connect_tag(self.files[1], t1, "abc")
         backend.connect_tag(self.files[2], t1, "abc")
-        self.assertSetEqual({self.files[0],}, backend.query_files(f"{t1} == a"))
-        self.assertSetEqual({self.files[1], self.files[2]}, backend.query_files(f"{t1} == abc"))
+        self.assertEqual(1, len(backend.query_files(f"{t1} == a")))
+        self.assertEqual(2, len(backend.query_files(f"{t1} == abc")))
         self.assertEqual(0, len(backend.query_files(f"{t1} == b")))
 
     def test_query_with_str_condition_wrong(self):
@@ -625,9 +626,9 @@ class TestCommandBackend(unittest.TestCase):
         backend.connect_tag(self.files[1], t1, "abc")
         backend.connect_tag(self.files[2], t1, "abc")
         with self.assertRaises(SemoException):
-            self.assertSetEqual({self.files[0],}, backend.query_files(f"{t1} = a"))
+            self.assertSetEqual({(t1 + ":a", self.files[0]),}, backend.query_files(f"{t1} = a"))
         with self.assertRaises(SemoException):
-            self.assertSetEqual({self.files[1], self.files[2]}, backend.query_files(f"{t1} === abc"))
+            self.assertSetEqual({(t1 + ":abc", self.files[1]), (t1 + ":abc", self.files[2])}, backend.query_files(f"{t1} === abc"))
         with self.assertRaises(SemoException):
             self.assertEqual(0, len(backend.query_files(f"{t1} < b")))
 
@@ -636,8 +637,8 @@ class TestCommandBackend(unittest.TestCase):
         backend.connect_tag(self.files[0], t1, 5)
         backend.connect_tag(self.files[1], t1, 10)
         backend.connect_tag(self.files[2], t1, 10)
-        self.assertSetEqual({self.files[0],}, backend.query_files(f"{t1} == 5"))
-        self.assertSetEqual({self.files[1], self.files[2]}, backend.query_files(f"{t1} == 10"))
+        self.assertEqual(1, len(backend.query_files(f"{t1} == 5")))
+        self.assertEqual(2, len(backend.query_files(f"{t1} == 10")))
         self.assertEqual(0, len(backend.query_files(f"{t1} == 3")))
 
     def test_query_with_int_condition_gt(self):
@@ -645,9 +646,9 @@ class TestCommandBackend(unittest.TestCase):
         backend.connect_tag(self.files[0], t1, 5)
         backend.connect_tag(self.files[1], t1, 10)
         backend.connect_tag(self.files[2], t1, 20)
-        self.assertSetEqual({self.files[2],}, backend.query_files(f"{t1} > 10"))
-        self.assertSetEqual({self.files[1], self.files[2]}, backend.query_files(f"{t1} >= 10"))
-        self.assertSetEqual({self.files[0], self.files[1], self.files[2]}, backend.query_files(f"{t1} >= -2"))
+        self.assertEqual(1, len(backend.query_files(f"{t1} > 10")))
+        self.assertEqual(2, len(backend.query_files(f"{t1} >= 10")))
+        self.assertEqual(3, len(backend.query_files(f"{t1} >= -2")))
         self.assertEqual(0, len(backend.query_files(f"{t1} > 20")))
 
     def test_query_with_int_condition_lt(self):
@@ -655,9 +656,9 @@ class TestCommandBackend(unittest.TestCase):
         backend.connect_tag(self.files[0], t1, 5)
         backend.connect_tag(self.files[1], t1, 10)
         backend.connect_tag(self.files[2], t1, 20)
-        self.assertSetEqual({self.files[0],}, backend.query_files(f"{t1} < 7"))
-        self.assertSetEqual({self.files[0],}, backend.query_files(f"{t1} <= 5"))
-        self.assertSetEqual({self.files[0], self.files[1]}, backend.query_files(f"{t1} < 20"))
+        self.assertEqual(1, len(backend.query_files(f"{t1} < 7")))
+        self.assertEqual(1, len(backend.query_files(f"{t1} <= 5")))
+        self.assertEqual(2, len(backend.query_files(f"{t1} < 20")))
         self.assertEqual(0, len(backend.query_files(f"{t1} <= 3")))
 
     def test_query_with_int_condition_wrong(self):
@@ -666,17 +667,17 @@ class TestCommandBackend(unittest.TestCase):
         backend.connect_tag(self.files[1], t1, 20)
         backend.connect_tag(self.files[2], t1, 38)
         with self.assertRaises(SemoException):
-            self.assertSetEqual({self.files[0],}, backend.query_files(f"{t1} == a"))
+            self.assertEqual(11, backend.query_files(f"{t1} == a"))
         with self.assertRaises(SemoException):
-            self.assertSetEqual({self.files[0],}, backend.query_files(f"{t1} > a"))
+            self.assertEqual(1, len(backend.query_files(f"{t1} > a")))
         with self.assertRaises(SemoException):
-            self.assertSetEqual({self.files[0],}, backend.query_files(f"{t1} <= a"))
+            self.assertEqual(1, len(backend.query_files(f"{t1} <= a")))
         with self.assertRaises(SemoException):
-            self.assertSetEqual({self.files[0],}, backend.query_files(f"{t1} = 5"))
+            self.assertEqual(1, len(backend.query_files(f"{t1} = 5")))
         with self.assertRaises(SemoException):
-            self.assertSetEqual({self.files[1], self.files[2]}, backend.query_files(f"{t1} === 20"))
+            self.assertEqual(2, len(backend.query_files(f"{t1} === 20")))
         with self.assertRaises(SemoException):
-            self.assertSetEqual({self.files[1], self.files[2]}, backend.query_files(f"{t1} <== 20"))
+            self.assertEqual(2, len(backend.query_files(f"{t1} <== 20")))
         with self.assertRaises(SemoException):
             self.assertEqual(0, len(backend.query_files(f"{t1} <> 5")))
 

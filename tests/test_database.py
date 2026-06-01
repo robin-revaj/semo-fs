@@ -1,7 +1,7 @@
 import unittest, os, sys, pwd
 user = pwd.getpwuid(os.getuid()).pw_name
 sys.path.append(f"/home/{user}/.semo/semo")
-from semo import database as db, utils
+from semo import database as db, utils as utils
 from utils import SemoException
 
 class TestDatabaseCommands(unittest.TestCase):
@@ -49,7 +49,7 @@ class TestDatabaseCommands(unittest.TestCase):
         os.remove("tests/data/incorrectDB.db")
 
     def test_dump_tables(self):
-        pattern = {'tag' : [], 'file' : [], 'rel_file_tag_null' : [], 'rel_file_tag_str' : [], 'rel_file_tag_int' : [], 'rel_tag_tag' : []}
+        pattern = {'tag' : [], 'file' : [], 'rel_file_tag_null' : [], 'rel_file_tag_str' : [], 'rel_file_tag_int' : [], 'rel_tag_tag' : [], 'filesystem' : []}
         self.assertDictEqual(pattern, self.testDB.dump_tables())
 
     def test_new_tag(self):
@@ -413,9 +413,9 @@ class TestDatabaseCommands(unittest.TestCase):
         self.assertSetEqual({(self.file_system, inode, filename, 1)}, self.testDB.get_files_for_tag(strtag))
         self.assertSetEqual({(self.file_system, inode, filename, 1)}, self.testDB.get_files_for_tag(inttag))
 
-        self.assertSetEqual({(self.file_system, inode, filename, 1, None)}, self.testDB.get_rels_for_tag(nulltag))
-        self.assertSetEqual({(self.file_system, inode, filename, 1, "s42")}, self.testDB.get_rels_for_tag(strtag))
-        self.assertSetEqual({(self.file_system, inode, filename, 1, 42)}, self.testDB.get_rels_for_tag(inttag))
+        self.assertSetEqual({(self.file_system, inode, filename, 1, 'test_list_files_for_tag_null')}, self.testDB.get_rels_for_tag(nulltag))
+        self.assertSetEqual({(self.file_system, inode, filename, 1, 'test_list_files_for_tag_str:s42')}, self.testDB.get_rels_for_tag(strtag))
+        self.assertSetEqual({(self.file_system, inode, filename, 1, 'test_list_files_for_tag_int:42')}, self.testDB.get_rels_for_tag(inttag))
 
     def test_list_subtags_for_tag(self):
         root_name = 'test_list_subtags_for_tag_root'
@@ -497,7 +497,7 @@ class TestDatabaseCommands(unittest.TestCase):
         self.testDB.new_rel_file_tag(self.file_system, inode, tagname, "s42")
         self.assertTrue((1, 1, 1, "s42") in self.testDB.dump_tables()['rel_file_tag_str'])
         self.assertDictEqual({tagname:"s42"}, self.testDB.get_rels_for_file(self.file_system, inode))
-        self.assertSetEqual({(self.file_system, inode, filename, 1, "s42")}, self.testDB._str_rels_for_tag_condition(tagname, "s42"))
+        self.assertSetEqual({(self.file_system, inode, filename, 1, tagname + ":s42")}, self.testDB._str_rels_for_tag_condition(tagname, "s42"))
         self.assertSetEqual(set(), self.testDB._str_rels_for_tag_condition(tagname, "s43"))
 
     def test_int_rels_with_equals_condition(self):
@@ -509,7 +509,7 @@ class TestDatabaseCommands(unittest.TestCase):
         self.testDB.new_rel_file_tag(self.file_system, inode, tagname, 42)
         self.assertTrue((1, 1, 1, 42) in self.testDB.dump_tables()['rel_file_tag_int'])
         self.assertDictEqual({tagname:42}, self.testDB.get_rels_for_file(self.file_system, inode))
-        self.assertSetEqual({(self.file_system, inode, filename, 1, 42)}, self.testDB._int_rels_for_tag_condition(tagname, "==", 42))
+        self.assertSetEqual({(self.file_system, inode, filename, 1, tagname+":42")}, self.testDB._int_rels_for_tag_condition(tagname, "==", 42))
         self.assertSetEqual(set(), self.testDB._int_rels_for_tag_condition(tagname, "==", 43))
 
     def test_int_rels_with_range_condition(self):
@@ -521,10 +521,10 @@ class TestDatabaseCommands(unittest.TestCase):
         self.testDB.new_rel_file_tag(self.file_system, inode, tagname, 42)
         self.assertTrue((1, 1, 1, 42) in self.testDB.dump_tables()['rel_file_tag_int'])
         self.assertDictEqual({tagname:42}, self.testDB.get_rels_for_file(self.file_system, inode))
-        self.assertSetEqual({(self.file_system, inode, filename, 1, 42)}, self.testDB._int_rels_for_tag_condition(tagname, "<", 50))
-        self.assertSetEqual({(self.file_system, inode, filename, 1, 42)}, self.testDB._int_rels_for_tag_condition(tagname, ">", 5))
-        self.assertSetEqual({(self.file_system, inode, filename, 1, 42)}, self.testDB._int_rels_for_tag_condition(tagname, "<=", 50))
-        self.assertSetEqual({(self.file_system, inode, filename, 1, 42)}, self.testDB._int_rels_for_tag_condition(tagname, ">=", 5))
+        self.assertSetEqual({(self.file_system, inode, filename, 1, tagname+":42")}, self.testDB._int_rels_for_tag_condition(tagname, "<", 50))
+        self.assertSetEqual({(self.file_system, inode, filename, 1, tagname+":42")}, self.testDB._int_rels_for_tag_condition(tagname, ">", 5))
+        self.assertSetEqual({(self.file_system, inode, filename, 1, tagname+":42")}, self.testDB._int_rels_for_tag_condition(tagname, "<=", 50))
+        self.assertSetEqual({(self.file_system, inode, filename, 1, tagname+":42")}, self.testDB._int_rels_for_tag_condition(tagname, ">=", 5))
         self.assertSetEqual(set(), self.testDB._int_rels_for_tag_condition(tagname, ">", 90))
         self.assertSetEqual(set(), self.testDB._int_rels_for_tag_condition(tagname, ">=", 90))
         self.assertSetEqual(set(), self.testDB._int_rels_for_tag_condition(tagname, "<", 3))

@@ -81,7 +81,7 @@ class Watcher:
             path = os.path.join(part_path, filename)
             if utils.home()+"/databases" in path:
                 continue
-            print(path, filename, types)
+            #print(path, filename, types)
             match (types[0]):
                 case 'IN_DELETE_SELF' | 'IN_MOVE_SELF':
                     if path in self.watches:

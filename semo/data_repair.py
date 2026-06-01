@@ -60,7 +60,7 @@ def in_moved_within_watched_region(former_path : str, new_path : str):
     """
 
     database = db.Database(utils.get_working_db())
-    validator = v.Validator(database)
+    #validator = v.Validator(database)
     fsid, inode = utils.get_fsid_and_inode(new_path)
     database.set_file_path(fsid, inode, new_path)
 
@@ -83,7 +83,7 @@ def in_moved_outside_watched_region(former_path : str):
     """
 
     database = db.Database(utils.get_working_db())
-    validator = v.Validator(database)
+    #validator = v.Validator(database)
     entry = database.get_file_by_path(former_path)
     if entry is not None:
         fsid, inode, _, _ = entry

@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 
-"""Handles all direct interactions with the SQL database
+"""Handle all direct interactions with the SQL database.
 
 File should be imported as a module.
 
@@ -13,84 +13,84 @@ import sqlite3 as sql
 from utils import SemoException
 
 class Database:
-    """Functions as a wrapper for interacting with a database file
+    """Wrapper for interacting with a database file.
 
     Attributes
     ----------
     __path : str
-        Path to database file
+        Path to database file.
     __conn : sql.Connection
-        Opened connection created when an instance of class is created
+        Opened connection created when an instance of class is created.
     
     Methods
     -------
     connect()
-        Opens new connection under self.__conn
+        Open new connection under self.__conn.
     disconnect()
-        Closes connection under self.__conn
+        Close connection under self.__conn.
     verify_db()
-        Checks that the database file contains the correct tables, columns, indices 
+        Check that the database file contains the correct tables, columns, indices.
     init_create_script()
-        Runs create script which assembles the semo database in an empty database file
+        Run create script, assemble semo database in empty database file.
     clear_contents()
-        Deletes all entries from all tables
+        Delete all entries from all tables.
     dump_tables()
-        Returns full contents of all tables as dictionary
+        Return full contents of all tables as dictionary.
     new_tag(tag_name, tag_type)
-        Creates new tag entry
+        Create new tag entry.
     delete_tag(tag_name)
-        Deletes tag entry
+        Delete tag entry.
     new_file(fsid, inode, path)
-        Creates new file entry
+        Create new file entry.
     delete_file(fsid, inode, id)
-        Deletes file entry
+        Delete file entry.
     new_rel_file_tag(fsid, inode, tag_name, value)
-        Creates new file-tag relationship entry
+        Create new file-tag relationship entry.
     delete_rel_file_tag(fsid, inode, tag_name)
-        Deletes file-tag relationship entry
+        Delete file-tag relationship entry.
     new_rel_tag_tag(superior_tag, inferior_tag)
-        Creates new tag-subtag relationship entry
+        Create new tag-subtag relationship entry.
     delete_rel_tag_tag(superior_tag, inferior_tag)
-        Deletes tag-subtag relationship entry
+        Delete tag-subtag relationship entry.
     _direct_rels_for_file(fsid, inode)
-        Returns direct relationships for file
+        Return direct relationships for file.
     _direct_tags_for_file(fsid, inode)
-        Returns tag names of direct relationships for file
+        Return tag names of direct relationships for file.
     _direct_null_rels_for_tag(tag_name)
     _direct_str_rels_for_tag(tag_name)
     _direct_int_rels_for_tag(tag_name)
     _str_rels_for_tag_condition(tag_name, condition)
     _int_rels_for_tag_condition(tag_name, operator, condition)
     _direct_rels_for_tag(tag_name)
-        Returns direct relationships for tag
+        Return direct relationships for tag.
     _direct_files_for_tag(tag_name)
-        Returns file data of direct relationships for tag
+        Return file data of direct relationships for tag.
     _direct_inferiors_for_tag(tag_name)
-        Returns direct tag-subtag relationships where given tag is the superior
+        Return direct tag-subtag relationships where given tag is the superior.
     _direct_superiors_for_tag(tag_name)
-        Returns direct tag-subtag relationships where given tag is the inferior
+        Return direct tag-subtag relationships where given tag is the inferior.
     get_tags
-        Returns all tag entries
+        Return all tag entries.
     get_files
-        Returns all file entries, shortened to (fsid, inode)
+        Return all file entries, shortened to (fsid, inode).
     get_complete_file_entries
-        Returns all file entries including the path and id column (fsid, inode, path, id)
+        Return all file entries including the path and id column (fsid, inode, path, id).
     get_rels_for_file(fsid, inode)
-        Returns direct and inherited file-tag relationships for file
+        Return direct and inherited file-tag relationships for file.
     get_tags_for_file(fsid, inode)
-        Returns tag names of direct and inherited file-tag relationships for file
+        Return tag names of direct and inherited file-tag relationships for file.
     get_rels_for_tag(tag_name)
-        Returns direct and inherited file-tag relationships for tag
+        Return direct and inherited file-tag relationships for tag.
     get_files_for_tag(tag_name)
-        Returns file data of direct and inherited file-tag relationships for tag
+        Return file data of direct and inherited file-tag relationships for tag.
     get_tag_type(tag_name)
-        Returns representation of tag's data type
+        Return representation of tag's data type.
     get_root_tags()
-        Returns tags which have no superiors
+        Return tags which have no superiors.
     get_inferiors_tree(tag_name)
-        Returns set of all direct and indirect subtags for tag
+        Return set of all direct and indirect subtags for tag.
     get_superiors_tree(tag_name)
-        Returns set of all direct and indirect superior tags for tag
+        Return set of all direct and indirect superior tags for tag.
     set_file_path(fsid, inode, path)
     set_file_fsi_inode(fsid, inode, path)
     get_file_by_fsid_inode(fsid, inode)
@@ -104,29 +104,41 @@ class Database:
     """
     
     def __init__(self, path : str):
+        """Create instance of `semo.Database` class.
+        
+        Initializes object and instantiates SQL connection with file at provided location.
+
+        Then calls class method `verify_db`, which assesses whether the file is compatible with class.
+
+        Raises
+        ------
+        semo.SemoException
+            If file fails verification or errors occur.
+        """
         self.__path = path
         self.__conn : sql.Connection = sql.connect(self.__path)
         if not self.verify_db():
             raise SemoException("Failed database initalization")
 
     def connect(self):
-        """Opens new connection under self.__conn"""
+        """Open new connection under `self.__conn`."""
 
         self.__conn = sql.connect(self.__path)
     
     def disconnect(self):
-        """Closes connection under self.__conn"""
+        """Close connection under `self.__conn`."""
+
         self.__conn.close()
 
-    def verify_db(self):
-        """Checks that the database file contains the correct tables, columns, indices 
+    def verify_db(self) -> bool:
+        """Check if the database file contains the correct tables, columns, indices. 
         
         Returns
         -------
         bool
 
         Raises
-        -----
+        ------
         SemoException
             in case of SQL error during verification
         """
@@ -175,7 +187,7 @@ class Database:
         return True
         
     def init_create_script(self):
-        """Runs create script which assembles the semo database in an empty database file"""
+        """Run create script which assembles the semo database in an empty database file."""
         c = self.__conn.cursor()
         c.execute("PRAGMA foreign_keys = ON")
 
@@ -243,7 +255,7 @@ class Database:
         self.__conn.commit()
 
     def clear_contents(self):
-        """Deletes all entries from all tables"""
+        """Delete all entries from all tables."""
 
         c = self.__conn.cursor()
         c.execute("DELETE FROM file")
@@ -256,11 +268,11 @@ class Database:
         self.__conn.commit()
 
     def dump_tables(self):
-        """Returns full contents of all tables as dictionary
+        """Return full contents of all tables as dictionary.
         
         Returns
         -------
-        dict[str:list]
+        dict of {str : list}
         """
         c = self.__conn.cursor()
         res = {}
@@ -299,12 +311,19 @@ class Database:
         return res.fetchone()
 
     def new_tag(self, tag_name : str, tag_type = None):
-        """Creates new tag entry
+        """Create new tag entry.
+
+        Parameters
+        ----------
+        tag_name : str
+            Name of tag.
+        tag_type : {'str', 'int'}, optional
+            Data type of the tag's relationship values.
         
         Raises
         ------
-        SemoException
-            If tag entry already exists
+        semo.SemoException
+            If tag entry already exists.
         """
 
         if self.__get_tag_id(tag_name): raise SemoException("tag already in database")
@@ -313,12 +332,17 @@ class Database:
         self.__conn.commit()
 
     def delete_tag(self, tag_name : str):
-        """Deletes tag entry and its relationships
+        """Delete tag entry and its relationships.
         
+        Parameters
+        ----------
+        tag_name : str
+            Name of tag.
+
         Raises
         ------
-        SemoException
-            If tag entry doesn't exist
+        semo.SemoException
+            If tag entry doesn't exist.
         """
 
         id_to_delete = self.__get_tag_id(tag_name)
@@ -338,12 +362,21 @@ class Database:
         self.__conn.commit()
 
     def new_file(self, fsid : int, inode : int, path : str):
-        """Creates new file entry
+        """Create new file entry.
+
+        Parameters
+        ----------
+        fsid : int
+            File system ID of file system containing file.
+        inode : int
+            Index node of file.
+        path : str
+            Path to file.
         
         Raises
         ------
-        SemoException
-            If file entry already exists
+        semo.SemoException
+            If file entry already exists.
         """
 
         if self.__get_file_id(fsid, inode): raise SemoException("file already in database")
@@ -354,12 +387,21 @@ class Database:
         self.__conn.commit()
 
     def delete_file(self, fsid : int, inode : int, id=None):
-        """Deletes file entry and its relationships
+        """Delete file entry and its relationships.
+
+        Parameters
+        ----------
+        fsid : int
+            File system ID of file system containing file.
+        inode : int
+            Index node of file.
+        id : int, optional
+            Internal database ID of file. If set, will be used to identify entry.
         
         Raises
         ------
-        SemoException
-            If file entry doesn't exist
+        semo.SemoException
+            If file entry doesn't exist.
         """
 
         if id is None:
@@ -403,20 +445,23 @@ class Database:
         self.__conn.commit()
 
     def new_rel_file_tag(self, fsid : int, inode : int, tag_name : str, value = None):
-        """Creates new file-tag relationship entry
+        """Create new file-tag relationship entry.
         
         Parameters
         ----------
         fsid : int
+            File system ID of file system containing file.
         inode : int
+            Index node of file.
         tag_name : str
-        value : str | int | None, optional
-            Default is None
+            Name of tag.
+        value : str or int, optional
+            Value for relationship.
 
         Raises
         ------
-        SemoException
-            If file entry or tag entry don't exist or provided value is not of corresponding data type to provided tag
+        semo.SemoException
+            If file entry or tag entry don't exist or provided value is not of corresponding data type to provided tag.
         """
         
         file_id, tag_id = self.__get_file_id(fsid, inode), self.__get_tag_id(tag_name)
@@ -433,25 +478,29 @@ class Database:
                 self.__new_rel_file_tag_int(file_id, tag_id, value)
             case _:
                 if self.__get_rel_file_tag_null_id(tag_id, file_id): raise SemoException("relationship already in database")
+                if value is not None: raise SemoException("wrong value type")
                 self.__new_rel_file_tag_null(file_id, tag_id)
 
     def delete_rel_file_tag(self, fsid : int, inode : int, tag_name : str):
-        """Deletes file-tag relationship entry
+        """Delete file-tag relationship entry.
         
         Parameters
         ----------
         fsid : int
+            File system ID of file system containing file.
         inode : int
+            Index node of file.
         tag_name : str
+            Name of tag.
 
         Raises
         ------
-        SemoException
-            If file entry or tag entry don't exist
+        semo.SemoException
+            If file entry or tag entry don't exist.
         """
         
         file_id, tag_id = self.__get_file_id(fsid, inode), self.__get_tag_id(tag_name)
-        if not file_id or not tag_id: raise SemoException("file or tag not in database")
+        if file_id is None or tag_id is None: raise SemoException("file or tag not in database")
         match self.get_tag_type(tag_name):
             case "str":
                 self.__delete_rel_file_tag_str(file_id, tag_id)
@@ -461,17 +510,19 @@ class Database:
                 self.__delete_rel_file_tag_null(file_id, tag_id)
 
     def new_rel_tag_tag(self, superior_tag : str, inferior_tag : str):
-        """Creates new tag-subtag relationship entry
+        """Create new tag-subtag relationship entry.
         
         Parameters
         ----------
         superior_tag : str
+            Name of tag to assign as superior.
         inferior_tag : str
+            Name of tag to assign as inferior.
 
         Raises
         ------
-        SemoException
-            If superior tag entry or inferior tag entry don't exist
+        semo.SemoException
+            If superior tag entry or inferior tag entry don't exist.
         """
         
         sup_id, inf_id = self.__get_tag_id(superior_tag), self.__get_tag_id(inferior_tag)
@@ -480,17 +531,19 @@ class Database:
         self.__conn.cursor().execute("INSERT INTO rel_tag_tag VALUES(NULL, ?, ?)", (self.__get_tag_id(superior_tag), self.__get_tag_id(inferior_tag)))
         self.__conn.commit()
     def delete_rel_tag_tag(self, superior_tag : str, inferior_tag : str):
-        """Deletes tag-subtag relationship entry
+        """Delete tag-subtag relationship entry.
         
         Parameters
         ----------
         superior_tag : str
+            Name of superior tag.
         inferior_tag : str
+            Name of inferior tag.
 
         Raises
         ------
-        SemoException
-            If superior tag entry or inferior tag entry don't exist
+        semo.SemoException
+            If superior tag entry or inferior tag entry don't exist.
         """
 
         sup_id, inf_id = self.__get_tag_id(superior_tag), self.__get_tag_id(inferior_tag)
@@ -503,7 +556,20 @@ class Database:
     # direct queries
 
     def __direct_null_rels_for_file(self, fsid : int, inode : int) -> set[str]:
-        """Returns direct relationships for file with tags of NULL data type"""
+        """Return direct relationships for file with tags of NULL data type.
+        
+        Parameters
+        ----------
+        fsid : int
+            File system ID of file system containing file.
+        inode : int
+            Index node of file.
+
+        Returns
+        -------
+        set of str
+            Set of tag names.
+        """
 
         res = self.__conn.cursor().execute("SELECT tag.name FROM (\
                                         SELECT rel_file_tag_null.tag_id, rel_file_tag_null.file_id \
@@ -513,7 +579,20 @@ class Database:
         return {x[0] for x in res.fetchall()}
     
     def __direct_str_rels_for_file(self, fsid : int, inode : int) -> dict[str, str]: 
-        """Returns direct relationships for file with tags of STR data type"""
+        """Return direct relationships for file with tags of STR data type.
+        
+        Parameters
+        ----------
+        fsid : int
+            File system ID of file system containing file.
+        inode : int
+            Index node of file.
+
+        Returns
+        -------
+        dict of {str : str}
+            Dictionairy of (tag_name : value) pairs.
+        """
         
         res = self.__conn.cursor().execute("SELECT tag.name, r.value FROM (\
                                         SELECT rel_file_tag_str.tag_id, rel_file_tag_str.file_id, rel_file_tag_str.value \
@@ -523,7 +602,20 @@ class Database:
         return {x[0]:x[1] for x in res.fetchall()}
     
     def __direct_int_rels_for_file(self, fsid : int, inode : int) -> dict[str, int]: 
-        """Returns direct relationships for file with tags of INT data type"""
+        """Return direct relationships for file with tags of INT data type.
+        
+        Parameters
+        ----------
+        fsid : int
+            File system ID of file system containing file.
+        inode : int
+            Index node of file.
+
+        Returns
+        -------
+        dict of {str : int}
+            Dictionairy of (tag_name : value) pairs.
+        """
         
         res = self.__conn.cursor().execute("SELECT tag.name, r.value FROM (\
                                         SELECT rel_file_tag_int.tag_id, rel_file_tag_int.file_id, rel_file_tag_int.value \
@@ -533,17 +625,19 @@ class Database:
         return {x[0]:x[1] for x in res.fetchall()}
     
     def _direct_rels_for_file(self, fsid : int, inode : int) -> dict[str, str | int | None]:
-        """Returns direct file-tag relationships for file
+        """Return direct file-tag relationships for file.
         
         Parameters
         ----------
         fsid : int
+            File system ID of file system containing file.
         inode : int
+            Index node of file.
 
         Returns
         -------
-        dict[str, str | int | None]
-            Dictionairy of (tag_name : value) pairs
+        dict of {str : str, int or None}
+            Dictionairy of (tag_name : value) pairs.
         """
         null_rels = {rel : None for rel in self.__direct_null_rels_for_file(fsid, inode)}
         str_rels = self.__direct_str_rels_for_file(fsid, inode)
@@ -555,31 +649,35 @@ class Database:
         return combined
     
     def _direct_tags_for_file(self, fsid : int, inode : int) -> set[str]:
-        """Returns tag names of direct file-tag relationships for file
+        """Return tag names of direct file-tag relationships for file.
         
         Parameters
         ----------
         fsid : int
+            File system ID of file system containing file.
         inode : int
+            Index node of file.
 
         Returns
         -------
-        set[str]
+        set of str
+            Set of tag names.
         """
 
         return set(self._direct_rels_for_file(fsid, inode).keys())
 
     def _direct_null_rels_for_tag(self, tag_name : str) -> set[tuple[int, int, str, int, str]]:
-        """Returns direct file-tag relationships for tag of data type NULL
+        """Return direct file-tag relationships for tag of data type NULL.
         
         Parameters
         ----------
         tag_name : str
+            Name of tag.
 
         Returns
         -------
-        set[tuple[int, int, str, int, str]]
-            Tuples containing (fsid, inode, filepath, file entry id, tag name)
+        set of tuple of (int, int, str, int, str)
+            Set of tuples containing (fsid, inode, filepath, file entry id, tag name).
         """
         
         res = self.__conn.cursor().execute("SELECT file.fsid, file.inode, file.path, file.id FROM (\
@@ -590,16 +688,17 @@ class Database:
         return {(x[0], x[1], x[2], x[3], tag_name) for x in res.fetchall()}
     
     def _direct_str_rels_for_tag(self, tag_name : str) -> set[tuple[int, int, str, int, str]]:
-        """Returns direct file-tag relationships for tag of data type STR
+        """Return direct file-tag relationships for tag of data type STR.
         
         Parameters
         ----------
         tag_name : str
+            Name of tag.
 
         Returns
         -------
-        set[tuple[int, int, str, int, str]]
-            Tuples containing (fsid, inode, filepath, file entry id, tag name + value)
+        set of tuple of (int, int, str, int, str)
+            Set of tuples containing (fsid, inode, filepath, file entry id, tag name + value).
         """
 
         res = self.__conn.cursor().execute("SELECT file.fsid, file.inode, file.path, file.id, r.value FROM (\
@@ -611,17 +710,19 @@ class Database:
 
 
     def _str_rels_for_tag_condition(self, tag_name : str, condition : str) -> set[tuple[int, int, str, int, str]]:
-        """Returns direct file-tag relationships for tag of data type STR where value == condition
+        """Returns direct file-tag relationships for tag of data type STR where value == condition.
         
         Parameters
         ----------
         tag_name : str
+            Name of tag.
         condition : str
+            String to be compared against the values of relationships of tag `tag_name`.
 
         Returns
         -------
-        set[tuple[int, int, str, int, str]]
-            Tuples containing (fsid, inode, filepath, file entry id, tag name + value)
+        set of tuple of (int, int, str, int, str)
+            Set of tuples containing (fsid, inode, filepath, file entry id, tag name + value).
         """
         
         res = self.__conn.cursor().execute("SELECT file.fsid, file.inode, file.path, file.id, r.value FROM (\
@@ -633,16 +734,17 @@ class Database:
         return {(x[0], x[1], x[2], x[3], ":".join([tag_name, x[4]])) for x in res.fetchall()}
     
     def _direct_int_rels_for_tag(self, tag_name : str) -> set[tuple[int, int, str, int, str]]:
-        """Returns direct file-tag relationships for tag of data type INT
+        """Return direct file-tag relationships for tag of data type INT.
         
         Parameters
         ----------
         tag_name : str
+            Name of tag.
 
         Returns
         -------
-        set[tuple[int, int, str, int, str]]
-            Tuples containing (fsid, inode, filepath, file entry id, tag name)
+        set of tuple of (int, int, str, int, str)
+            Set of tuples containing (fsid, inode, filepath, file entry id, tag name).
         """
 
         res = self.__conn.cursor().execute("SELECT file.fsid, file.inode, file.path, file.id, r.value FROM (\
@@ -653,24 +755,26 @@ class Database:
         return {(x[0], x[1], x[2], x[3], ":".join([tag_name, str(x[4])])) for x in res.fetchall()}
     
     def _int_rels_for_tag_condition(self, tag_name : str, operator : str, condition : int) -> set[tuple[int, int, str, int, str]]:
-        """Returns direct file-tag relationships for tag of data type INT where given condition is met
+        """Return direct file-tag relationships for tag of data type INT where given condition is met.
         
         Parameters
         ----------
         tag_name : str
-        operator : str
-            One of ['==', '>', '<', '>=', '<=']
+            Name of tag.
+        operator : {'==', '>', '<', '>=', '<='}
+            The integer comparison operator for requested operation.
         condition : int
+            Integer to be compared against the values of relationships of tag `tag_name`.
 
         Returns
         -------
-        set[tuple[int, int, str, int, str]]
-            Tuples containing (fsid, inode, filepath, file entry id, tag name)
+        set of tuple of (int, int, str, int, str)
+            Set of tuples containing (fsid, inode, filepath, file entry id, tag name).
 
         Raises
         ------
-        SemoException
-            If provided operator is invalid
+        semo.SemoException
+            If provided `operator` is invalid.
         """
         
         if operator not in ["==", ">", "<", ">=", "<="]:
@@ -684,7 +788,7 @@ class Database:
         return {(x[0], x[1], x[2], x[3], ":".join([tag_name, str(x[4])])) for x in res.fetchall()}
     
     def _direct_rels_for_tag(self, tag_name : str) -> set[tuple[int, int, str, int, str]]:
-        """Returns direct relationships for tag
+        """Return direct relationships for tag.
         
         Parameters
         ----------
@@ -692,8 +796,8 @@ class Database:
 
         Returns
         -------
-        set[tuple[int, int, str, int, str]]
-            Tuples containing (fsid, inode, filepath, file entry id, tag name (+ value))
+        set of tuple of (int, int, str, int, str)
+            Tuples containing (fsid, inode, filepath, file entry id, tag name (+ value)).
         """
 
         tag_type = self.get_tag_type(tag_name)
@@ -705,7 +809,7 @@ class Database:
         return self._direct_null_rels_for_tag(tag_name)
 
     def _direct_files_for_tag(self, tag_name : str) -> set[tuple[int, int, str, int]]:
-        """Returns file data of direct relationships for tag
+        """Return file data of direct relationships for tag.
         
         Parameters
         ----------
@@ -713,15 +817,15 @@ class Database:
 
         Returns
         -------
-        set[tuple[int, int, str, int]]
-            Tuples containing (fsid, inode, filepath, file entry id)
+        set of tuple of (int, int, str, int)
+            Tuples containing (fsid, inode, filepath, file entry id).
         """
 
         return {x[0:4] for x in self._direct_rels_for_tag(tag_name)}
 
     
     def _direct_inferiors_for_tag(self, tag_name : str) -> set[str]:
-        """Returns direct tag-subtag relationships where given tag is the superior
+        """Return direct tag-subtag relationships where given tag is the superior.
         
         Parameters
         ----------
@@ -729,8 +833,8 @@ class Database:
 
         Returns
         -------
-        set[str]
-            Set of inferior tag names
+        set of str
+            Set of inferior tag names.
         """
 
         res = self.__conn.cursor().execute("SELECT tag.name FROM (\
@@ -741,7 +845,7 @@ class Database:
         return {x[0] for x in res.fetchall()}
 
     def _direct_superiors_for_tag(self, tag_name : str) -> set[str]:
-        """Returns direct tag-subtag relationships where given tag is the inferior
+        """Return direct tag-subtag relationships where given tag is the inferior.
         
         Parameters
         ----------
@@ -749,8 +853,8 @@ class Database:
 
         Returns
         -------
-        set[str]
-            Set of superior tag names
+        set of str
+            Set of superior tag names.
         """
         
         res = self.__conn.cursor().execute("SELECT tag.name FROM (\
@@ -763,40 +867,40 @@ class Database:
     # query functions
     
     def get_tags(self) -> set[str]:
-        """Returns set of all tag entry names
+        """Return set of all tag entry names.
         
         Returns
         ----------
-        set[str]
+        set of str
         """
 
         res = self.__conn.cursor().execute ("SELECT name FROM tag")
         return set([x[0] for x in res.fetchall()])
     
     def get_files(self) -> set[tuple[int, int]]:
-        """Returns (fsid, inode) pairs for all file entries
+        """Return (fsid, inode) pairs for all file entries.
         
         Returns
         ----------
-        set[tuple[int, int]]
+        set of tuple of (int, int)
         """
         
         res = self.__conn.cursor().execute ("SELECT fsid, inode, path FROM file")
         return set([(x[0], x[1]) for x in res.fetchall()])
     
     def get_complete_file_entries(self) -> set[tuple[int, int, str, int]]:
-        """Returns (fsid, inode, path, database id) tuples for all file entries
+        """Return (fsid, inode, path, database id) tuples for all file entries.
         
         Returns
         ----------
-        set[tuple[int, int, str, int]]
+        set of tuple of (int, int, str, int)
         """
 
         res = self.__conn.cursor().execute ("SELECT fsid, inode, path, id FROM file")
         return set([(x[0], x[1], x[2], x[3]) for x in res.fetchall()])
     
     def get_rels_for_file(self, fsid : int, inode : int) -> dict[str, str | int | None]:
-        """Returns direct and inherited file-tag relationships for file
+        """Return direct and inherited file-tag relationships for file.
         
         Parameters
         ----------
@@ -805,8 +909,8 @@ class Database:
 
         Returns
         -------
-        dict[str, str | int | None]
-            Dictionary in format (tag_name : value)
+        dict of {str : str, int or None}
+            Dictionary in format (tag_name : value).
         """
         
         output = {}
@@ -817,7 +921,7 @@ class Database:
         return output
 
     def get_tags_for_file(self, fsid : int, inode : int) -> set[str]:
-        """Returns tag names of direct and inherited file-tag relationships for file
+        """Return tag names of direct and inherited file-tag relationships for file.
         
         Parameters
         ----------
@@ -826,7 +930,7 @@ class Database:
 
         Returns
         -------
-        set[str]
+        set of str
         """
 
         output = set()
@@ -837,7 +941,7 @@ class Database:
         return output
     
     def get_rels_for_tag(self, tag_name : str) -> set[tuple[int, int, str, int, str]]:
-        """Returns direct and inherited file-tag relationships for tag
+        """Return direct and inherited file-tag relationships for tag.
         
         Parameters
         ----------
@@ -845,8 +949,8 @@ class Database:
 
         Returns
         -------
-        set[tuple[int, int, str, int, str]]
-            Tuples in format (fsid, inode, path, file id, tag_name + value)
+        set of tuple of (int, int, str, int, str)
+            Tuples in format (fsid, inode, path, file id, tag_name + value).
         """
 
         output = set()
@@ -857,7 +961,7 @@ class Database:
         return output
     
     def get_files_for_tag(self, tag_name : str) -> set[tuple[int, int, str, int]]:
-        """Returns file data of direct and inherited file-tag relationships for tag
+        """Return file data of direct and inherited file-tag relationships for tag.
         
         Parameters
         ----------
@@ -865,8 +969,8 @@ class Database:
 
         Returns
         -------
-        set[tuple[int, int, str, int]]
-            Tuples in format (fsid, inode, path, file id)
+        set of tuple of (int, int, str, int)
+            Tuples in format (fsid, inode, path, file id).
         """
         
         output = self._direct_files_for_tag(tag_name)
@@ -875,7 +979,7 @@ class Database:
         return output
 
     def get_tag_type(self, tag_name : str) -> str:
-        """Returns representation of tag's data type
+        """Return internal string representation of tag's data type.
         
         Parameters
         ----------
@@ -890,11 +994,11 @@ class Database:
         return res.fetchone()[0]
 
     def get_root_tags(self) -> set[str]:
-        """Returns set of all tags which have no superiors
+        """Return set of all tags which have no superiors.
         
         Returns
         -------
-        set[str]
+        set of str
         """
 
         res = self.__conn.cursor().execute(
@@ -905,7 +1009,7 @@ class Database:
         return set([x[0] for x in res.fetchall()])
     
     def get_inferiors_tree(self, tag_name : str) -> set[str]:
-        """Returns set of all direct and indirect subtags for tag
+        """Return set of all direct and indirect subtags for tag.
 
         Parameters
         ----------
@@ -913,7 +1017,7 @@ class Database:
 
         Returns
         -------
-        set[str]
+        set of str
         """
 
         output = set()
@@ -926,7 +1030,7 @@ class Database:
         return output
 
     def get_superiors_tree(self, tag_name : str) -> set[str]:
-        """Returns set of all direct and indirect superior tags for tag
+        """Return set of all direct and indirect superior tags for tag.
 
         Parameters
         ----------
@@ -934,7 +1038,7 @@ class Database:
 
         Returns
         -------
-        set[str]
+        set of str
         """
 
         output = set()
@@ -950,7 +1054,7 @@ class Database:
     # file management
     
     def set_file_path(self, fsid : int, inode : int, filepath : str):
-        """Sets given filepath to file entry identified by (fsid, inode)
+        """Set given filepath to file entry identified by (fsid, inode).
 
         Parameters
         ----------
@@ -963,7 +1067,7 @@ class Database:
         self.__conn.commit()
 
     def set_file_fsid_inode(self, fsid : int, inode : int, filepath : str):
-        """Sets (fsid, inode) to file entry identified by filepath
+        """Set (fsid, inode) to file entry identified by filepath.
         
         Parameters
         ----------
@@ -976,7 +1080,7 @@ class Database:
         self.__conn.commit()
 
     def get_file_by_path(self, path: str) -> tuple[int, int, str, int] | None:
-        """Returns file entry identified by path
+        """Return file entry identified by path.
         
         Parameters
         ----------
@@ -984,8 +1088,8 @@ class Database:
 
         Returns
         -------
-        tuple[int, int, str, int] | None
-            Tuple in format (fsid, inode, path, database id)
+        tuple of (int, int, str, int) or None
+            Tuple in format (fsid, inode, path, database id).
         """
 
         res = self.__conn.cursor().execute("SELECT fsid, inode, path, id FROM file WHERE path == ?", (path,))
@@ -995,7 +1099,7 @@ class Database:
             return None
 
     def get_file_by_fsid_inode(self, fsid : int, inode: int) -> tuple[int, int, str, int] | None:
-        """Returns file entry identified by (fsid, inode)
+        """Return file entry identified by (fsid, inode).
         
         Parameters
         ----------
@@ -1004,18 +1108,18 @@ class Database:
 
         Returns
         -------
-        tuple[int, int, str, int] | None
-            Tuple in format (fsid, inode, path, database id)
+        tuple of (int, int, str, int) or None
+            Tuple in format (fsid, inode, path, database id).
         """
 
-        res = self.__conn.cursor().execute("SELECT fsid, inode, path FROM file WHERE fsid == ? AND inode == ?", (fsid, inode))
+        res = self.__conn.cursor().execute("SELECT fsid, inode, path, id FROM file WHERE fsid == ? AND inode == ?", (fsid, inode))
         try:
             return res.fetchall()[0]
         except IndexError:
             return None
         
     def get_file_by_id(self, entry_id : int) -> tuple[int, int, str, int] | None:
-        """Returns file entry identified by database id
+        """Return file entry identified by database id.
         
         Parameters
         ----------
@@ -1023,8 +1127,8 @@ class Database:
 
         Returns
         -------
-        tuple[int, int, str, int] | None
-            Tuple in format (fsid, inode, path, database id)
+        tuple of (int, int, str, int) or None
+            Tuple in format (fsid, inode, path, database id).
         """
         
         res = self.__conn.cursor().execute("SELECT fsid, inode, path, id FROM file WHERE id == ?", (entry_id,))
@@ -1034,7 +1138,7 @@ class Database:
             return None
         
     def get_files_by_path_prefix(self, path_prefix: str) -> list[tuple[int, int, str, int]]:
-        """Returns file entries whose paths start with provided prefix
+        """Return file entries whose paths start with provided prefix.
         
         Parameters
         ----------
@@ -1042,15 +1146,15 @@ class Database:
 
         Returns
         -------
-        list[tuple[int, int, str, int]]
-            Tuples in format (fsid, inode, path, database id)
+        list of tuple of (int, int, str, int)
+            Tuples in format (fsid, inode, path, database id).
         """
         
         res = self.__conn.cursor().execute("SELECT fsid, inode, path, id FROM file WHERE path LIKE ?", (path_prefix + '%',))
         return res.fetchall()
     
     def get_files_by_path_suffix(self, path_suffix: str) -> list[tuple[int, int, str, int]]:
-        """Returns file entries whose paths end with provided suffix
+        """Return file entries whose paths end with provided suffix.
         
         Parameters
         ----------
@@ -1058,8 +1162,8 @@ class Database:
 
         Returns
         -------
-        list[tuple[int, int, str, int]]
-            Tuples in format (fsid, inode, path, database id)
+        list of tuple of (int, int, str, int)
+            Tuples in format (fsid, inode, path, database id).
         """
 
         res = self.__conn.cursor().execute("SELECT fsid, inode, path, id FROM file WHERE path LIKE ?", ('%' + path_suffix,))
@@ -1067,7 +1171,7 @@ class Database:
     
         
     def is_known_and_is_awake_fs(self, fsid : int) -> bool | None:
-        """Resolves if an entry exists for provided fsid and is marked currently active in database
+        """Resolve if an entry exists for provided fsid and is marked currently active in database.
 
         Parameters
         ----------
@@ -1075,8 +1179,8 @@ class Database:
 
         Returns
         -------
-        bool | None
-            None if entry doesn't exist, True if FS entry is marked awake, False if FS entry is marked sleeping
+        bool or None
+            None if entry doesn't exist, True if FS entry is marked awake, False if FS entry is marked sleeping.
         """
         
         res = self.__conn.cursor().execute("SELECT active FROM filesystem WHERE fsid == ?", (fsid,))
@@ -1086,13 +1190,12 @@ class Database:
             return 
         
     def set_fs_active(self, fsid : int, active : bool = True):
-        """Marks FS entry as active (or inactive)
+        """Mark FS entry as active (or inactive).
         
         Parameters
         ----------
         fsid : int
-        active : bool, optional
-            Default is True
+        active : bool, default=True
         """
 
         self.__conn.cursor().execute("INSERT OR IGNORE INTO filesystem VALUES (NULL, ?, ?)", (fsid, active))
@@ -1100,7 +1203,7 @@ class Database:
         self.__conn.commit()
         
     def set_fs_sleep(self, fsid : int):
-        """Marks FS entry as asleep
+        """Mark FS entry as asleep.
         
         Parameters
         ----------

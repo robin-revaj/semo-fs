@@ -484,16 +484,19 @@ def _query_resolve_set_operation(operand1 : set, operator : str, operand2 : set)
     SemoException
         If operator is incorrect
     """
+    valueless1 = {(fsid, inode, path, id) : data for (fsid, inode, path, id, data) in operand1}
+    valueless2 = {(fsid, inode, path, id) : data for (fsid, inode, path, id, data) in operand2}
     
     match (operator):
         case "&" | "*":
-            return operand1.intersection(operand2)
+            resolved = set(valueless1.keys()).intersection(set(valueless2.keys()))
         case "|" | "+":
-            return operand1.union(operand2)
+            resolved = set(valueless1.keys()).union(set(valueless2.keys()))
         case "/" | "-":
-            return operand1.difference(operand2)
+            resolved = set(valueless1.keys()).difference(set(valueless2.keys()))
         case _:
             raise SemoException("Incorrect operator: " + operator)
+    return { (fsid, inode, path, id, (valueless1.get((fsid, inode, path, id)) or valueless2.get((fsid, inode, path, id)))) for (fsid, inode, path, id) in resolved }
 
 def _query_resolve_operand(operand : str | set) -> set:
     """Translates operand to set of file data
