@@ -11,11 +11,9 @@ git clone https://github.com/robin-revaj/semo-fs.git
 
 # semo-fs
 #    semo
-#        python files
-#        setup.py
-#        setup.sh
 #    tests
 #    requirements.txt
+#    setup.sh
 #    semo_watcher.service
 #    README.md
 
@@ -25,10 +23,12 @@ fi
 
 semopath=$HOME/.semo
 
-mv $PWD/semo-fs/semo $semopath/semo
-mv $PWD/semo-fs/tests $semopath/tests
-mv $PWD/semo-fs/requirements.txt $semopath/requirements.txt
-mv $PWD/semo-fs/semo_watcher.service $semopath/semo_watcher.service
+mv $PWD/semo-fs/semo $semopath
+mv $PWD/semo-fs/tests $semopath
+mv $PWD/semo-fs/requirements.txt $semopath
+mv $PWD/semo-fs/semo_watcher.service $semopath
+mv $PWD/semo-fs/README.md $semopath
+mv $PWD/semo-fs/setup.sh $semopath
 
 pip install -r $semopath/requirements.txt
 
@@ -36,14 +36,14 @@ mkdir $semopath/databases
 mkdir $semopath/mnt
 
 dbname=$(read -p "Name your database file: " x)
-watchpath=$(read -p "Choose directory to watch changes in: " x)
+#watchpath=$(read -p "Choose directory to watch changes in: " x)
 
 if [ ! -f ~/.bash_aliases ]; then
     touch ~/.bash_aliases
 fi
 echo "alias semo='python3 $semopath/semo'" >> ~/.bash_aliases
 
-python3 $semopath/semo/setup.py $semopath $dbname $watchpath
+python3 $semopath/semo/setup.py $semopath $dbname #$watchpath
 
 echo "Exec=python3 $semopath/semo/semo_watcher.py" >> $semopath/semo_watcher.service
 echo "" >> $semopath/semo_watcher.service
