@@ -7,20 +7,33 @@
 #   setup.sh
 #   semo_watcher.service
 
-pip3 install -r requirements.txt
+git clone https://github.com/robin-revaj/semo-fs.git
+
+# semo-fs
+#    semo
+#        python files
+#        setup.py
+#        setup.sh
+#    tests
+#    requirements.txt
+#    semo_watcher.service
+#    README.md
 
 if [ ! -d ~/.semo ]; then
     mkdir ~/.semo
 fi
 
-semopath=$($HOME/.semo)
-mv ./semo $semopath/semo
-mv ./tests $semopath/tests
-mv ./requirements.txt $semopath/requirements.txt
-mv ./setup.sh $semopath/setup.sh
-mv ./semo_watcher.service $semopath/semo_watcher.service
+semopath=$HOME/.semo
+
+mv $PWD/semo-fs/semo $semopath/semo
+mv $PWD/semo-fs/tests $semopath/tests
+mv $PWD/semo-fs/requirements.txt $semopath/requirements.txt
+mv $PWD/semo-fs/semo_watcher.service $semopath/semo_watcher.service
+
+pip install -r $semopath/requirements.txt
 
 mkdir $semopath/databases
+mkdir $semopath/mnt
 
 dbname=$(read -p "Name your database file: " x)
 watchpath=$(read -p "Choose directory to watch changes in: " x)
@@ -37,9 +50,9 @@ echo "" >> $semopath/semo_watcher.service
 echo "[Install]" >> $semopath/semo_watcher.service
 echo "WantedBy=multi-user.target" >> $semopath/semo_watcher.service
 
-cp $semopath/semo_watcher.service /etc/systemd/system/semo_watcher.service
-systemctl enable semo_watcher
-systemctl daemon-reload
-systemctl start semo_watcher
+sudo cp $semopath/semo_watcher.service /etc/systemd/system/semo_watcher.service
+sudo systemctl enable semo_watcher
+sudo systemctl daemon-reload
+#systemctl start semo_watcher
 
-rmdir .
+rmdir semo-fs

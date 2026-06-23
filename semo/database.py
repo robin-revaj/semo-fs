@@ -500,7 +500,8 @@ class Database:
         """
         
         file_id, tag_id = self.__get_file_id(fsid, inode), self.__get_tag_id(tag_name)
-        if file_id is None or tag_id is None: raise SemoException("file or tag not in database")
+        if file_id is None or tag_id is None: #raise SemoException("file or tag not in database")
+            return
         match self.get_tag_type(tag_name):
             case "str":
                 self.__delete_rel_file_tag_str(file_id, tag_id)

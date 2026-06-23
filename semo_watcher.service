@@ -1,0 +1,9 @@
+[Unit]
+Description=Semo FS filesystem change tracker
+After=
+StartLimitIntervalSec=0
+
+[Service]
+Type=Simple
+Restart=on-failure
+RestartSec=1

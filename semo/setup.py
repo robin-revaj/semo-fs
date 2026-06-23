@@ -16,7 +16,7 @@ def main(*args):
     
     homepath = args[0]
     dbpath = homepath + args[1]
-    watchpath = args[2]
+    #watchpath = args[2]
     
     with open(homepath + "/semo.log", 'w') as f:
         pass
@@ -26,7 +26,7 @@ def main(*args):
         'test_db' : f'{homepath}/tests/testDB.db',
         'default_db' : os.path.abspath(dbpath),
         'fs_mount_point' : f'{homepath}/mnt',
-        'watches' : [watchpath,]
+        'watches' : []
         }
         json.dump(data, f)
 

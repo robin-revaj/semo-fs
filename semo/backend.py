@@ -389,8 +389,8 @@ def query_files(query : str, shortened_output = True) -> set[tuple]:
     instruction_list = _query_parse_instruction_set(query)
     raw_output = _query_read_level(instruction_list)
     
-    if shortened_output:
-        return {(val, path) for (_, _, path, _, val) in raw_output}
+    # if shortened_output:
+    #     return {(val, path) for (_, _, path, _, val) in raw_output}
     return raw_output
     
 def _query_parse_instruction_set(query : str) -> list:
@@ -465,7 +465,7 @@ def _query_read_level(level_data : list) -> set[tuple]:
         
     return op1
 
-def _query_resolve_set_operation(operand1 : set, operator : str, operand2 : set) -> set:
+def _query_resolve_set_operation(operand1 : set, operator : str, operand2 : set) -> set[tuple[tuple, str]]:
     """Handle set operations
     
     Parameters
@@ -484,9 +484,9 @@ def _query_resolve_set_operation(operand1 : set, operator : str, operand2 : set)
     SemoException
         If operator is incorrect
     """
-    valueless1 = {(fsid, inode, path, id) : data for (fsid, inode, path, id, data) in operand1}
-    valueless2 = {(fsid, inode, path, id) : data for (fsid, inode, path, id, data) in operand2}
-    
+    valueless1 = {path : data for (data, path) in operand1}
+    valueless2 = {path : data for (data, path) in operand2}
+
     match (operator):
         case "&" | "*":
             resolved = set(valueless1.keys()).intersection(set(valueless2.keys()))
@@ -496,9 +496,11 @@ def _query_resolve_set_operation(operand1 : set, operator : str, operand2 : set)
             resolved = set(valueless1.keys()).difference(set(valueless2.keys()))
         case _:
             raise SemoException("Incorrect operator: " + operator)
-    return { (fsid, inode, path, id, (valueless1.get((fsid, inode, path, id)) or valueless2.get((fsid, inode, path, id)))) for (fsid, inode, path, id) in resolved }
+    
+    output = {((valueless1.get(path, ()) + valueless2.get(path, ())), path) for path in resolved}
+    return output
 
-def _query_resolve_operand(operand : str | set) -> set:
+def _query_resolve_operand(operand : str | set) -> set[tuple[tuple, str]]:
     """Translates operand to set of file data
     
     Parameters
@@ -517,10 +519,13 @@ def _query_resolve_operand(operand : str | set) -> set:
     """
 
     if isinstance(operand, set): return operand
-    if isinstance(operand, str): return get_rels_for_tag(operand, path_only_output=False)
+    if isinstance(operand, str): 
+        raw = get_rels_for_tag(operand, path_only_output=False)
+        output = { ((val,), path) for (fsid, inode, path, id, val) in raw }
+        return output
     raise SemoException("wrong operand type: ", operand)
 
-def _query_resolve_condition(tag_name : str, operation : str, value : int | str) -> set:
+def _query_resolve_condition(tag_name : str, operation : str, value : int | str) -> set[tuple[tuple, str]]:
     """Translates a condition operand into set of file data.
     
     Parameters
@@ -549,12 +554,14 @@ def _query_resolve_condition(tag_name : str, operation : str, value : int | str)
     match database.get_tag_type(tag_name):
         case "int":
             value = int(value)
-            return database._int_rels_for_tag_condition(tag_name, operation, value)
+            raw = database._int_rels_for_tag_condition(tag_name, operation, value)
+            return { ((val,), path) for (fsid, inode, path, id, val) in raw }
         case "str":
             if operation != "==":
                 raise SemoException(f"string value {value} not comparable")
             value = str(value)
-            return database._str_rels_for_tag_condition(tag_name, value)
+            raw = database._str_rels_for_tag_condition(tag_name, value)
+            return { ((val,), path) for (fsid, inode, path, id, val) in raw }
     raise SemoException(f"type '{value}' not comparable")    
 
 def get_files_for_tag_DIRECT(tag_name : str, path_only_output = True) -> set:
@@ -616,7 +623,7 @@ def get_rels_for_tag(tag_name : str, path_only_output : bool = True) -> set:
     raw_output = database.get_rels_for_tag(tag_name)
     if not path_only_output:
         return raw_output
-    user_output = { path for (fsid, inode, path, data, id) in raw_output }
+    user_output = { ((data,), path) for (fsid, inode, path, id, data) in raw_output }
     return user_output
 
 def get_files_for_directory(path : str, path_only_output = True) -> list:

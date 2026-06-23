@@ -482,7 +482,7 @@ class TestCommandBackend(unittest.TestCase):
         tag2 = "test_list_files_no_query2"
         backend.connect_tag(self.files[0], tag1)
         backend.connect_tag(self.files[1], tag2)
-        self.assertSetEqual({(tag1, self.files[0]), (tag2, self.files[1])}, backend.query_files(""))
+        self.assertSetEqual({((tag1,), self.files[0]), ((tag2,), self.files[1])}, backend.query_files(""))
 
     def test_list_files_query_singular(self):
         tag1 = "test_list_files_query_singular1"
