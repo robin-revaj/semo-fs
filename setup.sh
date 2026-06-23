@@ -45,6 +45,8 @@ echo "alias semo='python3 $semopath/semo'" >> ~/.bash_aliases
 
 python3 $semopath/semo/setup.py $semopath $dbname #$watchpath
 
+exit 0
+
 echo "Exec=python3 $semopath/semo/semo_watcher.py" >> $semopath/semo_watcher.service
 echo "" >> $semopath/semo_watcher.service
 echo "[Install]" >> $semopath/semo_watcher.service

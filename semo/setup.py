@@ -9,19 +9,20 @@ This file is run as a script and contains the functions:
 
 """
 
-import os, json
+import os, json, sys
 
-def main(*args):
+def main(home_dir_path, database_file_name):
     """Saves starting information to a json file."""
     
-    homepath = args[0]
-    dbpath = homepath + args[1]
+    homepath = home_dir_path
+    dbpath = homepath + database_file_name
     #watchpath = args[2]
     
     with open(homepath + "/semo.log", 'w') as f:
         pass
     with open(homepath + "/data.json", 'w') as f:
         data = {
+        'homedir' : homepath,
         'working_db' : os.path.abspath(dbpath),
         'test_db' : f'{homepath}/tests/testDB.db',
         'default_db' : os.path.abspath(dbpath),
@@ -31,4 +32,4 @@ def main(*args):
         json.dump(data, f)
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1], sys.argv[2])

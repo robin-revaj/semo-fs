@@ -65,8 +65,8 @@ class TestChanges(unittest.TestCase):
 
     def test_delete_file(self):
         cli.translate_TAG(Namespace(filename=self.files[1], tagname="testtag", value=None), suppress=True)
-        self.assertEqual({('testtag', self.files[1])}, cli.translate_LISTFILES(Namespace(query=""), suppress=True))
-        self.assertEqual({('testtag', self.files[1])}, cli.translate_LISTFILES(Namespace(query="testtag"), suppress=True))
+        self.assertEqual({(('testtag',), self.files[1])}, cli.translate_LISTFILES(Namespace(query=""), suppress=True))
+        self.assertEqual({(('testtag',), self.files[1])}, cli.translate_LISTFILES(Namespace(query="testtag"), suppress=True))
         os.remove(self.files[1])
         time.sleep(0.1)
         self.assertEqual(set(), cli.translate_LISTFILES(Namespace(query="testtag"), suppress=True))
@@ -88,46 +88,46 @@ class TestChanges(unittest.TestCase):
 
     def test_rename_file(self):
         cli.translate_TAG(Namespace(filename=self.files[0], tagname="testtag", value=None), suppress=True)
-        self.assertEqual({('testtag', self.files[0])}, cli.translate_LISTFILES(Namespace(query="testtag"), suppress=True))
+        self.assertEqual({(('testtag',), self.files[0])}, cli.translate_LISTFILES(Namespace(query="testtag"), suppress=True))
         os.rename(self.files[0], self.loc + "/chfolder1/file.txt")
         time.sleep(0.1)
-        self.assertEqual({('testtag', self.loc + "/chfolder1/file.txt")}, cli.translate_LISTFILES(Namespace(query="testtag"), suppress=True))
+        self.assertEqual({(('testtag',), self.loc + "/chfolder1/file.txt")}, cli.translate_LISTFILES(Namespace(query="testtag"), suppress=True))
         os.rename(self.loc + "/chfolder1/file.txt", self.files[0])
         time.sleep(0.1)
 
     def test_rename_folder(self):
         cli.translate_TAG(Namespace(filename=self.files[0], tagname="testtag", value=None), suppress=True)
-        self.assertEqual({('testtag', self.files[0])}, cli.translate_LISTFILES(Namespace(query="testtag"), suppress=True))
+        self.assertEqual({(('testtag',), self.files[0])}, cli.translate_LISTFILES(Namespace(query="testtag"), suppress=True))
         os.rename(self.folders[0], self.loc + "/chfolder")
         time.sleep(0.1)
-        self.assertEqual({('testtag', self.loc + "/chfolder/file1.txt")}, cli.translate_LISTFILES(Namespace(query="testtag"), suppress=True))
+        self.assertEqual({(('testtag',), self.loc + "/chfolder/file1.txt")}, cli.translate_LISTFILES(Namespace(query="testtag"), suppress=True))
         os.rename(self.loc + "/chfolder", self.folders[0])
         time.sleep(0.1)
 
     def test_move_file(self):
         newpath = self.loc + "/chfolder2/file1.txt"
         cli.translate_TAG(Namespace(filename=self.files[0], tagname="testtag", value=None), suppress=True)
-        self.assertEqual({('testtag', self.files[0])}, cli.translate_LISTFILES(Namespace(query="testtag"), suppress=True))
+        self.assertEqual({(('testtag',), self.files[0])}, cli.translate_LISTFILES(Namespace(query="testtag"), suppress=True))
         os.rename(self.files[0], newpath)
         time.sleep(0.1)
-        self.assertEqual({('testtag', newpath)}, cli.translate_LISTFILES(Namespace(query="testtag"), suppress=True))
+        self.assertEqual({(('testtag',), newpath)}, cli.translate_LISTFILES(Namespace(query="testtag"), suppress=True))
         os.rename(newpath, self.files[0])
         time.sleep(0.1)
 
     def test_move_folder(self):
         newpath = self.loc + "/chfolder2/chfolder1"
         cli.translate_TAG(Namespace(filename=self.files[0], tagname="testtag", value=None), suppress=True)
-        self.assertEqual({('testtag', self.files[0])}, cli.translate_LISTFILES(Namespace(query="testtag"), suppress=True))
+        self.assertEqual({(('testtag',), self.files[0])}, cli.translate_LISTFILES(Namespace(query="testtag"), suppress=True))
         os.rename(self.folders[0], newpath)
         time.sleep(0.1)
-        self.assertEqual({('testtag', newpath + "/file1.txt")}, cli.translate_LISTFILES(Namespace(query="testtag"), suppress=True))
+        self.assertEqual({(('testtag',), newpath + "/file1.txt")}, cli.translate_LISTFILES(Namespace(query="testtag"), suppress=True))
         os.rename(newpath, self.folders[0])
         time.sleep(0.1)
 
     def test_move_file_gone(self):
         newpath = os.path.abspath("tests/file1.txt")
         cli.translate_TAG(Namespace(filename=self.files[0], tagname="testtag", value=None), suppress=True)
-        self.assertEqual({('testtag', self.files[0])}, cli.translate_LISTFILES(Namespace(query="testtag"), suppress=True))
+        self.assertEqual({(('testtag',), self.files[0])}, cli.translate_LISTFILES(Namespace(query="testtag"), suppress=True))
         os.rename(self.files[0], newpath)
         time.sleep(2)
         self.assertEqual(set(), cli.translate_LISTFILES(Namespace(query="testtag"), suppress=True))
@@ -137,7 +137,7 @@ class TestChanges(unittest.TestCase):
     def test_move_folder_gone(self):
         newpath = os.path.abspath("tests/chfolder1")
         cli.translate_TAG(Namespace(filename=self.files[0], tagname="testtag", value=None), suppress=True)
-        self.assertEqual({('testtag', self.files[0])}, cli.translate_LISTFILES(Namespace(query="testtag"), suppress=True))
+        self.assertEqual({(('testtag',), self.files[0])}, cli.translate_LISTFILES(Namespace(query="testtag"), suppress=True))
         os.rename(self.folders[0], newpath)
         time.sleep(2)
         self.assertEqual(set(), cli.translate_LISTFILES(Namespace(query="testtag"), suppress=True))

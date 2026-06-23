@@ -79,6 +79,8 @@ def connect_tag(file_name : str, tag_name : str, value = None) -> list[str]:
     validator = v.Validator(database)
     if utils.is_integer_string(value):
         value = int(value)  # type: ignore
+    if value == "":
+        value = None
     permit = validator.approved_tag_operation(file_system, inode, file_name, tag_name, value)
     if not permit.approved:
         logger.info(f"Tag operation not approved for file ({file_name}) and tag '{tag_name}'")
@@ -706,7 +708,8 @@ def watch_directory(path : str) -> str:
         msg = "watch set for returning filesystem. if contents were modifified or mountpoint changed data may be lost. Run recovery"
     else:
         msg = "watch set for directory. if contents were modified data may be lost. Run recovery"
-    os.kill(daemon_pid(), signal.SIGUSR1)
+    os.system(f"sudo kill -USR1 {daemon_pid()}")
+    #os.kill(daemon_pid(), signal.SIGUSR1)
     return msg
 
 def unwatch_directory(path : str):
@@ -725,7 +728,8 @@ def unwatch_directory(path : str):
 
     if path in utils.get_watches():
         utils.sleep_watch(path)
-        os.kill(daemon_pid(), signal.SIGUSR1)
+        os.system(f"sudo kill -USR1 {daemon_pid()}")
+        #os.kill(daemon_pid(), signal.SIGUSR1)
         return "unwatch set for directory"
     return "directory not watched"
 
@@ -819,7 +823,7 @@ def export_data_to_xattr(dirpath : str, delete_local = False):
         return
     for fsid, inode, filepath, entry_id in entries:
         semo_data = database._direct_rels_for_file(fsid, inode)
-        data_string = " ".join(f"{k}:{v}" for k, v in semo_data.items())
+        data_string = " ".join(f"{k}:{v}" if v else f"{k}:" for k, v in semo_data.items())
         os.setxattr(filepath, "user.semo", data_string.encode())
         if delete_local:
             database.delete_file(fsid, inode)
@@ -843,11 +847,13 @@ def import_data_from_xattr(dirpath : str):
         prefix, dirs, files = contents
         for item in dirs + files:
             filepath = os.path.join(prefix, item)
-            data_string = os.getxattr(filepath, "user.semo").decode()
-            if data_string:
-                semo_data = dict(item.split(":") for item in data_string.split())
-                for k, v in semo_data.items():
-                    connect_tag(filepath, k, v)
-                imported.append(filepath)
-                os.setxattr(filepath, "user.semo", b"")
+            try:
+                data_string = os.getxattr(filepath, "user.semo").decode()
+            except OSError:
+                continue
+            semo_data = dict(item.split(":") for item in data_string.split())
+            for k, v in semo_data.items():
+                connect_tag(filepath, k, v)
+            imported.append(filepath)
+            os.removexattr(filepath, "user.semo")
     return imported

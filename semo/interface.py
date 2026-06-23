@@ -279,6 +279,8 @@ def translate_LISTWATCHES(suppress=False):
     """
     
     output = utils.get_watches()
+    #print("HELLOOO")
+    print(output)
     if not suppress: print(output)
     return output
 

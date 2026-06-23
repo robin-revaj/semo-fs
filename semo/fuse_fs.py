@@ -30,7 +30,7 @@ class semoFS(fuse.Fuse):
     
     def disassemble_local_name(self, local_name) -> tuple[str, int]:
         try:
-            filename, entry_id = local_name[:-1].rsplit('(', 1)
+            entry_id, filename = local_name[1:].split(']', 1)
             return (filename, int(entry_id))
         except ValueError as e:
             return ("", 0)
@@ -50,8 +50,8 @@ class semoFS(fuse.Fuse):
             try:
                 filedata = backend.get_files_for_tag_DIRECT(tag_name=current_item, path_only_output=False)
                 filenames = []
-                for _, _, filepath, database_id in filedata:
-                    local_name = os.path.basename(filepath) + "(" + str(database_id) + ")"
+                for _, _, filepath, database_id, in filedata:
+                    local_name = "[" + str(database_id) + "]" + os.path.basename(filepath)
                     filenames.append(local_name)
                 files.extend(filenames)
             except Exception as e:
@@ -70,7 +70,7 @@ class semoFS(fuse.Fuse):
             st.st_mode = stat.S_IFDIR | 0o555
             st.st_nlink = 2
             return st
-        if "." in path:
+        if os.path.basename(path).startswith("."):
             return st
         
         head, tail = os.path.split(path)
@@ -119,7 +119,33 @@ class semoFS(fuse.Fuse):
         pass
     def rmdir(self):
         pass
-                    
+
+    def getxattr(self, path, attribute, follow_symlinks=True):
+        return b""
+        return os.getxattr(self.readlink(path), attribute, follow_symlinks=follow_symlinks)
+
+    def listxattr(self, path, follow_symlinks=True):
+        return []
+        return os.listxattr(self.readlink(path), follow_symlinks=follow_symlinks)
+        _, local_name = os.path.split(path)
+        filename, entry_id = self.disassemble_local_name(local_name)
+
+    def access(self, path, mode):
+        return os.access(self.readlink(path), mode)
+    
+    def read(self, path, size, offset):
+        real_path = self.readlink(path)
+        with open(real_path, 'rb') as f:
+            f.seek(offset)
+            return f.read(size)
+        
+    def write(self, path, buf, offset):
+        real_path = self.readlink(path)
+        with open(real_path, 'r+b') as f:
+            f.seek(offset)
+            f.write(buf)
+        return len(buf)
+
 def main():
     fuse.fuse_python_api = (0, 2)
     fs = semoFS(version="%prog " + "0", usage=fuse.Fuse.fusage)

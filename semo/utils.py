@@ -36,7 +36,9 @@ def home():
         absolute path
     """
 
-    return os.path.expanduser('~') + '/.semo'
+    #return os.path.expandvars('~/.semo')
+    return "/home/mercury/.semo"
+    #return os.path.expanduser('~') + '/.semo'
 
 def dataset():
     """Reads and loads data from json file.
@@ -48,7 +50,7 @@ def dataset():
     """
 
     with open(home() + '/data.json', 'r') as f:
-        data = json.loads(f.read())
+        data = json.load(f)
     return data
 
 def get_working_db() -> str:
@@ -148,6 +150,7 @@ def get_watches() -> list[str]:
     """
 
     data = dataset()
+    return data["watches"]
     return data.get('watches', [])
 
 def set_watch(path) -> None:
